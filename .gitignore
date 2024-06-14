@@ -1,3 +1,4 @@
 *.o
 game
 
+compile_commands.json
