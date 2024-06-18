@@ -1,11 +1,17 @@
 CC=g++
+OBJ_FILES=main.o Game.o Sprite.o
 
 all: game
 
 
-game: main.o
+game: $(OBJ_FILES)
 	$(CC) $^ -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -o $@
 
+Game.o: Game.cpp
+	$(CC) $^ -c -o $@
+
+Sprite.o: Sprite.cpp
+	$(CC) $^ -c -o $@
 
 main.o: main.cpp
 	$(CC) $^ -c -o $@
