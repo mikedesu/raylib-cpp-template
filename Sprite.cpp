@@ -6,7 +6,6 @@ Sprite::Sprite(const char *filepath, const int anim_frames, const float x,
   this->anim_frames = anim_frames;
   set_scale(1.0f);
   init_rects();
-  position = (Vector2){x, y};
   origin = (Vector2){0, 0};
 }
 
@@ -16,7 +15,6 @@ Sprite::Sprite(Texture2D &texture, const int anim_frames, const float x,
   this->anim_frames = anim_frames;
   set_scale(1.0f);
   init_rects();
-  position = (Vector2){x, y};
   origin = (Vector2){0, 0};
 }
 
@@ -38,7 +36,17 @@ void Sprite::draw_hitbox() {
 void Sprite::move_pos_x(const int x) { dest.x += x * scale; }
 void Sprite::move_pos_y(const int y) { dest.y += y * scale; }
 
+void Sprite::move_rect(Rectangle &r) {
+  dest.x = r.x;
+  dest.y = r.y;
+}
+
 void Sprite::set_scale(const float scale) {
   this->scale = scale;
   init_rects();
 }
+
+int Sprite::get_x() const { return dest.x; }
+int Sprite::get_y() const { return dest.y; };
+
+Rectangle Sprite::get_dest() const { return dest; }
