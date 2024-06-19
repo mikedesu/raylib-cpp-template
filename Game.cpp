@@ -4,6 +4,12 @@ using std::to_string;
 
 Game::Game() {
 
+  const int screenWidth = 1280;
+  const int screenHeight = 720;
+  const char *title = "test";
+  InitWindow(screenWidth, screenHeight, title);
+  SetTargetFPS(60); // Set our game to run at 60 frames-per-second
+
   camera = {0};
 
   const char font_path[] = "hack.ttf";
@@ -13,17 +19,14 @@ Game::Game() {
   Texture2D texture = LoadTexture(img_path);
   textures["skull"] = texture;
 
-  // shared_ptr<Sprite> skull = new Sprite(texture, 2, 0, 0);
   shared_ptr<Sprite> skull = make_shared<Sprite>(texture, 2, 0, 0);
   sprites[0] = skull;
-
   debug_panel_on = true;
-
-  const int screenWidth = 1280;
-  const int screenHeight = 720;
 
   target = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
   screenRect = (Rectangle){0, 0, screenWidth, -screenHeight};
+
+  SetExitKey(KEY_Q);
 }
 
 void Game::run() {
@@ -41,6 +44,7 @@ void Game::run() {
     }
 
     if (IsKeyPressed(KEY_F)) {
+
       ToggleFullscreen();
     }
 
@@ -80,7 +84,13 @@ void Game::draw_debug_panel(Camera2D &camera, Font &font) {
 
 Game::~Game() {
 
-  sprites.clear();
+  for (auto &texture : textures) {
+    UnloadTexture(texture.second);
+  }
+
   textures.clear();
+  sprites.clear();
   UnloadRenderTexture(target);
+
+  CloseWindow();
 }
