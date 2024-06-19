@@ -1,17 +1,14 @@
 #pragma once
 
+#include "Sprite.h"
 #include <memory>
 #include <string>
 #include <unordered_map>
 
-#include "Sprite.h"
-
-using std::string;
-using std::unordered_map;
-// using std::unique_ptr;
-// using std::make_unique;
 using std::make_shared;
 using std::shared_ptr;
+using std::string;
+using std::unordered_map;
 
 typedef int entity_id;
 
@@ -20,6 +17,8 @@ class Game {
 public:
   Game();
   void run();
+  void draw();
+  void handle_input();
   void draw_debug_panel(Camera2D &camera, Font &font);
   ~Game();
 
@@ -34,4 +33,6 @@ private:
   Camera2D camera;
   RenderTexture target;
   Rectangle screenRect;
+
+  entity_id player_id;
 };

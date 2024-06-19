@@ -2,6 +2,8 @@
 
 using std::to_string;
 
+static entity_id next_entity_id = 0;
+
 Game::Game() {
 
   const int screenWidth = 1280;
@@ -12,7 +14,7 @@ Game::Game() {
 
   camera = {0};
 
-  const char font_path[] = "hack.ttf";
+  const char font_path[] = "fonts/hack.ttf";
   global_font = LoadFont(font_path);
 
   const char *img_path = "../ecs/img/skull-sheet.png";
@@ -20,7 +22,9 @@ Game::Game() {
   textures["skull"] = texture;
 
   shared_ptr<Sprite> skull = make_shared<Sprite>(texture, 2, 0, 0);
-  sprites[0] = skull;
+  skull->set_scale(4.0f);
+  sprites[next_entity_id] = skull;
+  player_id = next_entity_id++;
   debug_panel_on = true;
 
   target = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
@@ -29,49 +33,58 @@ Game::Game() {
   SetExitKey(KEY_Q);
 }
 
+void Game::handle_input() {
+  if (IsKeyDown(KEY_UP)) {
+    sprites[player_id]->move_pos_y(-1);
+  } else if (IsKeyDown(KEY_DOWN)) {
+    sprites[player_id]->move_pos_y(1);
+  }
+
+  if (IsKeyDown(KEY_LEFT)) {
+    sprites[player_id]->move_pos_x(-1);
+  } else if (IsKeyDown(KEY_RIGHT)) {
+    sprites[player_id]->move_pos_x(1);
+  }
+
+  if (IsKeyPressed(KEY_F)) {
+
+    ToggleFullscreen();
+  }
+
+  if (IsKeyPressed(KEY_D)) {
+    debug_panel_on = !debug_panel_on;
+  }
+}
+
+void Game::draw() {
+  BeginDrawing();
+  BeginMode2D(camera);
+  BeginTextureMode(target);
+  ClearBackground(WHITE);
+
+  for (auto &sprite : sprites) {
+    sprite.second->draw();
+    if (debug_panel_on) {
+      sprite.second->draw_hitbox();
+    }
+  }
+
+  EndTextureMode();
+  EndMode2D();
+  DrawTextureRec(target.texture, screenRect, (Vector2){0, 0}, WHITE);
+  DrawFPS(10, 10);
+
+  // draw debug panel
+  if (debug_panel_on) {
+    draw_debug_panel(camera, global_font);
+  }
+  EndDrawing();
+}
+
 void Game::run() {
   while (!WindowShouldClose()) {
-    if (IsKeyDown(KEY_UP)) {
-      // skull_position.y -= move_unit;
-    } else if (IsKeyDown(KEY_DOWN)) {
-      // skull_position.y += move_unit;
-    }
-
-    if (IsKeyDown(KEY_LEFT)) {
-      // skull_position.x -= move_unit;
-    } else if (IsKeyDown(KEY_RIGHT)) {
-      // skull_position.x += move_unit;
-    }
-
-    if (IsKeyPressed(KEY_F)) {
-
-      ToggleFullscreen();
-    }
-
-    if (IsKeyPressed(KEY_D)) {
-      debug_panel_on = !debug_panel_on;
-    }
-
-    BeginDrawing();
-    BeginMode2D(camera);
-    BeginTextureMode(target);
-    ClearBackground(WHITE);
-    // DrawTexturePro(texture, skull_rect,
-    //                (Rectangle){skull_position.x, skull_position.y,
-    //                            ((float)texture.width / 2) * scale,
-    //                            texture.height * scale},
-    //                (Vector2){0, 0}, 0, WHITE);
-    //  DrawRectangleLines(48, 24, 24, 24, RED);
-    EndTextureMode();
-    EndMode2D();
-    DrawTextureRec(target.texture, screenRect, (Vector2){0, 0}, WHITE);
-    DrawFPS(10, 10);
-
-    // draw debug panel
-    if (debug_panel_on) {
-      draw_debug_panel(camera, global_font);
-    }
-    EndDrawing();
+    handle_input();
+    draw();
   }
 }
 

@@ -18,4 +18,4 @@ main.o: main.cpp
 
 
 clean:
-	rm -f *.o game
+	rm -f *.o game 
