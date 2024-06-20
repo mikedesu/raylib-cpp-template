@@ -7,6 +7,9 @@ Sprite::Sprite(const char *filepath, const int anim_frames, const float x,
   set_scale(1.0f);
   init_rects();
   origin = (Vector2){0, 0};
+  this->dest.x = x;
+  this->dest.y = y;
+  current_frame = 0;
 }
 
 Sprite::Sprite(Texture2D &texture, const int anim_frames, const float x,
@@ -16,13 +19,17 @@ Sprite::Sprite(Texture2D &texture, const int anim_frames, const float x,
   set_scale(1.0f);
   init_rects();
   origin = (Vector2){0, 0};
+  this->dest.x = x;
+  this->dest.y = y;
+  current_frame = 0;
 }
 
 void Sprite::init_rects() {
   src = (Rectangle){0, 0, (float)texture.width / anim_frames,
                     (float)texture.height};
-  dest = (Rectangle){0, 0, ((float)texture.width / anim_frames) * scale,
-                     (float)texture.height * scale};
+  dest =
+      (Rectangle){dest.x, dest.y, ((float)texture.width / anim_frames) * scale,
+                  (float)texture.height * scale};
 }
 
 Sprite::~Sprite() {}
@@ -50,3 +57,21 @@ int Sprite::get_x() const { return dest.x; }
 int Sprite::get_y() const { return dest.y; };
 
 Rectangle Sprite::get_dest() const { return dest; }
+
+int Sprite::get_width() const { return src.width * scale; }
+
+int Sprite::get_height() const { return src.height * scale; }
+
+int Sprite::get_anim_frames() const { return anim_frames; }
+
+int Sprite::get_current_frame() const { return current_frame; }
+
+void Sprite::set_current_frame(const int frame) {
+  current_frame = frame;
+
+  // update the src rectangle
+  src.x = (float)frame * src.width;
+  src.y = 0;
+}
+
+float Sprite::get_scale() const { return scale; }

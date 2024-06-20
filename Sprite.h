@@ -17,10 +17,16 @@ public:
   void move_pos_y(const int y);
   void move_rect(Rectangle &r);
   void set_scale(const float scale);
+  float get_scale() const;
 
   int get_x() const;
   int get_y() const;
   Rectangle get_dest() const;
+  int get_width() const;
+  int get_height() const;
+  int get_anim_frames() const;
+  int get_current_frame() const;
+  void set_current_frame(const int frame);
 
 private:
   Texture2D texture;
@@ -28,6 +34,7 @@ private:
   Rectangle dest;
   Vector2 origin;
   int anim_frames;
+  int current_frame;
   float scale;
 
   void init_rects();

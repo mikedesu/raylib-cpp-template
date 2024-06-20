@@ -12,6 +12,13 @@ using std::unordered_map;
 
 typedef int entity_id;
 
+typedef struct {
+  Texture2D texture;
+  int num_frames;
+  int is_player;
+  string asset_path;
+} texture_info;
+
 class Game {
 public:
   Game();
@@ -21,10 +28,14 @@ public:
   void draw_debug_panel(Camera2D &camera, Font &font);
   void load_fonts();
   void load_assets();
+  void spawn_player();
+  void spawn_knife();
   ~Game();
 
 private:
-  unordered_map<string, Texture2D> textures;
+  // unordered_map<string, Texture2D> textures;
+  unordered_map<string, texture_info> textures;
+
   unordered_map<entity_id, shared_ptr<Sprite>> sprites;
   bool debug_panel_on;
   Font global_font;
