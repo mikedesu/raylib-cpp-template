@@ -28,6 +28,14 @@ public:
   int get_current_frame() const;
   void set_current_frame(const int frame);
 
+  void set_vx(const float vx);
+  void set_vy(const float vy);
+  int get_vx() const;
+  int get_vy() const;
+
+  void mark_for_deletion();
+  bool get_is_marked_for_deletion() const;
+
 private:
   Texture2D texture;
   Rectangle src;
@@ -36,6 +44,10 @@ private:
   int anim_frames;
   int current_frame;
   float scale;
+
+  Vector2 velocity;
+
+  bool is_marked_for_deletion;
 
   void init_rects();
 };

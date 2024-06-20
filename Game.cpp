@@ -59,11 +59,22 @@ void Game::spawn_player() {
 }
 
 void Game::spawn_knife() {
-  int x = GetRandomValue(0, GetScreenWidth());
-  int y = GetRandomValue(0, GetScreenHeight());
+  // get skull's position
+  int x = sprites[player_id]->get_dest().x;
+  int y = sprites[player_id]->get_dest().y;
+  int w = sprites[player_id]->get_width();
+  int h = sprites[player_id]->get_height();
+
+  x += w;
+  y += h / 2;
+
+  // int x = GetRandomValue(0, GetScreenWidth());
+  // int y = GetRandomValue(0, GetScreenHeight());
   shared_ptr<Sprite> sprite = make_shared<Sprite>(
       textures["knife"].texture, textures["knife"].num_frames, x, y);
   sprite->set_scale(4.0f);
+  sprite->set_vx(1.0f);
+  sprite->set_vy(0.0f);
   sprites[next_entity_id] = sprite;
   next_entity_id++;
 }
@@ -92,9 +103,12 @@ void Game::handle_input() {
 
   if (IsKeyDown(KEY_Z)) {
     sprites[player_id]->set_current_frame(1);
-    spawn_knife();
   } else if (IsKeyUp(KEY_Z)) {
     sprites[player_id]->set_current_frame(0);
+  }
+
+  if (IsKeyPressed(KEY_Z)) {
+    spawn_knife();
   }
 
   if (IsKeyPressed(KEY_S)) {
@@ -141,9 +155,36 @@ void Game::draw() {
   EndDrawing();
 }
 
+void Game::update() {
+  for (auto &sprite : sprites) {
+    entity_id id = sprite.first;
+
+    sprites[id]->move_pos_x(sprites[id]->get_vx());
+    sprites[id]->move_pos_y(sprites[id]->get_vy());
+    // sprite.second->move_pos_x(sprite.second->get_vx());
+    // sprite.second->move_pos_y(sprite.second->get_vy());
+
+    if (sprites[id]->get_dest().x < 0 ||
+        sprites[id]->get_dest().x > GetScreenWidth() ||
+        sprites[id]->get_dest().y < 0 ||
+        sprites[id]->get_dest().y > GetScreenHeight()) {
+      sprites[id]->mark_for_deletion();
+    }
+  }
+
+  for (auto it = sprites.begin(); it != sprites.end();) {
+    if (it->second->get_is_marked_for_deletion()) {
+      it = sprites.erase(it);
+    } else {
+      it++;
+    }
+  }
+}
+
 void Game::run() {
   while (!WindowShouldClose()) {
     handle_input();
+    update();
     draw();
   }
 }
@@ -152,7 +193,8 @@ void Game::draw_debug_panel(Camera2D &camera, Font &font) {
   string camera_info_str = "Camera: " + to_string(camera.target.x) + ", " +
                            to_string(camera.target.y) + "\nPlayer: " +
                            to_string(sprites[player_id]->get_dest().x) + ", " +
-                           to_string(sprites[player_id]->get_dest().y);
+                           to_string(sprites[player_id]->get_dest().y) + "\n" +
+                           to_string(sprites.size()) + " sprites";
   DrawRectangle(0, 0, 500, 200, Fade(BLACK, 0.5f));
   DrawTextEx(font, camera_info_str.c_str(), (Vector2){10, 10}, 16, 0.5f, WHITE);
 }

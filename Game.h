@@ -30,6 +30,7 @@ public:
   void load_assets();
   void spawn_player();
   void spawn_knife();
+  void update();
   ~Game();
 
 private:

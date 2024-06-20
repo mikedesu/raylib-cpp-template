@@ -10,6 +10,8 @@ Sprite::Sprite(const char *filepath, const int anim_frames, const float x,
   this->dest.x = x;
   this->dest.y = y;
   current_frame = 0;
+  velocity = (Vector2){0, 0};
+  is_marked_for_deletion = false;
 }
 
 Sprite::Sprite(Texture2D &texture, const int anim_frames, const float x,
@@ -22,6 +24,8 @@ Sprite::Sprite(Texture2D &texture, const int anim_frames, const float x,
   this->dest.x = x;
   this->dest.y = y;
   current_frame = 0;
+  velocity = (Vector2){0, 0};
+  is_marked_for_deletion = false;
 }
 
 void Sprite::init_rects() {
@@ -75,3 +79,17 @@ void Sprite::set_current_frame(const int frame) {
 }
 
 float Sprite::get_scale() const { return scale; }
+
+void Sprite::set_vx(const float vx) { velocity.x = vx; }
+
+void Sprite::set_vy(const float vy) { velocity.y = vy; }
+
+int Sprite::get_vx() const { return velocity.x; }
+
+int Sprite::get_vy() const { return velocity.y; }
+
+bool Sprite::get_is_marked_for_deletion() const {
+  return is_marked_for_deletion;
+}
+
+void Sprite::mark_for_deletion() { is_marked_for_deletion = true; }
