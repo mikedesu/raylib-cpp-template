@@ -23,14 +23,17 @@ class Game {
 public:
   Game();
   void run();
+  void draw_sprite(entity_id id);
   void draw();
   void handle_input();
+  void handle_sprite_movement(entity_id id);
   void draw_debug_panel(Camera2D &camera, Font &font);
   void load_fonts();
   void load_assets();
   void spawn_player();
   void spawn_knife();
   void update();
+  void spawn_bat();
   ~Game();
 
 private:
@@ -44,4 +47,7 @@ private:
   RenderTexture target;
   Rectangle screenRect;
   entity_id player_id;
+  float global_scale;
+
+  unsigned int current_frame;
 };

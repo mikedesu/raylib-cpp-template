@@ -12,6 +12,8 @@ Sprite::Sprite(const char *filepath, const int anim_frames, const float x,
   current_frame = 0;
   velocity = (Vector2){0, 0};
   is_marked_for_deletion = false;
+  is_animating = false;
+  is_flipped = false;
 }
 
 Sprite::Sprite(Texture2D &texture, const int anim_frames, const float x,
@@ -26,11 +28,22 @@ Sprite::Sprite(Texture2D &texture, const int anim_frames, const float x,
   current_frame = 0;
   velocity = (Vector2){0, 0};
   is_marked_for_deletion = false;
+  is_animating = false;
+  is_flipped = false;
 }
+
+void Sprite::set_is_animating(const bool is_animating) {
+  this->is_animating = is_animating;
+}
+
+bool Sprite::get_is_animating() const { return is_animating; }
 
 void Sprite::init_rects() {
   src = (Rectangle){0, 0, (float)texture.width / anim_frames,
                     (float)texture.height};
+
+  flipped_src = (Rectangle){src.x, src.y, src.width * -1.0f, src.height};
+
   dest =
       (Rectangle){dest.x, dest.y, ((float)texture.width / anim_frames) * scale,
                   (float)texture.height * scale};
@@ -38,7 +51,10 @@ void Sprite::init_rects() {
 
 Sprite::~Sprite() {}
 
-void Sprite::draw() { DrawTexturePro(texture, src, dest, origin, 0, WHITE); }
+void Sprite::draw() {
+  DrawTexturePro(texture, is_flipped ? flipped_src : src, dest, origin, 0,
+                 WHITE);
+}
 
 void Sprite::draw_hitbox() {
   DrawRectangleLines(dest.x, dest.y, dest.width, dest.height, RED);
@@ -71,11 +87,24 @@ int Sprite::get_anim_frames() const { return anim_frames; }
 int Sprite::get_current_frame() const { return current_frame; }
 
 void Sprite::set_current_frame(const int frame) {
+  if (frame < 0 || frame >= anim_frames) {
+    return;
+  }
+
   current_frame = frame;
 
   // update the src rectangle
   src.x = (float)frame * src.width;
   src.y = 0;
+}
+
+void Sprite::incr_frame() {
+  current_frame++;
+  if (current_frame >= anim_frames) {
+    current_frame = 0;
+  }
+
+  src.x = (float)current_frame * src.width;
 }
 
 float Sprite::get_scale() const { return scale; }
@@ -93,3 +122,10 @@ bool Sprite::get_is_marked_for_deletion() const {
 }
 
 void Sprite::mark_for_deletion() { is_marked_for_deletion = true; }
+
+void Sprite::set_is_flipped(const bool is_flipped) {
+
+  this->is_flipped = is_flipped;
+}
+
+bool Sprite::get_is_flipped() const { return is_flipped; }

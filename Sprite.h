@@ -35,19 +35,26 @@ public:
 
   void mark_for_deletion();
   bool get_is_marked_for_deletion() const;
+  void set_is_animating(const bool is_animating);
+  bool get_is_animating() const;
+  void incr_frame();
+
+  void set_is_flipped(const bool is_flipped);
+  bool get_is_flipped() const;
 
 private:
   Texture2D texture;
   Rectangle src;
+  Rectangle flipped_src;
   Rectangle dest;
   Vector2 origin;
   int anim_frames;
   int current_frame;
   float scale;
-
   Vector2 velocity;
-
   bool is_marked_for_deletion;
+  bool is_animating;
+  bool is_flipped;
 
   void init_rects();
 };
