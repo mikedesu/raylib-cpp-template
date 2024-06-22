@@ -22,14 +22,16 @@ public:
 
   void draw();
   void draw_hitbox();
-  void move_pos_x(const int x);
-  void move_pos_y(const int y);
+  void move_pos_x(const float x);
+  void move_pos_y(const float y);
   void move_rect(Rectangle &r);
   void set_scale(const float scale);
   float get_scale() const;
 
-  int get_x() const;
-  int get_y() const;
+  float get_x() const;
+  float get_y() const;
+  void set_x(const float x);
+  void set_y(const float y);
   Rectangle get_dest() const;
   int get_width() const;
   int get_height() const;

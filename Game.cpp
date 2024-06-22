@@ -83,19 +83,26 @@ void Game::spawn_knife() {
   int y = sprites[player_id]->get_dest().y;
   int w = sprites[player_id]->get_width();
   int h = sprites[player_id]->get_height();
-
-  x += w;
-  y += h / 2;
-
-  // int x = GetRandomValue(0, GetScreenWidth());
-  // int y = GetRandomValue(0, GetScreenHeight());
   shared_ptr<Sprite> sprite =
       make_shared<Sprite>(textures["knife"].texture,
                           textures["knife"].num_frames, x, y, SPRITETYPE_KNIFE);
-  // sprite->set_scale(2.0f);
   sprite->set_scale(global_scale);
-  // sprite->set_scale(4.0f);
-  sprite->set_vx(1.0f);
+  if (sprites[player_id]->get_is_flipped()) {
+    // need to subtrack width of KNIFE not skull
+    x -= sprite->get_width();
+  } else {
+    x += w;
+  }
+  // x += w;
+  y += h / 2;
+  sprite->set_x(x);
+  sprite->set_y(y);
+  if (sprites[player_id]->get_is_flipped()) {
+    sprite->set_vx(-1.0f);
+    sprite->set_is_flipped(true);
+  } else {
+    sprite->set_vx(1.0f);
+  }
   sprite->set_vy(0.0f);
   sprites[next_entity_id] = sprite;
   next_entity_id++;
@@ -103,24 +110,42 @@ void Game::spawn_knife() {
 
 void Game::handle_input() {
   if (IsKeyDown(KEY_UP)) {
+    // shift key
     if (sprites[player_id]->get_dest().y > 0) {
-      sprites[player_id]->move_pos_y(-1.0f);
+      if (IsKeyDown(KEY_LEFT_SHIFT)) {
+        sprites[player_id]->move_pos_y(-2.0f);
+      } else {
+        sprites[player_id]->move_pos_y(-1.0f);
+      }
     }
   } else if (IsKeyDown(KEY_DOWN)) {
     if (sprites[player_id]->get_dest().y <
         GetScreenHeight() - sprites[player_id]->get_height()) {
-      sprites[player_id]->move_pos_y(1.0f);
+      if (IsKeyDown(KEY_LEFT_SHIFT)) {
+        sprites[player_id]->move_pos_y(2.0f);
+      } else {
+        sprites[player_id]->move_pos_y(1.0f);
+      }
     }
   }
   if (IsKeyDown(KEY_LEFT)) {
     if (sprites[player_id]->get_dest().x > 0) {
-      sprites[player_id]->move_pos_x(-1.0f);
+
+      if (IsKeyDown(KEY_LEFT_SHIFT)) {
+        sprites[player_id]->move_pos_x(-2.0f);
+      } else {
+        sprites[player_id]->move_pos_x(-1.0f);
+      }
       sprites[player_id]->set_is_flipped(true);
     }
   } else if (IsKeyDown(KEY_RIGHT)) {
     if (sprites[player_id]->get_dest().x <
         GetScreenWidth() - sprites[player_id]->get_width()) {
-      sprites[player_id]->move_pos_x(1.0f);
+      if (IsKeyDown(KEY_LEFT_SHIFT)) {
+        sprites[player_id]->move_pos_x(2.0f);
+      } else {
+        sprites[player_id]->move_pos_x(1.0f);
+      }
       sprites[player_id]->set_is_flipped(false);
     }
   }
@@ -149,13 +174,10 @@ void Game::handle_input() {
     spawn_bat();
   }
 
-  // if (IsKeyDown(KEY_X)) {
-  //  sprites[player_id]->set_scale(2.0f);
-  //}
-
   if (IsKeyPressed(KEY_F)) {
     ToggleFullscreen();
   }
+
   if (IsKeyPressed(KEY_D)) {
     debug_panel_on = !debug_panel_on;
   }
@@ -191,20 +213,16 @@ void Game::draw() {
     draw_debug_panel(camera, global_font);
   }
   EndDrawing();
-
   current_frame++;
 }
 
 void Game::handle_player_movement() {
-
   // check for collision with other sprites
   for (auto &sprite : sprites) {
-
     // avoid comparing with self
     if (sprite.first == player_id) {
       continue;
     }
-
     // check if player collides with other sprites
     if (CheckCollisionRecs(sprites[player_id]->get_dest(),
                            sprite.second->get_dest())) {
@@ -215,7 +233,6 @@ void Game::handle_player_movement() {
 }
 
 void Game::handle_knife_movement() {
-
   for (auto &sprite : sprites) {
     SpriteType type = sprite.second->get_type();
     if (type != SPRITETYPE_KNIFE) {
@@ -225,7 +242,6 @@ void Game::handle_knife_movement() {
     sprite.second->move_pos_x(sprite.second->get_vx());
     sprite.second->move_pos_y(sprite.second->get_vy());
     // handle collision detection
-
     for (auto &sprite2 : sprites) {
       entity_id id = sprite2.first;
       SpriteType type2 = sprite2.second->get_type();
@@ -241,7 +257,6 @@ void Game::handle_knife_movement() {
         continue;
       }
     }
-
     // we will need a function to check bounding box intersection
     // check if sprite moves off-screen
     if (sprite.second->get_dest().x < 0 ||
@@ -253,9 +268,6 @@ void Game::handle_knife_movement() {
     }
   }
 }
-
-// void Game::handle_enemy_movement() {
-// }
 
 void Game::handle_sprite_movement(entity_id id) {
   // we need to separate out movement handling by entity type

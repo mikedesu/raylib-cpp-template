@@ -62,8 +62,8 @@ void Sprite::draw_hitbox() {
   DrawRectangleLines(dest.x, dest.y, dest.width, dest.height, RED);
 }
 
-void Sprite::move_pos_x(const int x) { dest.x += x * scale; }
-void Sprite::move_pos_y(const int y) { dest.y += y * scale; }
+void Sprite::move_pos_x(const float x) { dest.x += x * scale; }
+void Sprite::move_pos_y(const float y) { dest.y += y * scale; }
 
 void Sprite::move_rect(Rectangle &r) {
   dest.x = r.x;
@@ -75,8 +75,8 @@ void Sprite::set_scale(const float scale) {
   init_rects();
 }
 
-int Sprite::get_x() const { return dest.x; }
-int Sprite::get_y() const { return dest.y; };
+float Sprite::get_x() const { return dest.x; }
+float Sprite::get_y() const { return dest.y; };
 
 Rectangle Sprite::get_dest() const { return dest; }
 
@@ -135,3 +135,6 @@ bool Sprite::get_is_flipped() const { return is_flipped; }
 SpriteType Sprite::get_type() const { return type; }
 
 void Sprite::set_type(const SpriteType t) { type = t; }
+
+void Sprite::set_x(const float x) { dest.x = x; }
+void Sprite::set_y(const float y) { dest.y = y; }
