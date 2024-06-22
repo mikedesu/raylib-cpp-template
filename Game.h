@@ -34,6 +34,10 @@ public:
   void spawn_knife();
   void update();
   void spawn_bat();
+  void handle_sprites();
+  void handle_player_movement();
+  void handle_knife_movement();
+  void handle_enemy_movement();
   ~Game();
 
 private:

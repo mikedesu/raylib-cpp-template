@@ -2,13 +2,22 @@
 
 #include "raylib.h"
 
+typedef enum {
+  SPRITETYPE_NONE,
+  SPRITETYPE_PLAYER,
+  SPRITETYPE_ENEMY,
+  SPRITETYPE_BULLET,
+  SPRITETYPE_KNIFE,
+  SPRITETYPE_COUNT
+} SpriteType;
+
 class Sprite {
 
 public:
   Sprite(const char *filepath, const int anim_frames, const float x,
-         const float y);
+         const float y, SpriteType t);
   Sprite(Texture2D &texture, const int anim_frames, const float x,
-         const float y);
+         const float y, SpriteType t);
   ~Sprite();
 
   void draw();
@@ -42,6 +51,9 @@ public:
   void set_is_flipped(const bool is_flipped);
   bool get_is_flipped() const;
 
+  SpriteType get_type() const;
+  void set_type(const SpriteType t);
+
 private:
   Texture2D texture;
   Rectangle src;
@@ -55,6 +67,8 @@ private:
   bool is_marked_for_deletion;
   bool is_animating;
   bool is_flipped;
+
+  SpriteType type;
 
   void init_rects();
 };

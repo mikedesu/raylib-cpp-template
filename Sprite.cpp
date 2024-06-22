@@ -1,7 +1,7 @@
 #include "Sprite.h"
 
 Sprite::Sprite(const char *filepath, const int anim_frames, const float x,
-               const float y) {
+               const float y, SpriteType t) {
   texture = LoadTexture(filepath);
   this->anim_frames = anim_frames;
   set_scale(1.0f);
@@ -14,10 +14,11 @@ Sprite::Sprite(const char *filepath, const int anim_frames, const float x,
   is_marked_for_deletion = false;
   is_animating = false;
   is_flipped = false;
+  type = t;
 }
 
 Sprite::Sprite(Texture2D &texture, const int anim_frames, const float x,
-               const float y) {
+               const float y, SpriteType t) {
   this->texture = texture;
   this->anim_frames = anim_frames;
   set_scale(1.0f);
@@ -30,6 +31,7 @@ Sprite::Sprite(Texture2D &texture, const int anim_frames, const float x,
   is_marked_for_deletion = false;
   is_animating = false;
   is_flipped = false;
+  type = t;
 }
 
 void Sprite::set_is_animating(const bool is_animating) {
@@ -129,3 +131,7 @@ void Sprite::set_is_flipped(const bool is_flipped) {
 }
 
 bool Sprite::get_is_flipped() const { return is_flipped; }
+
+SpriteType Sprite::get_type() const { return type; }
+
+void Sprite::set_type(const SpriteType t) { type = t; }
