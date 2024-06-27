@@ -1,53 +1,86 @@
 #include "Game.h"
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include "mPrint.h"
+#include <cassert>
+// #include <cstdio>
+// #include <cstdlib>
+// #include <cstring>
 
 using std::to_string;
 
 static entity_id next_entity_id = 0;
 
 Game::Game() {
-  const int screenWidth = 1280;
-  const int screenHeight = 720;
-  const char *title = "test";
-  InitWindow(screenWidth, screenHeight, title);
-  SetTargetFPS(60); // Set our game to run at 60 frames-per-second
+  screen_rect = (Rectangle){0, 0, 0, 0};
   camera = {0};
-  load_assets();
-  debug_panel_on = true;
-  target = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
-  screenRect = (Rectangle){0, 0, screenWidth, -screenHeight};
-  SetExitKey(KEY_Q);
-  global_scale = 4.0f;
-  spawn_player();
+  has_been_initialized = false;
+}
+
+void Game::init() {
+  if (!has_been_initialized) {
+    mPrint("Initializing game...");
+    has_been_initialized = true;
+    InitWindow(screen_rect.width, -screen_rect.height,
+               get_window_title().c_str());
+    SetTargetFPS(60); // Set our game to run at 60 frames-per-second
+    load_assets();
+    target = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+    SetExitKey(KEY_Q);
+    spawn_player();
+  }
+}
+
+void Game::set_camera_default_values() {
+  camera.target.x = 0;
+  camera.target.y = 0;
+  camera.offset.x = 0;
+  camera.offset.y = 0;
+  camera.rotation = 0.0f;
+  camera.zoom = 0;
+}
+
+void Game::set_window_title(const char *title) { window_title = title; }
+
+string Game::get_window_title() { return window_title; }
+
+void Game::set_screen_width(int w) { screen_rect.width = w; }
+
+void Game::set_screen_height(int h) { screen_rect.height = -h; }
+
+void Game::set_debug_panel(bool b) { debug_panel_on = b; }
+
+void Game::set_global_scale(float s) {
+  assert(s > 0.0f);
+  global_scale = s;
 }
 
 void Game::load_fonts() {
+  mPrint("Loading fonts...");
   const char font_path[] = "fonts/hack.ttf";
   global_font = LoadFont(font_path);
 }
 
+void Game::add_texture_to_load(const char *asset_name, const char *asset_path,
+                               int num_frames, int is_player) {
+  Texture2D texture = {0};
+  texture_info info = {texture, num_frames, is_player, asset_path};
+  textures[asset_name] = info;
+}
+
+void Game::load_texture(const char *asset_name) {
+  const char *asset_path = textures[asset_name].asset_path.c_str();
+  const int num_frames = textures[asset_name].num_frames;
+  const int is_player = textures[asset_name].is_player;
+  Texture2D texture = LoadTexture(asset_path);
+  texture_info info = {texture, num_frames, is_player, asset_path};
+  textures[asset_name] = info;
+}
+
 void Game::load_assets() {
+  mPrint("Loading assets...");
   load_fonts();
-  const char *assets_file_path = "assets.txt";
-  FILE *assets_file = fopen(assets_file_path, "r");
-  if (assets_file == NULL) {
-    printf("Error: could not open file %s\n", assets_file_path);
-    exit(1);
+  for (auto &texture : textures) {
+    load_texture(texture.first.c_str());
   }
-  char asset_name[256] = {0};
-  while (fscanf(assets_file, "%s", asset_name) != EOF) {
-    char asset_path[256] = {0};
-    int num_frames;
-    int is_player;
-    fscanf(assets_file, "%d %d %s", &num_frames, &is_player, asset_path);
-    Texture2D texture = LoadTexture(asset_path);
-    texture_info info = {texture, num_frames, is_player, asset_path};
-    textures[asset_name] = info;
-    bzero(asset_name, 256);
-  }
-  fclose(assets_file);
 }
 
 void Game::spawn_player() {
@@ -55,7 +88,6 @@ void Game::spawn_player() {
                                                   textures["skull"].num_frames,
                                                   0, 0, SPRITETYPE_PLAYER);
   sprite->set_scale(global_scale);
-  // sprite->set_scale(4.0f);
   sprites[next_entity_id] = sprite;
   player_id = next_entity_id;
   next_entity_id++;
@@ -67,11 +99,7 @@ void Game::spawn_bat() {
   shared_ptr<Sprite> sprite =
       make_shared<Sprite>(textures["bat"].texture, textures["bat"].num_frames,
                           x, y, SPRITETYPE_ENEMY);
-  // sprite->set_scale(2.0f);
   sprite->set_scale(global_scale);
-  // sprite->set_scale(4.0f);
-  //  sprite->set_vx(0.0f);
-  //  sprite->set_vy(0.0f);
   sprite->set_is_animating(true);
   sprites[next_entity_id] = sprite;
   next_entity_id++;
@@ -206,7 +234,7 @@ void Game::draw() {
   }
   EndTextureMode();
   EndMode2D();
-  DrawTextureRec(target.texture, screenRect, (Vector2){0, 0}, WHITE);
+  DrawTextureRec(target.texture, screen_rect, (Vector2){0, 0}, WHITE);
   DrawFPS(10, 10);
   // draw debug panel
   if (debug_panel_on) {
@@ -332,10 +360,14 @@ void Game::update() {
 }
 
 void Game::run() {
-  while (!WindowShouldClose()) {
-    handle_input();
-    update();
-    draw();
+  if (!has_been_initialized) {
+    mPrint("Game has not been initialized. Exiting...");
+  } else {
+    while (!WindowShouldClose()) {
+      handle_input();
+      update();
+      draw();
+    }
   }
 }
 
@@ -350,12 +382,30 @@ void Game::draw_debug_panel(Camera2D &camera, Font &font) {
   DrawTextEx(font, camera_info_str.c_str(), (Vector2){10, 10}, 16, 0.5f, WHITE);
 }
 
-Game::~Game() {
+void Game::close() {
+  mPrint("Closing game...");
+  mPrint("Unloading textures...");
   for (auto &texture : textures) {
     UnloadTexture(texture.second.texture);
   }
+  mPrint("Clearing textures...");
   textures.clear();
+  mPrint("Clearing sprites...");
   sprites.clear();
-  UnloadRenderTexture(target);
-  CloseWindow();
+
+  if (IsRenderTextureReady(target)) {
+    mPrint("Unloading render texture...");
+    UnloadRenderTexture(target);
+  }
+
+  if (IsWindowReady()) {
+    mPrint("Closing window...");
+    CloseWindow();
+  }
+  mPrint("Game closed.");
 }
+
+Game::~Game() { close(); }
+
+void Game::set_has_been_initialized(bool b) { has_been_initialized = b; }
+bool Game::get_has_been_initialized() { return has_been_initialized; }

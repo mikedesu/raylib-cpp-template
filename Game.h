@@ -38,6 +38,21 @@ public:
   void handle_player_movement();
   void handle_knife_movement();
   void handle_enemy_movement();
+  void set_global_scale(float s);
+  void set_debug_panel(bool b);
+  void set_screen_width(int w);
+  void set_screen_height(int h);
+  void set_window_title(const char *t);
+  string get_window_title();
+  void set_camera_default_values();
+  void set_has_been_initialized(bool b);
+  bool get_has_been_initialized();
+  void init();
+  void close();
+  void load_texture(const char *asset_name);
+  void add_texture_to_load(const char *asset_name, const char *asset_path,
+                           int num_frames, int is_player);
+
   ~Game();
 
 private:
@@ -46,12 +61,15 @@ private:
 
   unordered_map<entity_id, shared_ptr<Sprite>> sprites;
   bool debug_panel_on;
+  bool has_been_initialized;
   Font global_font;
   Camera2D camera;
   RenderTexture target;
-  Rectangle screenRect;
+  Rectangle screen_rect;
   entity_id player_id;
   float global_scale;
 
   unsigned int current_frame;
+
+  string window_title;
 };
