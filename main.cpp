@@ -14,6 +14,10 @@ int main(void) {
   game.add_texture_to_load("knife", "../ecs/img/knife1.png", 1, 0);
   game.add_texture_to_load("bat", "../ecs/img/bat-sheet.png", 2, 0);
 
+  game.set_player_texture_key("skull");
+
+  // init is still specific to MY game
+  // i was thinking about lambdas earlier...
   game.init();
 
   game.run();

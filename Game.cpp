@@ -19,13 +19,20 @@ void Game::init() {
   if (!has_been_initialized) {
     mPrint("Initializing game...");
     has_been_initialized = true;
+    mPrint("Initializing window...");
     InitWindow(screen_rect.width, -screen_rect.height,
                get_window_title().c_str());
+    mPrint("Initializing camera...");
     SetTargetFPS(60); // Set our game to run at 60 frames-per-second
+    mPrint("Loading assets...");
     load_assets();
+    mPrint("Loading render texture...");
     target = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+    mPrint("Setting exit key...");
     SetExitKey(KEY_Q);
-    spawn_player();
+
+    mPrint("Spawning player...");
+    spawn_player(get_player_texture_key().c_str());
   }
 }
 
@@ -83,14 +90,23 @@ void Game::load_assets() {
   }
 }
 
-void Game::spawn_player() {
-  shared_ptr<Sprite> sprite = make_shared<Sprite>(textures["skull"].texture,
-                                                  textures["skull"].num_frames,
-                                                  0, 0, SPRITETYPE_PLAYER);
+entity_id Game::spawn_entity(const char *texture_key, sprite_type type) {
+  if (textures.find(texture_key) == textures.end()) {
+    mPrint("Texture key not found. Exiting...");
+    return -1;
+  }
+
+  shared_ptr<Sprite> sprite =
+      make_shared<Sprite>(textures[texture_key].texture,
+                          textures[texture_key].num_frames, 0, 0, type);
   sprite->set_scale(global_scale);
   sprites[next_entity_id] = sprite;
-  player_id = next_entity_id;
-  next_entity_id++;
+  return next_entity_id++;
+}
+
+entity_id Game::spawn_player(const char *texture_key) {
+  player_id = spawn_entity(texture_key, SPRITETYPE_PLAYER);
+  return player_id;
 }
 
 void Game::spawn_bat() {
@@ -262,7 +278,7 @@ void Game::handle_player_movement() {
 
 void Game::handle_knife_movement() {
   for (auto &sprite : sprites) {
-    SpriteType type = sprite.second->get_type();
+    sprite_type type = sprite.second->get_type();
     if (type != SPRITETYPE_KNIFE) {
       continue;
     }
@@ -272,7 +288,7 @@ void Game::handle_knife_movement() {
     // handle collision detection
     for (auto &sprite2 : sprites) {
       entity_id id = sprite2.first;
-      SpriteType type2 = sprite2.second->get_type();
+      sprite_type type2 = sprite2.second->get_type();
       if (type2 != SPRITETYPE_ENEMY) {
         continue;
       }
@@ -409,3 +425,14 @@ Game::~Game() { close(); }
 
 void Game::set_has_been_initialized(bool b) { has_been_initialized = b; }
 bool Game::get_has_been_initialized() { return has_been_initialized; }
+
+string Game::get_player_texture_key() { return player_texture_key; }
+
+void Game::set_player_texture_key(const char *key) {
+  // if (textures.find(key) == textures.end()) {
+  //   mPrint("Texture key not found. Exiting...");
+  //   return;
+  // }
+
+  player_texture_key = key;
+}

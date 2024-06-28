@@ -9,15 +9,15 @@ typedef enum {
   SPRITETYPE_BULLET,
   SPRITETYPE_KNIFE,
   SPRITETYPE_COUNT
-} SpriteType;
+} sprite_type;
 
 class Sprite {
 
 public:
   Sprite(const char *filepath, const int anim_frames, const float x,
-         const float y, SpriteType t);
+         const float y, sprite_type t);
   Sprite(Texture2D &texture, const int anim_frames, const float x,
-         const float y, SpriteType t);
+         const float y, sprite_type t);
   ~Sprite();
 
   void draw();
@@ -53,8 +53,8 @@ public:
   void set_is_flipped(const bool is_flipped);
   bool get_is_flipped() const;
 
-  SpriteType get_type() const;
-  void set_type(const SpriteType t);
+  sprite_type get_type() const;
+  void set_type(const sprite_type t);
 
 private:
   Texture2D texture;
@@ -70,7 +70,7 @@ private:
   bool is_animating;
   bool is_flipped;
 
-  SpriteType type;
+  sprite_type type;
 
   void init_rects();
 };

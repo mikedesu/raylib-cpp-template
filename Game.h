@@ -30,7 +30,10 @@ public:
   void draw_debug_panel(Camera2D &camera, Font &font);
   void load_fonts();
   void load_assets();
-  void spawn_player();
+  // void spawn_player();
+
+  entity_id spawn_player(const char *texture_key);
+
   void spawn_knife();
   void update();
   void spawn_bat();
@@ -53,6 +56,10 @@ public:
   void add_texture_to_load(const char *asset_name, const char *asset_path,
                            int num_frames, int is_player);
 
+  string get_player_texture_key();
+  void set_player_texture_key(const char *key);
+  entity_id spawn_entity(const char *texture_key, sprite_type type);
+
   ~Game();
 
 private:
@@ -72,4 +79,6 @@ private:
   unsigned int current_frame;
 
   string window_title;
+
+  string player_texture_key;
 };
