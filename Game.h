@@ -1,10 +1,12 @@
 #pragma once
 
 #include "Sprite.h"
+#include <functional>
 #include <memory>
 #include <string>
 #include <unordered_map>
 
+using std::function;
 using std::make_shared;
 using std::shared_ptr;
 using std::string;
@@ -36,6 +38,7 @@ public:
 
   void spawn_knife();
   void update();
+  void update_cleanup();
   void spawn_bat();
   void handle_sprites();
   void handle_player_movement();
@@ -60,6 +63,12 @@ public:
   void set_player_texture_key(const char *key);
   entity_id spawn_entity(const char *texture_key, sprite_type type);
 
+  void set_collision_func(function<void(entity_id)> f);
+
+  shared_ptr<Sprite> get_sprite(entity_id id);
+
+  entity_id get_player_id();
+
   ~Game();
 
 private:
@@ -79,6 +88,7 @@ private:
   unsigned int current_frame;
 
   string window_title;
-
   string player_texture_key;
+
+  function<void(entity_id)> collision_func;
 };

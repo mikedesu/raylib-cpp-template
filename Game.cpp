@@ -13,12 +13,19 @@ Game::Game() {
   screen_rect = (Rectangle){0, 0, 0, 0};
   camera = {0};
   has_been_initialized = false;
+  collision_func = nullptr;
 }
 
 void Game::init() {
   if (!has_been_initialized) {
     mPrint("Initializing game...");
-    has_been_initialized = true;
+
+    mPrint("Checking that player texture key is set...");
+    if (player_texture_key.empty()) {
+      mPrint("Player texture key not set. Exiting...");
+      return;
+    }
+
     mPrint("Initializing window...");
     InitWindow(screen_rect.width, -screen_rect.height,
                get_window_title().c_str());
@@ -33,6 +40,7 @@ void Game::init() {
 
     mPrint("Spawning player...");
     spawn_player(get_player_texture_key().c_str());
+    has_been_initialized = true;
   }
 }
 
@@ -260,7 +268,22 @@ void Game::draw() {
   current_frame++;
 }
 
-void Game::handle_player_movement() {
+void Game::handle_player_movement() {}
+
+void Game::handle_knife_movement() {}
+
+void Game::update_cleanup() {
+  for (auto it = sprites.cbegin(); it != sprites.cend();) {
+    if (it->second->get_is_marked_for_deletion()) {
+      it = sprites.erase(it);
+    } else {
+      it++;
+    }
+  }
+}
+
+void Game::update() {
+  // player-collision detection code
   // check for collision with other sprites
   for (auto &sprite : sprites) {
     // avoid comparing with self
@@ -274,15 +297,14 @@ void Game::handle_player_movement() {
       sprite.second->mark_for_deletion();
     }
   }
-}
 
-void Game::handle_knife_movement() {
+  // knife-movement code
+  /*
   for (auto &sprite : sprites) {
     sprite_type type = sprite.second->get_type();
     if (type != SPRITETYPE_KNIFE) {
       continue;
     }
-    // entity_id id = sprite.first;
     sprite.second->move_pos_x(sprite.second->get_vx());
     sprite.second->move_pos_y(sprite.second->get_vy());
     // handle collision detection
@@ -292,10 +314,8 @@ void Game::handle_knife_movement() {
       if (type2 != SPRITETYPE_ENEMY) {
         continue;
       }
-      // for some reason, game messing up when skull runs into knife...
       if (CheckCollisionRecs(sprite.second->get_dest(),
                              sprite2.second->get_dest())) {
-        // if the sprite is the player, we don't want to delete it
         sprite.second->mark_for_deletion();
         sprite2.second->mark_for_deletion();
         continue;
@@ -311,68 +331,13 @@ void Game::handle_knife_movement() {
       continue;
     }
   }
-}
+  */
 
-void Game::handle_sprite_movement(entity_id id) {
-  // we need to separate out movement handling by entity type
-  //
-  // player
-  // knives
-  // enemies
-  //
-  // this way we can likely avoid some of the bugginess currently experienced
-  if (id == player_id) {
-    return;
-  }
-  sprites[id]->move_pos_x(sprites[id]->get_vx());
-  sprites[id]->move_pos_y(sprites[id]->get_vy());
-  // handle collision detection
-  // we will need a function to check bounding box intersection
-  // check if sprite moves off-screen
-  if (sprites[id]->get_dest().x < 0 ||
-      sprites[id]->get_dest().x > GetScreenWidth() ||
-      sprites[id]->get_dest().y < 0 ||
-      sprites[id]->get_dest().y > GetScreenHeight()) {
-    sprites[id]->mark_for_deletion();
-    return;
-  }
-  // for every other sprite, check if it collides with the current sprite
   for (auto &sprite : sprites) {
-    entity_id sprite_id = sprite.first;
-    if (sprite.first == player_id || sprite_id == id) {
-      continue;
-    }
-    // for some reason, game messing up when skull runs into knife...
-    if (CheckCollisionRecs(sprites[id]->get_dest(),
-                           sprite.second->get_dest())) {
-      // if the sprite is the player, we don't want to delete it
-      sprites[id]->mark_for_deletion();
-    }
+    collision_func(sprite.first);
   }
-}
 
-void Game::handle_sprites() {
-  handle_player_movement();
-  handle_knife_movement();
-  // handle_enemy_movement();
-  // for (auto &sprite : sprites) {
-  //     entity_id id = sprite.first;
-  //     handle_sprite_movement(id);
-  //   }
-}
-
-void Game::update() {
-  handle_sprites();
-  // handle collision separate from movement
-  // this style of loop is likely the culprit of the freezing...
-  // constant iterator desu ka?
-  for (auto it = sprites.cbegin(); it != sprites.cend();) {
-    if (it->second->get_is_marked_for_deletion()) {
-      it = sprites.erase(it);
-    } else {
-      it++;
-    }
-  }
+  update_cleanup();
 }
 
 void Game::run() {
@@ -436,3 +401,12 @@ void Game::set_player_texture_key(const char *key) {
 
   player_texture_key = key;
 }
+
+void Game::set_collision_func(function<void(entity_id)> f) {
+
+  collision_func = f;
+}
+
+shared_ptr<Sprite> Game::get_sprite(entity_id id) { return sprites[id]; }
+
+entity_id Game::get_player_id() { return player_id; }
