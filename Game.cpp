@@ -124,14 +124,10 @@ entity_id Game::spawn_player(const char *texture_key) {
 void Game::spawn_bat() {
   int x = GetRandomValue(0, GetScreenWidth());
   int y = GetRandomValue(0, GetScreenHeight());
-  shared_ptr<Sprite> sprite =
-      make_shared<Sprite>(textures["bat"].texture, textures["bat"].num_frames,
-                          x, y, SPRITETYPE_ENEMY);
-  sprite->set_scale(global_scale);
-  sprite->set_is_animating(true);
-  sprites[next_entity_id] = sprite;
-  entity_ids.push_back(next_entity_id);
-  next_entity_id++;
+  entity_id bat_id = spawn_entity("bat", SPRITETYPE_ENEMY);
+  sprites[bat_id]->set_x(x);
+  sprites[bat_id]->set_y(y);
+  sprites[bat_id]->set_is_animating(true);
 }
 
 void Game::spawn_knife() {
@@ -140,30 +136,23 @@ void Game::spawn_knife() {
   int y = sprites[player_id]->get_dest().y;
   int w = sprites[player_id]->get_width();
   int h = sprites[player_id]->get_height();
-  shared_ptr<Sprite> sprite =
-      make_shared<Sprite>(textures["knife"].texture,
-                          textures["knife"].num_frames, x, y, SPRITETYPE_KNIFE);
-  sprite->set_scale(global_scale);
+  entity_id id = spawn_entity("knife", SPRITETYPE_KNIFE);
   if (sprites[player_id]->get_is_flipped()) {
     // need to subtrack width of KNIFE not skull
-    x -= sprite->get_width();
+    x -= sprites[id]->get_width();
   } else {
     x += w;
   }
-  // x += w;
   y += h / 2;
-  sprite->set_x(x);
-  sprite->set_y(y);
+  sprites[id]->set_x(x);
+  sprites[id]->set_y(y);
   if (sprites[player_id]->get_is_flipped()) {
-    sprite->set_vx(-1.0f);
-    sprite->set_is_flipped(true);
+    sprites[id]->set_vx(-1.0f);
+    sprites[id]->set_is_flipped(true);
   } else {
-    sprite->set_vx(1.0f);
+    sprites[id]->set_vx(1.0f);
   }
-  sprite->set_vy(0.0f);
-  sprites[next_entity_id] = sprite;
-  entity_ids.push_back(next_entity_id);
-  next_entity_id++;
+  sprites[id]->set_vy(0.0f);
 }
 
 void Game::handle_input() {
@@ -292,52 +281,13 @@ void Game::update_cleanup() {
 }
 
 void Game::update() {
-  // knife-movement code
-  /*
-  for (auto &sprite : sprites) {
-    sprite_type type = sprite.second->get_type();
-    if (type != SPRITETYPE_KNIFE) {
-      continue;
-    }
-    sprite.second->move_pos_x(sprite.second->get_vx());
-    sprite.second->move_pos_y(sprite.second->get_vy());
-    // handle collision detection
-    for (auto &sprite2 : sprites) {
-      entity_id id = sprite2.first;
-      sprite_type type2 = sprite2.second->get_type();
-      if (type2 != SPRITETYPE_ENEMY) {
-        continue;
-      }
-      if (CheckCollisionRecs(sprite.second->get_dest(),
-                             sprite2.second->get_dest())) {
-        sprite.second->mark_for_deletion();
-        sprite2.second->mark_for_deletion();
-        continue;
-      }
-    }
-    // we will need a function to check bounding box intersection
-    // check if sprite moves off-screen
-    if (sprite.second->get_dest().x < 0 ||
-        sprite.second->get_dest().x > GetScreenWidth() ||
-        sprite.second->get_dest().y < 0 ||
-        sprite.second->get_dest().y > GetScreenHeight()) {
-      sprite.second->mark_for_deletion();
-      continue;
-    }
-  }
-  */
-
-  // for_each(entity_ids.begin(), entity_ids.end(), collision_func);
-
-  // for (auto &f : collision_functions) {
-  // for_each(entity_ids.cbegin(), entity_ids.cend(), collision_functions[0]);
+  for_each(collision_functions.begin(), collision_functions.end(),
+           [&](auto f) { for_each(entity_ids.begin(), entity_ids.end(), f); });
+  // for (auto id : entity_ids) {
+  //   for (auto &f : collision_functions) {
+  //     f(id);
+  //   }
   // }
-
-  for (auto &f : collision_functions) {
-    for (auto id : entity_ids) {
-      f(id);
-    }
-  }
   update_cleanup();
 }
 
