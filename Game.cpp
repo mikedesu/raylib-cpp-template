@@ -1,10 +1,12 @@
 #include "Game.h"
 #include "mPrint.h"
+#include <algorithm>
 #include <cassert>
 // #include <cstdio>
 // #include <cstdlib>
 // #include <cstring>
 
+using std::for_each;
 using std::to_string;
 
 static entity_id next_entity_id = 0;
@@ -13,7 +15,8 @@ Game::Game() {
   screen_rect = (Rectangle){0, 0, 0, 0};
   camera = {0};
   has_been_initialized = false;
-  collision_func = nullptr;
+  entity_ids.clear();
+  collision_functions.clear();
 }
 
 void Game::init() {
@@ -109,6 +112,7 @@ entity_id Game::spawn_entity(const char *texture_key, sprite_type type) {
                           textures[texture_key].num_frames, 0, 0, type);
   sprite->set_scale(global_scale);
   sprites[next_entity_id] = sprite;
+  entity_ids.push_back(next_entity_id);
   return next_entity_id++;
 }
 
@@ -126,6 +130,7 @@ void Game::spawn_bat() {
   sprite->set_scale(global_scale);
   sprite->set_is_animating(true);
   sprites[next_entity_id] = sprite;
+  entity_ids.push_back(next_entity_id);
   next_entity_id++;
 }
 
@@ -157,6 +162,7 @@ void Game::spawn_knife() {
   }
   sprite->set_vy(0.0f);
   sprites[next_entity_id] = sprite;
+  entity_ids.push_back(next_entity_id);
   next_entity_id++;
 }
 
@@ -275,7 +281,10 @@ void Game::handle_knife_movement() {}
 void Game::update_cleanup() {
   for (auto it = sprites.cbegin(); it != sprites.cend();) {
     if (it->second->get_is_marked_for_deletion()) {
+      entity_id id = it->first;
       it = sprites.erase(it);
+      entity_ids.erase(remove(entity_ids.begin(), entity_ids.end(), id),
+                       entity_ids.end());
     } else {
       it++;
     }
@@ -283,21 +292,6 @@ void Game::update_cleanup() {
 }
 
 void Game::update() {
-  // player-collision detection code
-  // check for collision with other sprites
-  for (auto &sprite : sprites) {
-    // avoid comparing with self
-    if (sprite.first == player_id) {
-      continue;
-    }
-    // check if player collides with other sprites
-    if (CheckCollisionRecs(sprites[player_id]->get_dest(),
-                           sprite.second->get_dest())) {
-      // if the sprite is the player, we don't want to delete it
-      sprite.second->mark_for_deletion();
-    }
-  }
-
   // knife-movement code
   /*
   for (auto &sprite : sprites) {
@@ -333,10 +327,17 @@ void Game::update() {
   }
   */
 
-  for (auto &sprite : sprites) {
-    collision_func(sprite.first);
-  }
+  // for_each(entity_ids.begin(), entity_ids.end(), collision_func);
 
+  // for (auto &f : collision_functions) {
+  // for_each(entity_ids.cbegin(), entity_ids.cend(), collision_functions[0]);
+  // }
+
+  for (auto &f : collision_functions) {
+    for (auto id : entity_ids) {
+      f(id);
+    }
+  }
   update_cleanup();
 }
 
@@ -349,6 +350,8 @@ void Game::run() {
       update();
       draw();
     }
+
+    mPrint("Window closed.");
   }
 }
 
@@ -373,6 +376,9 @@ void Game::close() {
   textures.clear();
   mPrint("Clearing sprites...");
   sprites.clear();
+  // attempting to clear entity_ids causes a crash on close lol
+  // mPrint("Clearing entity ids...");
+  // entity_ids.clear();
 
   if (IsRenderTextureReady(target)) {
     mPrint("Unloading render texture...");
@@ -383,6 +389,7 @@ void Game::close() {
     mPrint("Closing window...");
     CloseWindow();
   }
+
   mPrint("Game closed.");
 }
 
@@ -393,20 +400,19 @@ bool Game::get_has_been_initialized() { return has_been_initialized; }
 
 string Game::get_player_texture_key() { return player_texture_key; }
 
-void Game::set_player_texture_key(const char *key) {
-  // if (textures.find(key) == textures.end()) {
-  //   mPrint("Texture key not found. Exiting...");
-  //   return;
-  // }
+void Game::set_player_texture_key(const char *key) { player_texture_key = key; }
 
-  player_texture_key = key;
-}
-
-void Game::set_collision_func(function<void(entity_id)> f) {
-
-  collision_func = f;
+void Game::add_collision_func(function<void(entity_id)> f) {
+  collision_functions.push_back(f);
 }
 
 shared_ptr<Sprite> Game::get_sprite(entity_id id) { return sprites[id]; }
 
 entity_id Game::get_player_id() { return player_id; }
+
+bool Game::entity_id_exists(entity_id id) {
+
+  return find(entity_ids.begin(), entity_ids.end(), id) != entity_ids.end();
+}
+
+vector<entity_id> &Game::get_entity_ids() { return entity_ids; }

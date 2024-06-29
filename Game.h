@@ -5,12 +5,14 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 using std::function;
 using std::make_shared;
 using std::shared_ptr;
 using std::string;
 using std::unordered_map;
+using std::vector;
 
 typedef int entity_id;
 
@@ -63,11 +65,14 @@ public:
   void set_player_texture_key(const char *key);
   entity_id spawn_entity(const char *texture_key, sprite_type type);
 
-  void set_collision_func(function<void(entity_id)> f);
+  void add_collision_func(function<void(entity_id)> f);
 
   shared_ptr<Sprite> get_sprite(entity_id id);
 
   entity_id get_player_id();
+
+  vector<entity_id> &get_entity_ids();
+  bool entity_id_exists(entity_id id);
 
   ~Game();
 
@@ -90,5 +95,9 @@ private:
   string window_title;
   string player_texture_key;
 
-  function<void(entity_id)> collision_func;
+  // function<void(entity_id)> collision_func;
+
+  vector<function<void(entity_id)>> collision_functions;
+
+  vector<entity_id> entity_ids;
 };
