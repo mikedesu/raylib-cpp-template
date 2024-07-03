@@ -10,23 +10,20 @@ int main(void) {
   game.set_debug_panel(true);
   game.set_global_scale(4.0f);
 
+  /*
   game.add_texture_to_load("skull", "../ecs/img/skull-sheet.png", 2, 1);
   game.add_texture_to_load("knife", "../ecs/img/knife1.png", 1, 0);
   game.add_texture_to_load("bat", "../ecs/img/bat-sheet.png", 2, 0);
-
   game.set_player_texture_key("skull");
-
   game.add_collision_func([&](entity_id id) {
     entity_id player_id = game.get_player_id();
     if (id == player_id) {
       return;
     }
-
     shared_ptr<Sprite> s = game.get_sprite(id);
     if (s == nullptr) {
       return;
     }
-
     // check if player collides with other sprites
     if (CheckCollisionRecs(game.get_sprite(player_id)->get_dest(),
                            s->get_dest())) {
@@ -35,7 +32,6 @@ int main(void) {
       return;
     }
   });
-
   game.add_collision_func([&](entity_id id) {
     shared_ptr<Sprite> s = game.get_sprite(id);
     if (s == nullptr) {
@@ -60,7 +56,6 @@ int main(void) {
         continue;
       }
     }
-
     // check if offscreen using collision rects
     Rectangle right_side = {(float)GetScreenWidth() + s->get_width(), 0, 1,
                             (float)GetScreenHeight()};
@@ -70,7 +65,6 @@ int main(void) {
                           1};
     Rectangle bottom_side = {0, (float)GetScreenHeight() + s->get_height(),
                              (float)GetScreenWidth(), 1};
-
     if (CheckCollisionRecs(s->get_dest(), right_side) ||
         CheckCollisionRecs(s->get_dest(), left_side) ||
         CheckCollisionRecs(s->get_dest(), top_side) ||
@@ -79,6 +73,7 @@ int main(void) {
       return;
     }
   });
+  */
 
   game.init();
   game.run();
