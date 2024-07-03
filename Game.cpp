@@ -98,7 +98,7 @@ void Game::set_camera_default_values() {
   camera2d.offset.x = 0;
   camera2d.offset.y = 0;
   camera2d.rotation = 0.0f;
-  camera2d.zoom = 0;
+  camera2d.zoom = 1;
 }
 
 void Game::set_window_title(const char *title) { window_title = title; }
@@ -130,21 +130,43 @@ void Game::handle_input() {
   if (IsKeyPressed(KEY_R)) {
     set_camera_default_values();
   }
+
+  if (IsKeyDown(KEY_LEFT)) {
+    // move camera
+    camera2d.target.x -= 4;
+  } else if (IsKeyDown(KEY_RIGHT)) {
+    camera2d.target.x += 4;
+  }
+
+  if (IsKeyDown(KEY_UP)) {
+    camera2d.target.y -= 4;
+  } else if (IsKeyDown(KEY_DOWN)) {
+    camera2d.target.y += 4;
+  }
+
+  if (IsKeyDown(KEY_Z)) {
+    camera2d.zoom += 0.1f;
+  } else if (IsKeyDown(KEY_X)) {
+    camera2d.zoom -= 0.1f;
+  }
 }
 
 void Game::draw() {
   BeginDrawing();
-  BeginMode2D(camera2d);
   BeginTextureMode(target);
+  BeginMode2D(camera2d);
 
   ClearBackground(WHITE);
 
   for (auto &s : sprites) {
     s.second->draw();
+    if (debug_panel_on) {
+      s.second->draw_hitbox();
+    }
   }
 
-  EndTextureMode();
   EndMode2D();
+  EndTextureMode();
   DrawTextureRec(target.texture, screen_rect, (Vector2){0, 0}, WHITE);
   DrawFPS(10, 10);
   // draw debug panel
