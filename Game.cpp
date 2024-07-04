@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cstdio>
 #include <cstring>
+#include <raylib.h>
 #include <string>
 
 using std::to_string;
@@ -10,12 +11,13 @@ using std::to_string;
 static entity_id next_entity_id = 0;
 
 Game::Game() {
-  screen_rect =
-      (Rectangle){0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()};
+  global_scale = 2.0f;
+  screen_rect = (Rectangle){0, 0, 1280, -720};
   camera2d = {0};
   current_frame = 0;
   set_camera_default_values();
   has_been_initialized = false;
+  controlmode = CONTROL_MODE_PLAYER;
 }
 
 void Game::init() {
@@ -27,6 +29,7 @@ void Game::init() {
                get_window_title().c_str());
     mPrint("Initializing camera...");
     set_camera_default_values();
+
     SetTargetFPS(60); // Set our game to run at 60 frames-per-second
     mPrint("Loading assets...");
     load_fonts();
@@ -40,7 +43,12 @@ void Game::init() {
     mPrint("Setting exit key...");
     SetExitKey(KEY_Q);
 
-    spawn_player(0, 0);
+    // spawn_player(0, 0);
+    const int sprite_width = textures["skull"].texture.width;
+    const int sprite_height = textures["skull"].texture.height;
+    const float x = (float)GetScreenWidth() / 2 - (float)sprite_width;
+    const float y = (float)GetScreenHeight() / 2 - (float)sprite_height;
+    spawn_player(x, y);
 
     has_been_initialized = true;
   }
@@ -79,10 +87,6 @@ bool Game::load_texture(const char *asset_name, const char *asset_path,
                         const int num_frames, const int is_player) {
   mPrint("Attempting to load texture: " + string(asset_name));
   Texture2D t = LoadTexture(asset_path);
-  // if (t.id == 0) {
-  //   mPrint("Error loading texture: " + string(asset_name));
-  //   return false;
-  // }
   texture_info ti;
   ti.texture = t;
   ti.num_frames = num_frames;
@@ -101,14 +105,11 @@ void Game::set_camera_default_values() {
   camera2d.zoom = 1;
 }
 
-void Game::set_window_title(const char *title) { window_title = title; }
-
 string Game::get_window_title() { return window_title; }
 
+void Game::set_window_title(const char *title) { window_title = title; }
 void Game::set_screen_width(int w) { screen_rect.width = w; }
-
 void Game::set_screen_height(int h) { screen_rect.height = -h; }
-
 void Game::set_debug_panel(bool b) { debug_panel_on = b; }
 
 void Game::set_global_scale(float s) {
@@ -122,9 +123,9 @@ void Game::load_fonts() {
   global_font = LoadFont(font_path);
 }
 
-void Game::handle_input() {
-  if (IsKeyPressed(KEY_D)) {
-    debug_panel_on = !debug_panel_on;
+void Game::handle_camera_input() {
+  if (IsKeyPressed(KEY_C)) {
+    controlmode = CONTROL_MODE_PLAYER;
   }
 
   if (IsKeyPressed(KEY_R)) {
@@ -133,15 +134,15 @@ void Game::handle_input() {
 
   if (IsKeyDown(KEY_LEFT)) {
     // move camera
-    camera2d.target.x -= 4;
+    camera2d.target.x -= 2;
   } else if (IsKeyDown(KEY_RIGHT)) {
-    camera2d.target.x += 4;
+    camera2d.target.x += 2;
   }
 
   if (IsKeyDown(KEY_UP)) {
-    camera2d.target.y -= 4;
+    camera2d.target.y -= 2;
   } else if (IsKeyDown(KEY_DOWN)) {
-    camera2d.target.y += 4;
+    camera2d.target.y += 2;
   }
 
   if (IsKeyDown(KEY_Z)) {
@@ -151,12 +152,59 @@ void Game::handle_input() {
   }
 }
 
+void Game::handle_player_input() {
+  if (IsKeyPressed(KEY_C)) {
+    controlmode = CONTROL_MODE_CAMERA;
+  }
+
+  if (IsKeyPressed(KEY_SPACE)) {
+    sprites[player_id]->set_ay(0.00f);
+    sprites[player_id]->set_vy(-2.0f);
+    sprites[player_id]->update();
+  }
+
+  if (IsKeyDown(KEY_LEFT)) {
+    // move player
+    sprites[player_id]->move(-2, 0);
+    if (!sprites[player_id]->get_is_flipped()) {
+      sprites[player_id]->flip();
+    }
+  } else if (IsKeyDown(KEY_RIGHT)) {
+    sprites[player_id]->move(2, 0);
+    if (sprites[player_id]->get_is_flipped()) {
+      sprites[player_id]->flip();
+    }
+  }
+}
+
+void Game::handle_input() {
+  if (IsKeyPressed(KEY_D)) {
+    debug_panel_on = !debug_panel_on;
+  }
+
+  switch (controlmode) {
+  case CONTROL_MODE_PLAYER:
+    handle_player_input();
+    break;
+  case CONTROL_MODE_CAMERA:
+    handle_camera_input();
+    break;
+  default:
+    break;
+  }
+}
+
 void Game::draw() {
   BeginDrawing();
   BeginTextureMode(target);
   BeginMode2D(camera2d);
+  ClearBackground(BROWN);
 
-  ClearBackground(WHITE);
+  // no background yet, but lets mock one up with shapes
+  // draw a large rectangle to represent a scene
+  // but lets make the dimension ratio 720x1280
+
+  DrawRectangle(GetScreenWidth() / 2 - 405 / 2, 0, 405, 720, BLACK);
 
   for (auto &s : sprites) {
     s.second->draw();
@@ -177,13 +225,23 @@ void Game::draw() {
   current_frame++;
 }
 
+void Game::update() {
+  // gravity
+  for (auto &s : sprites) {
+    if (s.second->get_type() == SPRITETYPE_PLAYER) {
+      s.second->incr_ay(0.0032f);
+      s.second->update();
+    }
+  }
+}
+
 void Game::run() {
   if (!has_been_initialized) {
     mPrint("Game has not been initialized. Exiting...");
   } else {
     while (!WindowShouldClose()) {
       handle_input();
-      // update();
+      update();
       draw();
     }
 
@@ -200,7 +258,15 @@ void Game::draw_debug_panel() {
       "Camera2D offset: " + to_string(camera2d.offset.x) + ", " +
       to_string(camera2d.offset.y) + "\n" +
       "Camera2D rotation: " + to_string(camera2d.rotation) + "\n" +
-      "Camera2D zoom: " + to_string(camera2d.zoom) + "\n";
+      "Camera2D zoom: " + to_string(camera2d.zoom) + "\n" +
+      "Player Position: " + to_string(sprites[player_id]->get_x()) + ", " +
+      to_string(sprites[player_id]->get_y()) + "\n" +
+      "Player Velocity: " + to_string(sprites[player_id]->get_vx()) + ", " +
+      to_string(sprites[player_id]->get_vy()) + "\n" +
+      "Player Acceleration: " + to_string(sprites[player_id]->get_ax()) + ", " +
+      to_string(sprites[player_id]->get_ay()) + "\n" +
+      "Control mode: " + to_string(controlmode) + "\n";
+
   DrawRectangle(0, 0, 500, 200, Fade(BLACK, 0.5f));
   DrawTextEx(global_font, camera_info_str.c_str(), (Vector2){10, 10}, 16, 0.5f,
              WHITE);
@@ -251,6 +317,8 @@ entity_id Game::spawn_entity(const char *texture_key, float x, float y,
     mPrint("Error creating sprite.");
     return -1;
   }
+  s->set_scale(global_scale);
+
   sprites[next_entity_id] = s;
   return next_entity_id++;
 }

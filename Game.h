@@ -16,6 +16,11 @@ using std::vector;
 
 typedef int entity_id;
 
+typedef enum {
+  CONTROL_MODE_PLAYER,
+  CONTROL_MODE_CAMERA,
+} control_mode;
+
 typedef struct {
   Texture2D texture;
   int num_frames;
@@ -28,24 +33,13 @@ public:
   Game();
   void run();
   // void draw_sprite(entity_id id);
+  void update();
   void draw();
   void handle_input();
-  // void handle_sprite_movement(entity_id id);
+  void handle_camera_input();
+  void handle_player_input();
   void draw_debug_panel();
   void load_fonts();
-  // void load_assets();
-  //  void spawn_player();
-
-  // entity_id spawn_player(const char *texture_key);
-
-  // void spawn_knife();
-  // void update();
-  // void update_cleanup();
-  // void spawn_bat();
-  // void handle_sprites();
-  // void handle_player_movement();
-  // void handle_knife_movement();
-  // void handle_enemy_movement();
   void set_global_scale(float s);
   void set_debug_panel(bool b);
   void set_screen_width(int w);
@@ -74,20 +68,27 @@ public:
 private:
   unordered_map<string, texture_info> textures;
   unordered_map<entity_id, shared_ptr<Sprite>> sprites;
+  vector<entity_id> entity_ids;
+  unordered_map<entity_id, bool> gravity;
+
   bool debug_panel_on;
   bool has_been_initialized;
+
   Font global_font;
 
   Camera2D camera2d;
 
   RenderTexture target;
+
   Rectangle screen_rect;
+
   entity_id player_id;
+
   float global_scale;
 
   unsigned int current_frame;
 
   string window_title;
 
-  vector<entity_id> entity_ids;
+  control_mode controlmode;
 };

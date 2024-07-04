@@ -34,11 +34,45 @@ Sprite::Sprite(Texture2D &texture, const int anim_frames, const float x,
   type = t;
 }
 
+void Sprite::mark_for_deletion() { is_marked_for_deletion = true; }
+
+void Sprite::set_ax(const float ax) { acceleration.x = ax; }
+void Sprite::set_ay(const float ay) { acceleration.y = ay; }
+void Sprite::set_vx(const float vx) { velocity.x = vx; }
+void Sprite::set_vy(const float vy) { velocity.y = vy; }
+void Sprite::set_type(const sprite_type t) { type = t; }
+void Sprite::set_x(const float x) { dest.x = x; }
+void Sprite::set_y(const float y) { dest.y = y; }
+void Sprite::set_velocity(const Vector2 v) { velocity = v; }
+void Sprite::set_acceleration(const Vector2 a) { acceleration = a; }
+
+void Sprite::incr_vx(const float vx) { velocity.x += vx; }
+void Sprite::incr_vy(const float vy) { velocity.y += vy; }
+void Sprite::incr_ax(const float ax) { acceleration.x += ax; }
+void Sprite::incr_ay(const float ay) { acceleration.y += ay; }
+
+const float Sprite::get_ax() const { return acceleration.x; }
+const float Sprite::get_ay() const { return acceleration.y; }
+const float Sprite::get_scale() const { return scale; }
+const float Sprite::get_vx() const { return velocity.x; }
+const float Sprite::get_vy() const { return velocity.y; }
+const bool Sprite::get_is_flipped() const { return is_flipped; }
+const sprite_type Sprite::get_type() const { return type; }
+const Vector2 Sprite::get_velocity() const { return velocity; }
+const Vector2 Sprite::get_acceleration() const { return acceleration; }
+const float Sprite::get_x() const { return dest.x; }
+const float Sprite::get_y() const { return dest.y; };
+const Rectangle Sprite::get_dest() const { return dest; }
+const int Sprite::get_width() const { return src.width * scale; }
+const int Sprite::get_height() const { return src.height * scale; }
+const int Sprite::get_anim_frames() const { return anim_frames; }
+const int Sprite::get_current_frame() const { return current_frame; }
+
 void Sprite::set_is_animating(const bool is_animating) {
   this->is_animating = is_animating;
 }
 
-bool Sprite::get_is_animating() const { return is_animating; }
+const bool Sprite::get_is_animating() const { return is_animating; }
 
 void Sprite::init_rects() {
   src = (Rectangle){0, 0, (float)texture.width / anim_frames,
@@ -62,8 +96,10 @@ void Sprite::draw_hitbox() {
   DrawRectangleLines(dest.x, dest.y, dest.width, dest.height, RED);
 }
 
-void Sprite::move_pos_x(const float x) { dest.x += x * scale; }
-void Sprite::move_pos_y(const float y) { dest.y += y * scale; }
+void Sprite::move(const float x, const float y) {
+  dest.x += x * scale;
+  dest.y += y * scale;
+}
 
 void Sprite::move_rect(Rectangle &r) {
   dest.x = r.x;
@@ -75,26 +111,11 @@ void Sprite::set_scale(const float scale) {
   init_rects();
 }
 
-float Sprite::get_x() const { return dest.x; }
-float Sprite::get_y() const { return dest.y; };
-
-Rectangle Sprite::get_dest() const { return dest; }
-
-int Sprite::get_width() const { return src.width * scale; }
-
-int Sprite::get_height() const { return src.height * scale; }
-
-int Sprite::get_anim_frames() const { return anim_frames; }
-
-int Sprite::get_current_frame() const { return current_frame; }
-
 void Sprite::set_current_frame(const int frame) {
   if (frame < 0 || frame >= anim_frames) {
     return;
   }
-
   current_frame = frame;
-
   // update the src rectangle
   src.x = (float)frame * src.width;
   src.y = 0;
@@ -105,36 +126,24 @@ void Sprite::incr_frame() {
   if (current_frame >= anim_frames) {
     current_frame = 0;
   }
-
   src.x = (float)current_frame * src.width;
 }
 
-float Sprite::get_scale() const { return scale; }
-
-void Sprite::set_vx(const float vx) { velocity.x = vx; }
-
-void Sprite::set_vy(const float vy) { velocity.y = vy; }
-
-int Sprite::get_vx() const { return velocity.x; }
-
-int Sprite::get_vy() const { return velocity.y; }
-
-bool Sprite::get_is_marked_for_deletion() const {
+const bool Sprite::get_is_marked_for_deletion() const {
   return is_marked_for_deletion;
 }
 
-void Sprite::mark_for_deletion() { is_marked_for_deletion = true; }
-
 void Sprite::set_is_flipped(const bool is_flipped) {
-
   this->is_flipped = is_flipped;
 }
 
-bool Sprite::get_is_flipped() const { return is_flipped; }
+void Sprite::update() {
+  // update the velocity
+  velocity.x += acceleration.x;
+  velocity.y += acceleration.y;
+  // update the position
+  dest.x += velocity.x;
+  dest.y += velocity.y;
+}
 
-sprite_type Sprite::get_type() const { return type; }
-
-void Sprite::set_type(const sprite_type t) { type = t; }
-
-void Sprite::set_x(const float x) { dest.x = x; }
-void Sprite::set_y(const float y) { dest.y = y; }
+void Sprite::flip() { set_is_flipped(!get_is_flipped()); }

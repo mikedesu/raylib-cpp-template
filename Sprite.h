@@ -22,39 +22,52 @@ public:
 
   void draw();
   void draw_hitbox();
-  void move_pos_x(const float x);
-  void move_pos_y(const float y);
+  void move(const float x, const float y);
   void move_rect(Rectangle &r);
-  void set_scale(const float scale);
-  float get_scale() const;
+  void mark_for_deletion();
 
-  float get_x() const;
-  float get_y() const;
+  const float get_scale() const;
+  const float get_x() const;
+  const float get_y() const;
+  const Rectangle get_dest() const;
+  const int get_width() const;
+  const int get_height() const;
+  const int get_anim_frames() const;
+  const int get_current_frame() const;
+  const float get_vx() const;
+  const float get_vy() const;
+  const Vector2 get_velocity() const;
+  const Vector2 get_acceleration() const;
+  const bool get_is_marked_for_deletion() const;
+  const bool get_is_animating() const;
+  const bool get_is_flipped() const;
+  const sprite_type get_type() const;
+  const float get_ax() const;
+  const float get_ay() const;
+
+  void incr_frame();
+  void incr_ax(const float ax);
+  void incr_ay(const float ay);
+  void incr_vx(const float vx);
+  void incr_vy(const float vy);
+
+  void set_scale(const float scale);
+  void set_current_frame(const int frame);
   void set_x(const float x);
   void set_y(const float y);
-  Rectangle get_dest() const;
-  int get_width() const;
-  int get_height() const;
-  int get_anim_frames() const;
-  int get_current_frame() const;
-  void set_current_frame(const int frame);
-
   void set_vx(const float vx);
   void set_vy(const float vy);
-  int get_vx() const;
-  int get_vy() const;
-
-  void mark_for_deletion();
-  bool get_is_marked_for_deletion() const;
+  void set_velocity(const Vector2 v);
+  void set_acceleration(const Vector2 a);
   void set_is_animating(const bool is_animating);
-  bool get_is_animating() const;
-  void incr_frame();
-
   void set_is_flipped(const bool is_flipped);
-  bool get_is_flipped() const;
-
-  sprite_type get_type() const;
   void set_type(const sprite_type t);
+  void set_ax(const float ax);
+  void set_ay(const float ay);
+
+  void flip();
+
+  void update();
 
 private:
   Texture2D texture;
@@ -65,7 +78,10 @@ private:
   int anim_frames;
   int current_frame;
   float scale;
+
   Vector2 velocity;
+  Vector2 acceleration;
+
   bool is_marked_for_deletion;
   bool is_animating;
   bool is_flipped;
