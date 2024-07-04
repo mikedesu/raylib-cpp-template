@@ -1,6 +1,10 @@
 #pragma once
 
+#include "Scene.h"
 #include "Sprite.h"
+#include "control_mode.h"
+#include "entity_id.h"
+#include "texture_info.h"
 #include <functional>
 #include <memory>
 #include <string>
@@ -13,20 +17,6 @@ using std::shared_ptr;
 using std::string;
 using std::unordered_map;
 using std::vector;
-
-typedef int entity_id;
-
-typedef enum {
-  CONTROL_MODE_PLAYER,
-  CONTROL_MODE_CAMERA,
-} control_mode;
-
-typedef struct {
-  Texture2D texture;
-  int num_frames;
-  int is_player;
-  string asset_path;
-} texture_info;
 
 class Game {
 public:
@@ -71,24 +61,18 @@ private:
   vector<entity_id> entity_ids;
   unordered_map<entity_id, bool> gravity;
 
-  bool debug_panel_on;
-  bool has_been_initialized;
-
-  Font global_font;
-
-  Camera2D camera2d;
-
-  RenderTexture target;
-
-  Rectangle screen_rect;
-
-  entity_id player_id;
-
   float global_scale;
-
+  entity_id player_id;
+  Font global_font;
+  bool has_been_initialized;
+  bool debug_panel_on;
   unsigned int current_frame;
-
+  control_mode controlmode;
   string window_title;
 
-  control_mode controlmode;
+  Camera2D camera2d;
+  RenderTexture target;
+  Rectangle screen_rect;
+
+  Scene scene;
 };

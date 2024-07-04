@@ -31,24 +31,28 @@ void Game::init() {
     set_camera_default_values();
 
     SetTargetFPS(60); // Set our game to run at 60 frames-per-second
-    mPrint("Loading assets...");
-    load_fonts();
-    bool result = load_textures();
-    if (!result) {
-      mPrint("Error loading textures. Exiting...");
-      return;
-    }
+    // mPrint("Loading assets...");
+    mPrint("Loading scene...");
+    scene.init();
+
+    // load_fonts();
+    // bool result = load_textures();
+    // if (!result) {
+    //   mPrint("Error loading textures. Exiting...");
+    //   return;
+    // }
+
     mPrint("Loading render texture...");
     target = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
     mPrint("Setting exit key...");
     SetExitKey(KEY_Q);
 
     // spawn_player(0, 0);
-    const int sprite_width = textures["skull"].texture.width;
-    const int sprite_height = textures["skull"].texture.height;
-    const float x = (float)GetScreenWidth() / 2 - (float)sprite_width;
-    const float y = (float)GetScreenHeight() / 2 - (float)sprite_height;
-    spawn_player(x, y);
+    // const int sprite_width = textures["skull"].texture.width;
+    // const int sprite_height = textures["skull"].texture.height;
+    // const float x = (float)GetScreenWidth() / 2 - (float)sprite_width;
+    // const float y = (float)GetScreenHeight() / 2 - (float)sprite_height;
+    // spawn_player(x, y);
 
     has_been_initialized = true;
   }
@@ -124,6 +128,7 @@ void Game::load_fonts() {
 }
 
 void Game::handle_camera_input() {
+  /*
   if (IsKeyPressed(KEY_C)) {
     controlmode = CONTROL_MODE_PLAYER;
   }
@@ -150,9 +155,11 @@ void Game::handle_camera_input() {
   } else if (IsKeyDown(KEY_X)) {
     camera2d.zoom -= 0.1f;
   }
+  */
 }
 
 void Game::handle_player_input() {
+  /*
   if (IsKeyPressed(KEY_C)) {
     controlmode = CONTROL_MODE_CAMERA;
   }
@@ -175,13 +182,19 @@ void Game::handle_player_input() {
       sprites[player_id]->flip();
     }
   }
+  */
 }
 
 void Game::handle_input() {
-  if (IsKeyPressed(KEY_D)) {
-    debug_panel_on = !debug_panel_on;
-  }
 
+  scene.handle_input();
+
+  // if (IsKeyPressed(KEY_D)) {
+  //   debug_panel_on = !debug_panel_on;
+  //   scene.set_debug_panel_on(debug_panel_on);
+  // }
+
+  /*
   switch (controlmode) {
   case CONTROL_MODE_PLAYER:
     handle_player_input();
@@ -192,47 +205,46 @@ void Game::handle_input() {
   default:
     break;
   }
+  */
 }
 
 void Game::draw() {
   BeginDrawing();
   BeginTextureMode(target);
-  BeginMode2D(camera2d);
-  ClearBackground(BROWN);
 
-  // no background yet, but lets mock one up with shapes
-  // draw a large rectangle to represent a scene
-  // but lets make the dimension ratio 720x1280
+  scene.draw();
 
-  DrawRectangle(GetScreenWidth() / 2 - 405 / 2, 0, 405, 720, BLACK);
+  // BeginMode2D(camera2d);
+  // ClearBackground(BROWN);
+  //  no background yet, but lets mock one up with shapes
+  //  draw a large rectangle to represent a scene
+  //  but lets make the dimension ratio 720x1280
+  // DrawRectangle(GetScreenWidth() / 2 - 405 / 2, 0, 405, 720, BLACK);
+  // for (auto &s : sprites) {
+  //   s.second->draw();
+  //   if (debug_panel_on) {
+  //     s.second->draw_hitbox();
+  //   }
+  // }
+  // EndMode2D();
 
-  for (auto &s : sprites) {
-    s.second->draw();
-    if (debug_panel_on) {
-      s.second->draw_hitbox();
-    }
-  }
-
-  EndMode2D();
   EndTextureMode();
   DrawTextureRec(target.texture, screen_rect, (Vector2){0, 0}, WHITE);
-  DrawFPS(10, 10);
-  // draw debug panel
-  if (debug_panel_on) {
-    draw_debug_panel();
-  }
+
   EndDrawing();
   current_frame++;
 }
 
 void Game::update() {
   // gravity
-  for (auto &s : sprites) {
-    if (s.second->get_type() == SPRITETYPE_PLAYER) {
-      s.second->incr_ay(0.0032f);
-      s.second->update();
-    }
-  }
+  // for (auto &s : sprites) {
+  //  if (s.second->get_type() == SPRITETYPE_PLAYER) {
+  //    s.second->incr_ay(0.0032f);
+  //    s.second->update();
+  //  }
+  //}
+
+  scene.update();
 }
 
 void Game::run() {
