@@ -8,6 +8,7 @@ GameplayScene::GameplayScene() {
   set_control_mode(CONTROL_MODE_PLAYER);
   set_texture_filepath("game_textures.txt");
   set_global_scale(4.0f);
+  set_scene_transition(SCENE_TRANSITION_IN);
 }
 
 GameplayScene::~GameplayScene() { mPrint("GameplayScene destructor"); }
@@ -42,4 +43,30 @@ bool GameplayScene::init() {
     set_has_been_initialized(true);
   }
   return true;
+}
+
+void GameplayScene::draw_debug_panel() {
+  string camera_info_str =
+      "Current Frame: " + to_string(get_current_frame()) + "\n" +
+      "Control mode: " + to_string(get_control_mode()) + "\n" +
+      //"Player Position: " + to_string(sprites[player_id]->get_x()) + ", " +
+      // to_string(sprites[player_id]->get_y()) + "\n" +
+      "Camera target: " + to_string(get_camera2d().target.x) + ", " +
+      to_string(get_camera2d().target.y) + "\n" + "GameplayScene";
+  //"Current Frame: " + to_string(current_frame) + "\n" +
+  //"Camera2D target: " + to_string(camera2d.target.x) + ", " +
+  // to_string(camera2d.target.y) + "\n" +
+  //"Camera2D offset: " + to_string(camera2d.offset.x) + ", " +
+  // to_string(camera2d.offset.y) + "\n" +
+  //"Camera2D rotation: " + to_string(camera2d.rotation) + "\n" +
+  //"Camera2D zoom: " + to_string(camera2d.zoom) + "\n" +
+  //"Player Position: " + to_string(sprites[player_id]->get_x()) + ", " +
+  // to_string(sprites[player_id]->get_y()) + "\n" +
+  //"Player Velocity: " + to_string(sprites[player_id]->get_vx()) + ", " +
+  // to_string(sprites[player_id]->get_vy()) + "\n" +
+  //"Player Acceleration: " + to_string(sprites[player_id]->get_ax()) + ", " +
+  // to_string(sprites[player_id]->get_ay()) + "\n" +
+  DrawRectangle(0, 0, 500, 200, Fade(BLACK, 0.5f));
+  DrawTextEx(get_global_font(), camera_info_str.c_str(), (Vector2){10, 10}, 16,
+             0.5f, WHITE);
 }

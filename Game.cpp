@@ -29,6 +29,7 @@ bool Game::init() {
 
     shared_ptr<Scene> title_scene = make_shared<TitleScene>();
     title_scene->set_id(next_scene_id++);
+    // title_scene->set_alpha(1.0f);
     scenes[title_scene->get_id()] = title_scene;
     scene_keys["title"] = title_scene->get_id();
 
@@ -100,6 +101,38 @@ void Game::load_fonts() {
   global_font = LoadFont(font_path);
 }
 
+void Game::handle_transition_out() {
+  const Color c = (Color){0x66, 0x66, 0x66};
+  const float a = scenes[current_scene_id]->get_alpha();
+  const int w = GetScreenWidth();
+  const int h = GetScreenHeight();
+  const float transition_speed = 0.005f;
+  DrawRectangle(0, 0, w, h, Fade(c, a));
+
+  if (a < 1.0f) {
+    scenes[current_scene_id]->set_alpha(scenes[current_scene_id]->get_alpha() +
+                                        transition_speed);
+  } else {
+    // scenes[current_scene_id]->set_scene_transition(SCENE_TRANSITION_NONE);
+  }
+}
+
+void Game::handle_transition_in() {
+  const Color c = (Color){0x66, 0x66, 0x66};
+  const float a = scenes[current_scene_id]->get_alpha();
+  const int w = GetScreenWidth();
+  const int h = GetScreenHeight();
+  const float transition_speed = 0.005f;
+  DrawRectangle(0, 0, w, h, Fade(c, a));
+
+  if (a > 0.0f) {
+    scenes[current_scene_id]->set_alpha(scenes[current_scene_id]->get_alpha() -
+                                        transition_speed);
+  } else {
+    scenes[current_scene_id]->set_scene_transition(SCENE_TRANSITION_NONE);
+  }
+}
+
 void Game::draw() {
   BeginDrawing();
   BeginTextureMode(target);
@@ -110,12 +143,28 @@ void Game::draw() {
 
   EndTextureMode();
 
-  if (scenes[current_scene_id]->get_scene_transition() ==
-      SCENE_TRANSITION_OUT) {
-    current_scene_id = scene_keys["gameplay"];
-  }
-
   DrawTextureRec(target.texture, screen_rect, (Vector2){0, 0}, WHITE);
+
+  // if (scenes[current_scene_id]->get_scene_transition() ==
+  //     SCENE_TRANSITION_OUT) {
+  //   handle_transition_out();
+  // } else if (scenes[current_scene_id]->get_scene_transition() ==
+  //            SCENE_TRANSITION_IN) {
+  //   handle_transition_in();
+  // }
+
+  switch (scenes[current_scene_id]->get_scene_transition()) {
+  case SCENE_TRANSITION_NONE:
+    break;
+  case SCENE_TRANSITION_IN:
+    handle_transition_in();
+    break;
+  case SCENE_TRANSITION_OUT:
+    handle_transition_out();
+    break;
+  default:
+    break;
+  }
 
   EndDrawing();
   current_frame++;

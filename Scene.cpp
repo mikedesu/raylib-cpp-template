@@ -348,3 +348,11 @@ const float Scene::get_alpha() const { return alpha; }
 void Scene::set_id(scene_id i) { id = i; }
 
 scene_id Scene::get_id() { return id; }
+
+Camera2D &Scene::get_camera2d() { return camera2d; }
+
+unsigned int Scene::get_current_frame() { return current_frame; }
+
+control_mode Scene::get_control_mode() { return controlmode; }
+
+Font &Scene::get_global_font() { return global_font; }

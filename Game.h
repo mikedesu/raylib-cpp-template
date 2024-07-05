@@ -42,6 +42,8 @@ public:
   bool get_has_been_initialized();
   bool init();
   void close();
+  void handle_transition_in();
+  void handle_transition_out();
   ~Game();
 
 private:

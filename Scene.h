@@ -53,7 +53,7 @@ public:
   void set_control_mode(control_mode cm);
 
   void flip_debug_panel();
-  void draw_debug_panel();
+  virtual void draw_debug_panel();
 
   void load_fonts();
   void close();
@@ -69,6 +69,10 @@ public:
 
   unordered_map<entity_id, shared_ptr<Sprite>> &get_sprites();
   unordered_map<string, texture_info> &get_textures();
+  Camera2D &get_camera2d();
+  unsigned int get_current_frame();
+  control_mode get_control_mode();
+  Font &get_global_font();
 
   void set_scene_transition(scene_transition st);
   scene_transition get_scene_transition();
