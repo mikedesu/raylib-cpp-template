@@ -8,6 +8,12 @@ static entity_id next_entity_id = 0;
 Scene::Scene() {
   mPrint("Scene constructor");
   controlmode = CONTROL_MODE_PLAYER;
+
+  texture_filepath = "";
+}
+
+void Scene::set_texture_filepath(const char *filepath) {
+  texture_filepath = filepath;
 }
 
 Scene::~Scene() { mPrint("Scene destructor"); }
@@ -38,11 +44,36 @@ void Scene::update() {
       }
     }
   }
+
+  // we want the camera to follow the player in such a way that
+  // the player is always in the center of the screen
+  // except for the game beginning, when they begin flapping at the bottom
+  // once they hit the center, the camera should follow them
+
+  // if (sprites[player_id]->get_y() < 3 * GetScreenHeight() / 4) {
+  // } else if (sprites[player_id]->get_y() > 3 * GetScreenHeight() / 4 &&
+  //            camera2d.target.y < 0) {
+  //   camera2d.target.y = 0;
+  // }
+  camera2d.target.y = sprites[player_id]->get_y();
+  camera2d.offset.y = GetScreenHeight() / 2;
 }
 
 void Scene::handle_cam_input() {
   if (IsKeyPressed(KEY_C)) {
     controlmode = CONTROL_MODE_PLAYER;
+  }
+
+  if (IsKeyDown(KEY_LEFT)) {
+    camera2d.target.x -= 2.0f;
+  } else if (IsKeyDown(KEY_RIGHT)) {
+    camera2d.target.x += 2.0f;
+  }
+
+  if (IsKeyDown(KEY_UP)) {
+    camera2d.target.y -= 2.0f;
+  } else if (IsKeyDown(KEY_DOWN)) {
+    camera2d.target.y += 2.0f;
   }
 }
 
@@ -53,8 +84,28 @@ void Scene::handle_player_input() {
 
   if (IsKeyPressed(KEY_SPACE)) {
     sprites[player_id]->set_ay(0.00f);
-    sprites[player_id]->set_vy(-2.0f);
+
+    // this value affects how high skull 'flaps' or jumps
+    const float vy = -32.0f;
+    // eventually skull will be able to make big jumps
+    // by acquiring powerups to modify this value
+    // this will mean less spacebar presses or taps
+    // which will encourage players to get the powerup
+    // but for testing we can play with this value
+    sprites[player_id]->set_vy(vy);
     sprites[player_id]->update();
+  }
+
+  if (IsKeyDown(KEY_LEFT)) {
+    sprites[player_id]->set_x(sprites[player_id]->get_x() - 2.0f);
+    if (!sprites[player_id]->get_is_flipped()) {
+      sprites[player_id]->flip();
+    }
+  } else if (IsKeyDown(KEY_RIGHT)) {
+    sprites[player_id]->set_x(sprites[player_id]->get_x() + 2.0f);
+    if (sprites[player_id]->get_is_flipped()) {
+      sprites[player_id]->flip();
+    }
   }
 }
 
@@ -76,32 +127,41 @@ void Scene::handle_input() {
 
 void Scene::draw() {
   BeginMode2D(camera2d);
-  ClearBackground(BROWN);
+  ClearBackground(BLACK);
   // no background yet, but lets mock one up with shapes
   // draw a large rectangle to represent a scene
   // but lets make the dimension ratio 720x1280
-  DrawRectangle(GetScreenWidth() / 2 - 405 / 2, 0, 405, 720, BLACK);
+  // DrawRectangle(GetScreenWidth() / 2 - 405 / 2, 0, 405, 720, BLACK);
+
+  // draw stars
+  for (auto &s : stars) {
+    // DrawPixelV(s.second, WHITE);
+    // cant see them so draw rectangles
+    DrawRectangle(s.second.x, s.second.y, 2, 2, WHITE);
+  }
+
+  DrawRectangle(0, GetScreenHeight() - 10, GetScreenWidth(), GetScreenHeight(),
+                BROWN);
+
   for (auto &s : sprites) {
     s.second->draw();
     if (debug_panel_on) {
       s.second->draw_hitbox();
     }
   }
+  EndMode2D();
+
   // draw debug panel
   if (debug_panel_on) {
-    DrawFPS(10, 10);
+    DrawFPS(GetScreenWidth() - 80, 10);
     draw_debug_panel();
   }
-  EndMode2D();
   current_frame++;
 }
 
-void Scene::init() {
+bool Scene::init() {
   if (!has_been_initialized) {
     mPrint("Initializing scene...");
-    // mPrint("Initializing window...");
-    // InitWindow(screen_rect.width, -screen_rect.height,
-    //            get_window_title().c_str());
     mPrint("Initializing camera...");
     set_camera_default_values();
     mPrint("Loading assets...");
@@ -109,23 +169,33 @@ void Scene::init() {
     bool result = load_textures();
     if (!result) {
       mPrint("Error loading textures. Exiting...");
-      return;
+      return false;
     }
     const int sprite_width = textures["skull"].texture.width;
     const int sprite_height = textures["skull"].texture.height;
     const float x = (float)GetScreenWidth() / 2 - (float)sprite_width;
     const float y = (float)GetScreenHeight() / 2 - (float)sprite_height;
     spawn_player(x, y);
+
+    for (int i = 0; i < 1000; i++) {
+      add_star();
+    }
+
     has_been_initialized = true;
   }
+  return true;
 }
 
 bool Scene::load_textures() {
   mPrint("Loading textures...");
-  const char *filename = "assets.txt";
-  FILE *file = fopen(filename, "r");
+  // check if the file exists
+  if (texture_filepath == "") {
+    mPrint("Error: texture_filepath not set.");
+    return false;
+  }
+  FILE *file = fopen(texture_filepath.c_str(), "r");
   if (file == NULL) {
-    mPrint("Error opening file: " + string(filename));
+    mPrint("Error opening file: " + texture_filepath);
     return false;
   }
   char line[256];
@@ -172,9 +242,14 @@ void Scene::set_camera_default_values() {
 }
 
 void Scene::draw_debug_panel() {
-  string camera_info_str = "Current Frame: " + to_string(current_frame) + "\n" +
+  string camera_info_str =
+      "Current Frame: " + to_string(current_frame) + "\n" +
 
-                           "Control mode: " + to_string(controlmode) + "\n";
+      "Control mode: " + to_string(controlmode) + "\n" +
+      "Player Position: " + to_string(sprites[player_id]->get_x()) + ", " +
+      to_string(sprites[player_id]->get_y()) + "\n" +
+      "Camera target: " + to_string(camera2d.target.x) + ", " +
+      to_string(camera2d.target.y) + "\n";
   //"Current Frame: " + to_string(current_frame) + "\n" +
   //"Camera2D target: " + to_string(camera2d.target.x) + ", " +
   // to_string(camera2d.target.y) + "\n" +
@@ -234,3 +309,11 @@ entity_id Scene::spawn_entity(const char *texture_key, float x, float y,
 bool Scene::get_debug_panel_on() { return debug_panel_on; }
 void Scene::set_debug_panel_on(bool b) { debug_panel_on = b; }
 void Scene::flip_debug_panel() { debug_panel_on = !debug_panel_on; }
+
+void Scene::add_star() {
+  const int x = GetRandomValue(0, GetScreenWidth());
+  const int y = GetRandomValue(-GetScreenHeight() * 10, GetScreenHeight());
+  stars[next_entity_id] = (Vector2){(float)x, (float)y};
+  mPrint("Star added at: " + to_string(x) + ", " + to_string(y));
+  next_entity_id++;
+}

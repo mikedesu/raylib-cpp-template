@@ -22,7 +22,6 @@ class Game {
 public:
   Game();
   void run();
-  // void draw_sprite(entity_id id);
   void update();
   void draw();
   void handle_input();
@@ -39,20 +38,8 @@ public:
   void set_camera_default_values();
   void set_has_been_initialized(bool b);
   bool get_has_been_initialized();
-  void init();
+  bool init();
   void close();
-
-  // bool load_texture(const char *asset_name, const char *asset_path,
-  //                   const int num_frames, const int is_player);
-
-  // bool load_textures();
-  //  void add_texture_to_load(const char *asset_name, const char *asset_path,
-  //                           int num_frames, int is_player);
-
-  // entity_id spawn_entity(const char *texture_key, float x, float y,
-  //                        sprite_type type);
-  // entity_id spawn_player(float x, float y);
-
   ~Game();
 
 private:

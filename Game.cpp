@@ -1,7 +1,7 @@
 #include "Game.h"
 #include "mPrint.h"
+#include "raylib.h"
 #include <cassert>
-#include <raylib.h>
 
 Game::Game() {
   global_scale = 2.0f;
@@ -13,7 +13,7 @@ Game::Game() {
   controlmode = CONTROL_MODE_PLAYER;
 }
 
-void Game::init() {
+bool Game::init() {
   if (!has_been_initialized) {
     mPrint("Initializing game...");
     mPrint("Checking that player texture key is set...");
@@ -24,14 +24,26 @@ void Game::init() {
     set_camera_default_values();
     SetTargetFPS(60); // Set our game to run at 60 frames-per-second
     mPrint("Loading scene...");
+
     scene.set_global_scale(global_scale);
-    scene.init();
+    scene.set_texture_filepath("assets.txt");
+    bool result = scene.init();
+    if (!result) {
+      mPrint("Error loading scene. Exiting...");
+      return false;
+    }
+
     mPrint("Loading render texture...");
     target = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
     mPrint("Setting exit key...");
     SetExitKey(KEY_Q);
+
+    // seed the RNG
+    SetRandomSeed(GetTime());
+
     has_been_initialized = true;
   }
+  return true;
 }
 
 void Game::set_camera_default_values() {
