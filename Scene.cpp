@@ -37,6 +37,8 @@ void Scene::update() {
       s.second->incr_ay(0.0032f);
       s.second->update();
       s.second->set_y(s.second->get_y() + s.second->get_vy());
+
+      // lock the player to a relative "ground" location
       const int height = s.second->get_height();
       const int bottom_of_sprite = s.second->get_y() + height;
       if (bottom_of_sprite >= GetScreenHeight()) {
@@ -86,12 +88,13 @@ void Scene::handle_player_input() {
     sprites[player_id]->set_ay(0.00f);
 
     // this value affects how high skull 'flaps' or jumps
-    const float vy = -32.0f;
-    // eventually skull will be able to make big jumps
-    // by acquiring powerups to modify this value
-    // this will mean less spacebar presses or taps
-    // which will encourage players to get the powerup
-    // but for testing we can play with this value
+    const float vy = -4.0f;
+    // const float vy = -32.0f;
+    //  eventually skull will be able to make big jumps
+    //  by acquiring powerups to modify this value
+    //  this will mean less spacebar presses or taps
+    //  which will encourage players to get the powerup
+    //  but for testing we can play with this value
     sprites[player_id]->set_vy(vy);
     sprites[player_id]->update();
   }
@@ -177,9 +180,9 @@ bool Scene::init() {
     const float y = (float)GetScreenHeight() / 2 - (float)sprite_height;
     spawn_player(x, y);
 
-    for (int i = 0; i < 1000; i++) {
-      add_star();
-    }
+    // for (int i = 0; i < 1000; i++) {
+    //   add_star();
+    // }
 
     has_been_initialized = true;
   }
@@ -312,7 +315,7 @@ void Scene::flip_debug_panel() { debug_panel_on = !debug_panel_on; }
 
 void Scene::add_star() {
   const int x = GetRandomValue(0, GetScreenWidth());
-  const int y = GetRandomValue(-GetScreenHeight() * 10, GetScreenHeight());
+  const int y = GetRandomValue(-GetScreenHeight() * 100, GetScreenHeight());
   stars[next_entity_id] = (Vector2){(float)x, (float)y};
   mPrint("Star added at: " + to_string(x) + ", " + to_string(y));
   next_entity_id++;

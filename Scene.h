@@ -73,6 +73,5 @@ private:
   unsigned int current_frame = 0;
 
   string texture_filepath;
-
   unordered_map<entity_id, Vector2> stars;
 };
