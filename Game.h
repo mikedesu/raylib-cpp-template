@@ -1,6 +1,7 @@
 #pragma once
 
 // #include "Scene.h"
+#include "GameplayScene.h"
 #include "Sprite.h"
 #include "TitleScene.h"
 #include "control_mode.h"
@@ -63,5 +64,12 @@ private:
   Rectangle screen_rect;
 
   // Scene scene;
-  TitleScene scene;
+  // TitleScene scene;
+  // GameplayScene scene;
+
+  unordered_map<scene_id, shared_ptr<Scene>> scenes;
+  unordered_map<string, scene_id> scene_keys;
+
+  scene_id current_scene_id;
+  shared_ptr<Scene> current_scene;
 };

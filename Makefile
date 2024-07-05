@@ -1,5 +1,5 @@
 CC=g++
-OBJ_FILES=main.o Game.o Sprite.o Scene.o TitleScene.o
+OBJ_FILES=main.o Game.o Sprite.o Scene.o TitleScene.o GameplayScene.o
 
 all: game
 
@@ -11,6 +11,9 @@ Game.o: Game.cpp
 	$(CC) $^ -c -o $@
 
 TitleScene.o: TitleScene.cpp
+	$(CC) $^ -c -o $@
+
+GameplayScene.o: GameplayScene.cpp
 	$(CC) $^ -c -o $@
 
 Scene.o: Scene.cpp

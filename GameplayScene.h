@@ -17,10 +17,10 @@ using std::string;
 using std::unordered_map;
 using std::vector;
 
-class TitleScene : public Scene {
+class GameplayScene : public Scene {
 public:
-  TitleScene();
-  ~TitleScene();
+  GameplayScene();
+  ~GameplayScene();
 
   void update();
   bool init();

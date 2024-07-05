@@ -336,3 +336,15 @@ unordered_map<entity_id, shared_ptr<Sprite>> &Scene::get_sprites() {
 unordered_map<string, texture_info> &Scene::get_textures() { return textures; }
 
 float Scene::get_global_scale() { return global_scale; }
+
+void Scene::set_scene_transition(scene_transition st) { transition = st; }
+
+scene_transition Scene::get_scene_transition() { return transition; }
+
+void Scene::set_alpha(float a) { alpha = a; }
+
+const float Scene::get_alpha() const { return alpha; }
+
+void Scene::set_id(scene_id i) { id = i; }
+
+scene_id Scene::get_id() { return id; }

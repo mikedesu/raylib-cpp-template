@@ -16,6 +16,16 @@ using std::string;
 using std::unordered_map;
 using std::vector;
 
+typedef int scene_id;
+
+typedef enum {
+
+  SCENE_TRANSITION_NONE,
+  SCENE_TRANSITION_IN,
+  SCENE_TRANSITION_OUT,
+
+} scene_transition;
+
 class Scene {
 public:
   Scene();
@@ -23,6 +33,10 @@ public:
 
   virtual void update();
   virtual bool init();
+  virtual void handle_input();
+  virtual void handle_cam_input();
+  virtual void handle_player_input();
+
   void draw();
 
   bool load_texture(const char *asset_name, const char *asset_path,
@@ -41,10 +55,6 @@ public:
   void flip_debug_panel();
   void draw_debug_panel();
 
-  virtual void handle_input();
-  virtual void handle_cam_input();
-  virtual void handle_player_input();
-
   void load_fonts();
   void close();
 
@@ -60,9 +70,17 @@ public:
   unordered_map<entity_id, shared_ptr<Sprite>> &get_sprites();
   unordered_map<string, texture_info> &get_textures();
 
+  void set_scene_transition(scene_transition st);
+  scene_transition get_scene_transition();
+
+  void set_alpha(float a);
+  const float get_alpha() const;
+
+  void set_id(scene_id i);
+  scene_id get_id();
+
 private:
   unordered_map<string, texture_info> textures;
-
   unordered_map<entity_id, shared_ptr<Sprite>> sprites;
   unordered_map<entity_id, shared_ptr<Sprite>> bgsprites;
   unordered_map<entity_id, bool> gravity;
@@ -83,4 +101,9 @@ private:
   string texture_filepath;
 
   unordered_map<entity_id, Vector2> stars;
+
+  scene_transition transition = SCENE_TRANSITION_NONE;
+  float alpha = 1.0f;
+
+  scene_id id;
 };
