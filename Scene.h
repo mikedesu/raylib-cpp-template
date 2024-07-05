@@ -41,6 +41,7 @@ public:
   void handle_cam_input();
   void handle_player_input();
   void load_fonts();
+  void close();
 
   entity_id spawn_entity(const char *texture_key, float x, float y,
                          sprite_type type);
@@ -52,12 +53,13 @@ private:
   vector<entity_id> entity_ids;
   unordered_map<entity_id, bool> gravity;
 
+  Font global_font;
+
+  Camera2D camera2d = {0};
   float global_scale = 1.0f;
   bool has_been_initialized = false;
   entity_id player_id = -1;
-  Camera2D camera2d;
   bool debug_panel_on = true;
-  Font global_font;
-  control_mode controlmode;
+  control_mode controlmode = CONTROL_MODE_PLAYER;
   unsigned int current_frame = 0;
 };

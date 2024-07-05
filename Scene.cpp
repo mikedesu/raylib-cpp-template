@@ -7,18 +7,22 @@ static entity_id next_entity_id = 0;
 
 Scene::Scene() {
   mPrint("Scene constructor");
-  // textures = {};
-  //  sprites = {};
-  //  entity_ids = {};
-  //  gravity = {};
+  controlmode = CONTROL_MODE_PLAYER;
 }
 
-Scene::~Scene() {
-  mPrint("Scene destructor");
-  // textures.clear();
-  // sprites.clear();
-  // entity_ids.clear();
-  // gravity.clear();
+Scene::~Scene() { mPrint("Scene destructor"); }
+
+void Scene::close() {
+  mPrint("Closing scene...");
+  mPrint("Unloading textures...");
+  for (auto &t : textures) {
+    UnloadTexture(t.second.texture);
+  }
+  mPrint("Clearing textures...");
+  textures.clear();
+  mPrint("Clearing sprites...");
+  sprites.clear();
+  UnloadFont(global_font);
 }
 
 void Scene::update() {
@@ -26,18 +30,38 @@ void Scene::update() {
     if (s.second->get_type() == SPRITETYPE_PLAYER) {
       s.second->incr_ay(0.0032f);
       s.second->update();
+      s.second->set_y(s.second->get_y() + s.second->get_vy());
+      const int height = s.second->get_height();
+      const int bottom_of_sprite = s.second->get_y() + height;
+      if (bottom_of_sprite >= GetScreenHeight()) {
+        s.second->set_y(GetScreenHeight() - height);
+      }
     }
   }
 }
-void Scene::handle_cam_input() {}
 
-void Scene::handle_player_input() {}
+void Scene::handle_cam_input() {
+  if (IsKeyPressed(KEY_C)) {
+    controlmode = CONTROL_MODE_PLAYER;
+  }
+}
+
+void Scene::handle_player_input() {
+  if (IsKeyPressed(KEY_C)) {
+    controlmode = CONTROL_MODE_CAMERA;
+  }
+
+  if (IsKeyPressed(KEY_SPACE)) {
+    sprites[player_id]->set_ay(0.00f);
+    sprites[player_id]->set_vy(-2.0f);
+    sprites[player_id]->update();
+  }
+}
 
 void Scene::handle_input() {
   if (IsKeyPressed(KEY_D)) {
     debug_panel_on = !debug_panel_on;
   }
-
   switch (controlmode) {
   case CONTROL_MODE_CAMERA:
     handle_cam_input();
@@ -57,57 +81,41 @@ void Scene::draw() {
   // draw a large rectangle to represent a scene
   // but lets make the dimension ratio 720x1280
   DrawRectangle(GetScreenWidth() / 2 - 405 / 2, 0, 405, 720, BLACK);
-
   for (auto &s : sprites) {
     s.second->draw();
     if (debug_panel_on) {
       s.second->draw_hitbox();
     }
   }
-
   // draw debug panel
   if (debug_panel_on) {
     DrawFPS(10, 10);
     draw_debug_panel();
   }
-
   EndMode2D();
-
   current_frame++;
 }
 
 void Scene::init() {
   if (!has_been_initialized) {
-
     mPrint("Initializing scene...");
     // mPrint("Initializing window...");
     // InitWindow(screen_rect.width, -screen_rect.height,
     //            get_window_title().c_str());
     mPrint("Initializing camera...");
     set_camera_default_values();
-
-    // SetTargetFPS(60); // Set our game to run at 60 frames-per-second
     mPrint("Loading assets...");
     load_fonts();
-
     bool result = load_textures();
     if (!result) {
       mPrint("Error loading textures. Exiting...");
       return;
     }
-
-    // mPrint("Loading render texture...");
-    // target = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
-    // mPrint("Setting exit key...");
-    // SetExitKey(KEY_Q);
-    // spawn_player(0, 0);
-
     const int sprite_width = textures["skull"].texture.width;
     const int sprite_height = textures["skull"].texture.height;
     const float x = (float)GetScreenWidth() / 2 - (float)sprite_width;
     const float y = (float)GetScreenHeight() / 2 - (float)sprite_height;
     spawn_player(x, y);
-
     has_been_initialized = true;
   }
 }
@@ -163,12 +171,10 @@ void Scene::set_camera_default_values() {
   camera2d.zoom = 1;
 }
 
-bool Scene::get_debug_panel_on() { return debug_panel_on; }
-void Scene::set_debug_panel_on(bool b) { debug_panel_on = b; }
-void Scene::flip_debug_panel() { debug_panel_on = !debug_panel_on; }
-
 void Scene::draw_debug_panel() {
-  string camera_info_str = "Current Frame: " + to_string(current_frame) + "\n";
+  string camera_info_str = "Current Frame: " + to_string(current_frame) + "\n" +
+
+                           "Control mode: " + to_string(controlmode) + "\n";
   //"Current Frame: " + to_string(current_frame) + "\n" +
   //"Camera2D target: " + to_string(camera2d.target.x) + ", " +
   // to_string(camera2d.target.y) + "\n" +
@@ -182,8 +188,6 @@ void Scene::draw_debug_panel() {
   // to_string(sprites[player_id]->get_vy()) + "\n" +
   //"Player Acceleration: " + to_string(sprites[player_id]->get_ax()) + ", " +
   // to_string(sprites[player_id]->get_ay()) + "\n" +
-  //"Control mode: " + to_string(controlmode) + "\n";
-
   DrawRectangle(0, 0, 500, 200, Fade(BLACK, 0.5f));
   DrawTextEx(global_font, camera_info_str.c_str(), (Vector2){10, 10}, 16, 0.5f,
              WHITE);
@@ -206,7 +210,6 @@ entity_id Scene::spawn_player(float x, float y) {
     mPrint("Player already spawned.");
     return player_id;
   }
-
   mPrint("Spawning player...");
   entity_id id = spawn_entity("skull", x, y, SPRITETYPE_PLAYER);
   player_id = id;
@@ -224,7 +227,10 @@ entity_id Scene::spawn_entity(const char *texture_key, float x, float y,
     return -1;
   }
   s->set_scale(global_scale);
-
   sprites[next_entity_id] = s;
   return next_entity_id++;
 }
+
+bool Scene::get_debug_panel_on() { return debug_panel_on; }
+void Scene::set_debug_panel_on(bool b) { debug_panel_on = b; }
+void Scene::flip_debug_panel() { debug_panel_on = !debug_panel_on; }

@@ -142,8 +142,8 @@ void Sprite::update() {
   velocity.x += acceleration.x;
   velocity.y += acceleration.y;
   // update the position
-  dest.x += velocity.x;
-  dest.y += velocity.y;
+  // dest.x += velocity.x;
+  // dest.y += velocity.y;
 }
 
 void Sprite::flip() { set_is_flipped(!get_is_flipped()); }
