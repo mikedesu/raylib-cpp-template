@@ -4,3 +4,5 @@ game
 compile_commands.json
 hack.ttf
 assets.txt
+game_textures.txt
+title_textures.txt

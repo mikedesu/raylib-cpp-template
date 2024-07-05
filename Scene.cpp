@@ -116,6 +116,7 @@ void Scene::handle_input() {
   if (IsKeyPressed(KEY_D)) {
     debug_panel_on = !debug_panel_on;
   }
+
   switch (controlmode) {
   case CONTROL_MODE_CAMERA:
     handle_cam_input();
@@ -143,8 +144,9 @@ void Scene::draw() {
     DrawRectangle(s.second.x, s.second.y, 2, 2, WHITE);
   }
 
-  DrawRectangle(0, GetScreenHeight() - 10, GetScreenWidth(), GetScreenHeight(),
-                BROWN);
+  // DrawRectangle(0, GetScreenHeight() - 10, GetScreenWidth(),
+  // GetScreenHeight(),
+  //               BROWN);
 
   for (auto &s : sprites) {
     s.second->draw();
@@ -249,8 +251,8 @@ void Scene::draw_debug_panel() {
       "Current Frame: " + to_string(current_frame) + "\n" +
 
       "Control mode: " + to_string(controlmode) + "\n" +
-      "Player Position: " + to_string(sprites[player_id]->get_x()) + ", " +
-      to_string(sprites[player_id]->get_y()) + "\n" +
+      //"Player Position: " + to_string(sprites[player_id]->get_x()) + ", " +
+      // to_string(sprites[player_id]->get_y()) + "\n" +
       "Camera target: " + to_string(camera2d.target.x) + ", " +
       to_string(camera2d.target.y) + "\n";
   //"Current Frame: " + to_string(current_frame) + "\n" +
@@ -320,3 +322,17 @@ void Scene::add_star() {
   mPrint("Star added at: " + to_string(x) + ", " + to_string(y));
   next_entity_id++;
 }
+
+void Scene::set_control_mode(control_mode cm) { controlmode = cm; }
+
+bool Scene::get_has_been_initialized() { return has_been_initialized; }
+
+void Scene::set_has_been_initialized(bool b) { has_been_initialized = b; }
+
+unordered_map<entity_id, shared_ptr<Sprite>> &Scene::get_sprites() {
+  return sprites;
+}
+
+unordered_map<string, texture_info> &Scene::get_textures() { return textures; }
+
+float Scene::get_global_scale() { return global_scale; }

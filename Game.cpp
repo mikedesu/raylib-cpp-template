@@ -4,7 +4,7 @@
 #include <cassert>
 
 Game::Game() {
-  global_scale = 2.0f;
+  global_scale = 1.0f;
   screen_rect = (Rectangle){0, 0, 1280, -720};
   camera2d = {0};
   current_frame = 0;
@@ -25,8 +25,10 @@ bool Game::init() {
     SetTargetFPS(60); // Set our game to run at 60 frames-per-second
     mPrint("Loading scene...");
 
-    scene.set_global_scale(global_scale);
-    scene.set_texture_filepath("assets.txt");
+    // const float title_scale = 32.0f;
+    // scene.set_global_scale(title_scale);
+    //
+    scene.set_texture_filepath("title_textures.txt");
     bool result = scene.init();
     if (!result) {
       mPrint("Error loading scene. Exiting...");
@@ -80,7 +82,9 @@ void Game::load_fonts() {
 void Game::draw() {
   BeginDrawing();
   BeginTextureMode(target);
+
   scene.draw();
+
   EndTextureMode();
   DrawTextureRec(target.texture, screen_rect, (Vector2){0, 0}, WHITE);
   EndDrawing();

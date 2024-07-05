@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Scene.h"
+// #include "Scene.h"
 #include "Sprite.h"
+#include "TitleScene.h"
 #include "control_mode.h"
 #include "entity_id.h"
 #include "texture_info.h"
@@ -61,5 +62,6 @@ private:
   RenderTexture target;
   Rectangle screen_rect;
 
-  Scene scene;
+  // Scene scene;
+  TitleScene scene;
 };

@@ -21,9 +21,9 @@ public:
   Scene();
   ~Scene();
 
-  void update();
+  virtual void update();
+  virtual bool init();
   void draw();
-  bool init();
 
   bool load_texture(const char *asset_name, const char *asset_path,
                     const int num_frames, const int is_player);
@@ -34,13 +34,16 @@ public:
   void set_camera_default_values();
   void set_debug_panel_on(bool b);
   void set_global_scale(float s);
+  float get_global_scale();
+
+  void set_control_mode(control_mode cm);
 
   void flip_debug_panel();
   void draw_debug_panel();
 
-  void handle_input();
-  void handle_cam_input();
-  void handle_player_input();
+  virtual void handle_input();
+  virtual void handle_cam_input();
+  virtual void handle_player_input();
 
   void load_fonts();
   void close();
@@ -51,6 +54,11 @@ public:
   void set_texture_filepath(const char *filepath);
 
   void add_star();
+  bool get_has_been_initialized();
+  void set_has_been_initialized(bool b);
+
+  unordered_map<entity_id, shared_ptr<Sprite>> &get_sprites();
+  unordered_map<string, texture_info> &get_textures();
 
 private:
   unordered_map<string, texture_info> textures;
@@ -73,5 +81,6 @@ private:
   unsigned int current_frame = 0;
 
   string texture_filepath;
+
   unordered_map<entity_id, Vector2> stars;
 };
