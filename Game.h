@@ -42,16 +42,16 @@ public:
   void init();
   void close();
 
-  bool load_texture(const char *asset_name, const char *asset_path,
-                    const int num_frames, const int is_player);
+  // bool load_texture(const char *asset_name, const char *asset_path,
+  //                   const int num_frames, const int is_player);
 
-  bool load_textures();
-  // void add_texture_to_load(const char *asset_name, const char *asset_path,
-  //                          int num_frames, int is_player);
+  // bool load_textures();
+  //  void add_texture_to_load(const char *asset_name, const char *asset_path,
+  //                           int num_frames, int is_player);
 
-  entity_id spawn_entity(const char *texture_key, float x, float y,
-                         sprite_type type);
-  entity_id spawn_player(float x, float y);
+  // entity_id spawn_entity(const char *texture_key, float x, float y,
+  //                        sprite_type type);
+  // entity_id spawn_player(float x, float y);
 
   ~Game();
 

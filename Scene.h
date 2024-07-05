@@ -42,6 +42,10 @@ public:
   void handle_player_input();
   void load_fonts();
 
+  entity_id spawn_entity(const char *texture_key, float x, float y,
+                         sprite_type type);
+  entity_id spawn_player(float x, float y);
+
 private:
   unordered_map<string, texture_info> textures;
   unordered_map<entity_id, shared_ptr<Sprite>> sprites;
@@ -50,7 +54,7 @@ private:
 
   float global_scale = 1.0f;
   bool has_been_initialized = false;
-  entity_id player_id;
+  entity_id player_id = -1;
   Camera2D camera2d;
   bool debug_panel_on = true;
   Font global_font;

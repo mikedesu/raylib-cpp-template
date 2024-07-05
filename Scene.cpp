@@ -3,6 +3,8 @@
 #include <cassert>
 #include <cstring>
 
+static entity_id next_entity_id = 0;
+
 Scene::Scene() {
   mPrint("Scene constructor");
   // textures = {};
@@ -56,12 +58,12 @@ void Scene::draw() {
   // but lets make the dimension ratio 720x1280
   DrawRectangle(GetScreenWidth() / 2 - 405 / 2, 0, 405, 720, BLACK);
 
-  // for (auto &s : sprites) {
-  //   s.second->draw();
-  //   if (debug_panel_on) {
-  //     s.second->draw_hitbox();
-  //   }
-  // }
+  for (auto &s : sprites) {
+    s.second->draw();
+    if (debug_panel_on) {
+      s.second->draw_hitbox();
+    }
+  }
 
   // draw debug panel
   if (debug_panel_on) {
@@ -98,6 +100,13 @@ void Scene::init() {
     // target = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
     // mPrint("Setting exit key...");
     // SetExitKey(KEY_Q);
+    // spawn_player(0, 0);
+
+    const int sprite_width = textures["skull"].texture.width;
+    const int sprite_height = textures["skull"].texture.height;
+    const float x = (float)GetScreenWidth() / 2 - (float)sprite_width;
+    const float y = (float)GetScreenHeight() / 2 - (float)sprite_height;
+    spawn_player(x, y);
 
     has_been_initialized = true;
   }
@@ -189,4 +198,33 @@ void Scene::load_fonts() {
   mPrint("Loading fonts...");
   const char font_path[] = "fonts/hack.ttf";
   global_font = LoadFont(font_path);
+}
+
+entity_id Scene::spawn_player(float x, float y) {
+  mPrint("Attempting to spawn player...");
+  if (player_id != -1) {
+    mPrint("Player already spawned.");
+    return player_id;
+  }
+
+  mPrint("Spawning player...");
+  entity_id id = spawn_entity("skull", x, y, SPRITETYPE_PLAYER);
+  player_id = id;
+  return id;
+}
+
+entity_id Scene::spawn_entity(const char *texture_key, float x, float y,
+                              sprite_type type) {
+  mPrint("Spawning entity...");
+  shared_ptr<Sprite> s =
+      make_shared<Sprite>(textures[texture_key].texture,
+                          textures[texture_key].num_frames, x, y, type);
+  if (s == nullptr) {
+    mPrint("Error creating sprite.");
+    return -1;
+  }
+  s->set_scale(global_scale);
+
+  sprites[next_entity_id] = s;
+  return next_entity_id++;
 }

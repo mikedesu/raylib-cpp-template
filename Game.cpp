@@ -8,7 +8,7 @@
 
 using std::to_string;
 
-static entity_id next_entity_id = 0;
+// static entity_id next_entity_id = 0;
 
 Game::Game() {
   global_scale = 2.0f;
@@ -58,6 +58,7 @@ void Game::init() {
   }
 }
 
+/*
 bool Game::load_textures() {
   mPrint("Loading textures...");
   const char *filename = "assets.txt";
@@ -86,7 +87,9 @@ bool Game::load_textures() {
   fclose(file);
   return true;
 }
+*/
 
+/*
 bool Game::load_texture(const char *asset_name, const char *asset_path,
                         const int num_frames, const int is_player) {
   mPrint("Attempting to load texture: " + string(asset_name));
@@ -99,6 +102,7 @@ bool Game::load_texture(const char *asset_name, const char *asset_path,
   textures[asset_name] = ti;
   return true;
 }
+*/
 
 void Game::set_camera_default_values() {
   camera2d.target.x = 0;
@@ -312,13 +316,15 @@ Game::~Game() { close(); }
 void Game::set_has_been_initialized(bool b) { has_been_initialized = b; }
 bool Game::get_has_been_initialized() { return has_been_initialized; }
 
+/*
 entity_id Game::spawn_player(float x, float y) {
   mPrint("Spawning player...");
   entity_id id = spawn_entity("skull", x, y, SPRITETYPE_PLAYER);
   player_id = id;
   return id;
 }
-
+*/
+/*
 entity_id Game::spawn_entity(const char *texture_key, float x, float y,
                              sprite_type type) {
   mPrint("Spawning entity...");
@@ -334,3 +340,4 @@ entity_id Game::spawn_entity(const char *texture_key, float x, float y,
   sprites[next_entity_id] = s;
   return next_entity_id++;
 }
+*/
