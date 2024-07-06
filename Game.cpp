@@ -106,13 +106,15 @@ void Game::handle_transition_out() {
   const float a = scenes[current_scene_id]->get_alpha();
   const int w = GetScreenWidth();
   const int h = GetScreenHeight();
-  const float transition_speed = 0.005f;
-  DrawRectangle(0, 0, w, h, Fade(c, a));
+  const float transition_speed = 0.020f;
 
   if (a < 1.0f) {
+    DrawRectangle(0, 0, w, h, Fade(c, a));
     scenes[current_scene_id]->set_alpha(scenes[current_scene_id]->get_alpha() +
                                         transition_speed);
   } else {
+    DrawRectangle(0, 0, w, h, Fade(c, a));
+    current_scene_id = scene_keys["gameplay"];
     // scenes[current_scene_id]->set_scene_transition(SCENE_TRANSITION_NONE);
   }
 }
@@ -122,10 +124,10 @@ void Game::handle_transition_in() {
   const float a = scenes[current_scene_id]->get_alpha();
   const int w = GetScreenWidth();
   const int h = GetScreenHeight();
-  const float transition_speed = 0.005f;
-  DrawRectangle(0, 0, w, h, Fade(c, a));
+  const float transition_speed = 0.020f;
 
   if (a > 0.0f) {
+    DrawRectangle(0, 0, w, h, Fade(c, a));
     scenes[current_scene_id]->set_alpha(scenes[current_scene_id]->get_alpha() -
                                         transition_speed);
   } else {

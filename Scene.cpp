@@ -8,8 +8,8 @@ static entity_id next_entity_id = 0;
 Scene::Scene() {
   mPrint("Scene constructor");
   controlmode = CONTROL_MODE_PLAYER;
-
   texture_filepath = "";
+  debug_panel_on = false;
 }
 
 void Scene::set_texture_filepath(const char *filepath) {
