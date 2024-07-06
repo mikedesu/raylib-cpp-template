@@ -90,6 +90,12 @@ Sprite::~Sprite() {}
 void Sprite::draw() {
   DrawTexturePro(texture, is_flipped ? flipped_src : src, dest, origin, 0,
                  WHITE);
+
+  if (is_animating && frame_counter % 10 == 0) {
+    incr_frame();
+    // frame_counter = 0;
+  }
+  frame_counter++;
 }
 
 void Sprite::draw_hitbox() {

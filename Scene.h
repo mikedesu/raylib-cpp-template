@@ -59,7 +59,7 @@ public:
   void close();
 
   entity_id spawn_entity(const char *texture_key, float x, float y,
-                         sprite_type type);
+                         sprite_type type, bool is_anim);
   entity_id spawn_player(float x, float y);
   void set_texture_filepath(const char *filepath);
 
@@ -82,6 +82,9 @@ public:
 
   void set_id(scene_id i);
   scene_id get_id();
+
+  void set_player_id(entity_id id);
+  entity_id get_player_id();
 
 private:
   unordered_map<string, texture_info> textures;

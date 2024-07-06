@@ -46,7 +46,7 @@ bool TitleScene::init() {
 
     const int x = w / 8 * get_global_scale();
     const int y = GetScreenHeight() / 4;
-    entity_id title_id = spawn_entity("title", x, y, SPRITETYPE_PLAYER);
+    entity_id title_id = spawn_entity("title", x, y, SPRITETYPE_PLAYER, false);
 
     set_has_been_initialized(true);
   }

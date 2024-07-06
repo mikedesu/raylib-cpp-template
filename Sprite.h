@@ -9,6 +9,7 @@ typedef enum {
   SPRITETYPE_ENEMY,
   SPRITETYPE_BULLET,
   SPRITETYPE_KNIFE,
+  SPRITETYPE_SOULSHARD,
   SPRITETYPE_COUNT
 } sprite_type;
 
@@ -78,6 +79,7 @@ private:
   Vector2 origin;
   int anim_frames;
   int current_frame;
+  int frame_counter;
   float scale;
 
   Vector2 velocity;

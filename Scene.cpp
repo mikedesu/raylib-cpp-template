@@ -138,15 +138,17 @@ void Scene::draw() {
   // DrawRectangle(GetScreenWidth() / 2 - 405 / 2, 0, 405, 720, BLACK);
 
   // draw stars
-  for (auto &s : stars) {
-    // DrawPixelV(s.second, WHITE);
-    // cant see them so draw rectangles
-    DrawRectangle(s.second.x, s.second.y, 2, 2, WHITE);
-  }
+  // want: real stars
+  // for (auto &s : stars) {
+  // DrawPixelV(s.second, WHITE);
+  // cant see them so draw rectangles
+  //    DrawRectangle(s.second.x, s.second.y, 2, 2, WHITE);
+  //  }
 
+  // want a real ground sprite texture
   // DrawRectangle(0, GetScreenHeight() - 10, GetScreenWidth(),
   // GetScreenHeight(),
-  //               BROWN);
+  //              BROWN);
 
   for (auto &s : sprites) {
     s.second->draw();
@@ -212,7 +214,13 @@ bool Scene::load_textures() {
     mPrint("Asset name: " + string(asset_name));
     mPrint("Num frames: " + string(num_frames));
     mPrint("Is player: " + string(is_player));
-    mPrint("Asset path: " + string(asset_path));
+    mPrint("Asset path: [" + string(asset_path) + "]");
+
+    // check to see if asset path has newline at end
+    if (asset_path[strlen(asset_path) - 1] == '\n') {
+      asset_path[strlen(asset_path) - 1] = '\0';
+    }
+
     bool result =
         load_texture(asset_name, asset_path, atoi(num_frames), atoi(is_player));
     if (!result) {
@@ -291,13 +299,13 @@ entity_id Scene::spawn_player(float x, float y) {
     return player_id;
   }
   mPrint("Spawning player...");
-  entity_id id = spawn_entity("skull", x, y, SPRITETYPE_PLAYER);
+  entity_id id = spawn_entity("skull", x, y, SPRITETYPE_PLAYER, false);
   player_id = id;
   return id;
 }
 
 entity_id Scene::spawn_entity(const char *texture_key, float x, float y,
-                              sprite_type type) {
+                              sprite_type type, bool is_anim) {
   mPrint("Spawning entity...");
   shared_ptr<Sprite> s =
       make_shared<Sprite>(textures[texture_key].texture,
@@ -307,6 +315,8 @@ entity_id Scene::spawn_entity(const char *texture_key, float x, float y,
     return -1;
   }
   s->set_scale(global_scale);
+  s->set_is_animating(is_anim);
+
   sprites[next_entity_id] = s;
   return next_entity_id++;
 }
@@ -356,3 +366,7 @@ unsigned int Scene::get_current_frame() { return current_frame; }
 control_mode Scene::get_control_mode() { return controlmode; }
 
 Font &Scene::get_global_font() { return global_font; }
+
+void Scene::set_player_id(entity_id id) { player_id = id; }
+
+entity_id Scene::get_player_id() { return player_id; }
