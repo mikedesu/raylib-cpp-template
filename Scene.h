@@ -26,6 +26,13 @@ typedef enum {
 
 } scene_transition;
 
+typedef enum {
+
+  SCENE_TYPE_TITLE,
+  SCENE_TYPE_GAMEPLAY,
+
+} scene_type;
+
 class Scene {
 public:
   Scene();
@@ -34,8 +41,8 @@ public:
   virtual void update();
   virtual bool init();
   virtual void handle_input();
-  virtual void handle_cam_input();
-  virtual void handle_player_input();
+  // virtual void handle_cam_input();
+  // virtual void handle_player_input();
 
   void draw();
 
@@ -61,9 +68,14 @@ public:
   entity_id spawn_entity(const char *texture_key, float x, float y,
                          sprite_type type, bool is_anim);
   entity_id spawn_player(float x, float y);
+  entity_id spawn_bat(const float x, const float y);
+  entity_id spawn_knife();
   void set_texture_filepath(const char *filepath);
 
   void add_star();
+  unordered_map<entity_id, Vector2> &get_stars();
+  void update_stars_vx(const float vx);
+
   bool get_has_been_initialized();
   void set_has_been_initialized(bool b);
 
@@ -85,6 +97,12 @@ public:
 
   void set_player_id(entity_id id);
   entity_id get_player_id();
+
+  void set_scene_type(scene_type st);
+  scene_type get_scene_type();
+
+  void draw_ground();
+  void draw_stars();
 
 private:
   unordered_map<string, texture_info> textures;
@@ -113,4 +131,5 @@ private:
   float alpha = 1.0f;
 
   scene_id id;
+  scene_type scenetype;
 };

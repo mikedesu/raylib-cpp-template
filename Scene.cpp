@@ -31,107 +31,40 @@ void Scene::close() {
   UnloadFont(global_font);
 }
 
-void Scene::update() {
-  for (auto &s : sprites) {
-    if (s.second->get_type() == SPRITETYPE_PLAYER) {
-      s.second->incr_ay(0.0032f);
-      s.second->update();
-      s.second->set_y(s.second->get_y() + s.second->get_vy());
+void Scene::update() {}
 
-      // lock the player to a relative "ground" location
-      const int height = s.second->get_height();
-      const int bottom_of_sprite = s.second->get_y() + height;
-      if (bottom_of_sprite >= GetScreenHeight()) {
-        s.second->set_y(GetScreenHeight() - height);
-      }
-    }
-  }
+void Scene::handle_input() {}
 
-  // we want the camera to follow the player in such a way that
-  // the player is always in the center of the screen
-  // except for the game beginning, when they begin flapping at the bottom
-  // once they hit the center, the camera should follow them
-
-  // if (sprites[player_id]->get_y() < 3 * GetScreenHeight() / 4) {
-  // } else if (sprites[player_id]->get_y() > 3 * GetScreenHeight() / 4 &&
-  //            camera2d.target.y < 0) {
-  //   camera2d.target.y = 0;
-  // }
-  camera2d.target.y = sprites[player_id]->get_y();
-  camera2d.offset.y = GetScreenHeight() / 2;
-}
-
-void Scene::handle_cam_input() {
-  if (IsKeyPressed(KEY_C)) {
-    controlmode = CONTROL_MODE_PLAYER;
-  }
-
-  if (IsKeyDown(KEY_LEFT)) {
-    camera2d.target.x -= 2.0f;
-  } else if (IsKeyDown(KEY_RIGHT)) {
-    camera2d.target.x += 2.0f;
-  }
-
-  if (IsKeyDown(KEY_UP)) {
-    camera2d.target.y -= 2.0f;
-  } else if (IsKeyDown(KEY_DOWN)) {
-    camera2d.target.y += 2.0f;
+void Scene::draw_stars() {
+  for (auto &s : stars) {
+    // DrawPixelV(s.second, WHITE);
+    // cant see them so draw rectangles
+    DrawRectangle(s.second.x, s.second.y, 4, 4, WHITE);
   }
 }
-
-void Scene::handle_player_input() {
-  if (IsKeyPressed(KEY_C)) {
-    controlmode = CONTROL_MODE_CAMERA;
-  }
-
-  if (IsKeyPressed(KEY_SPACE)) {
-    sprites[player_id]->set_ay(0.00f);
-
-    // this value affects how high skull 'flaps' or jumps
-    const float vy = -4.0f;
-    // const float vy = -32.0f;
-    //  eventually skull will be able to make big jumps
-    //  by acquiring powerups to modify this value
-    //  this will mean less spacebar presses or taps
-    //  which will encourage players to get the powerup
-    //  but for testing we can play with this value
-    sprites[player_id]->set_vy(vy);
-    sprites[player_id]->update();
-  }
-
-  if (IsKeyDown(KEY_LEFT)) {
-    sprites[player_id]->set_x(sprites[player_id]->get_x() - 2.0f);
-    if (!sprites[player_id]->get_is_flipped()) {
-      sprites[player_id]->flip();
-    }
-  } else if (IsKeyDown(KEY_RIGHT)) {
-    sprites[player_id]->set_x(sprites[player_id]->get_x() + 2.0f);
-    if (sprites[player_id]->get_is_flipped()) {
-      sprites[player_id]->flip();
-    }
-  }
-}
-
-void Scene::handle_input() {
-  if (IsKeyPressed(KEY_D)) {
-    debug_panel_on = !debug_panel_on;
-  }
-
-  switch (controlmode) {
-  case CONTROL_MODE_CAMERA:
-    handle_cam_input();
-    break;
-  case CONTROL_MODE_PLAYER:
-    handle_player_input();
-    break;
-  default:
-    break;
-  }
+void Scene::draw_ground() {
+  // want a real ground sprite texture
+  const int w = GetScreenWidth();
+  const int h = GetScreenHeight();
+  Color c = BROWN;
+  DrawRectangle(0, GetScreenHeight() - 10, w, h, c);
 }
 
 void Scene::draw() {
   BeginMode2D(camera2d);
-  ClearBackground(BLACK);
+
+  Color clear_color = BLACK;
+
+  switch (scenetype) {
+  case SCENE_TYPE_TITLE:
+    clear_color = BLACK;
+    break;
+  case SCENE_TYPE_GAMEPLAY:
+    clear_color = (Color){0x10, 0x10, 0x10, 0xFF};
+    break;
+  }
+
+  ClearBackground(clear_color);
   // no background yet, but lets mock one up with shapes
   // draw a large rectangle to represent a scene
   // but lets make the dimension ratio 720x1280
@@ -139,16 +72,12 @@ void Scene::draw() {
 
   // draw stars
   // want: real stars
-  // for (auto &s : stars) {
-  // DrawPixelV(s.second, WHITE);
-  // cant see them so draw rectangles
-  //    DrawRectangle(s.second.x, s.second.y, 2, 2, WHITE);
-  //  }
 
-  // want a real ground sprite texture
-  // DrawRectangle(0, GetScreenHeight() - 10, GetScreenWidth(),
-  // GetScreenHeight(),
-  //              BROWN);
+  if (scenetype != SCENE_TYPE_TITLE) {
+
+    draw_stars();
+    draw_ground();
+  }
 
   for (auto &s : sprites) {
     s.second->draw();
@@ -166,32 +95,7 @@ void Scene::draw() {
   current_frame++;
 }
 
-bool Scene::init() {
-  if (!has_been_initialized) {
-    mPrint("Initializing scene...");
-    mPrint("Initializing camera...");
-    set_camera_default_values();
-    mPrint("Loading assets...");
-    load_fonts();
-    bool result = load_textures();
-    if (!result) {
-      mPrint("Error loading textures. Exiting...");
-      return false;
-    }
-    const int sprite_width = textures["skull"].texture.width;
-    const int sprite_height = textures["skull"].texture.height;
-    const float x = (float)GetScreenWidth() / 2 - (float)sprite_width;
-    const float y = (float)GetScreenHeight() / 2 - (float)sprite_height;
-    spawn_player(x, y);
-
-    // for (int i = 0; i < 1000; i++) {
-    //   add_star();
-    // }
-
-    has_been_initialized = true;
-  }
-  return true;
-}
+bool Scene::init() { return true; }
 
 bool Scene::load_textures() {
   mPrint("Loading textures...");
@@ -254,32 +158,7 @@ void Scene::set_camera_default_values() {
   camera2d.zoom = 1;
 }
 
-void Scene::draw_debug_panel() {
-  string camera_info_str =
-      "Current Frame: " + to_string(current_frame) + "\n" +
-
-      "Control mode: " + to_string(controlmode) + "\n" +
-      //"Player Position: " + to_string(sprites[player_id]->get_x()) + ", " +
-      // to_string(sprites[player_id]->get_y()) + "\n" +
-      "Camera target: " + to_string(camera2d.target.x) + ", " +
-      to_string(camera2d.target.y) + "\n";
-  //"Current Frame: " + to_string(current_frame) + "\n" +
-  //"Camera2D target: " + to_string(camera2d.target.x) + ", " +
-  // to_string(camera2d.target.y) + "\n" +
-  //"Camera2D offset: " + to_string(camera2d.offset.x) + ", " +
-  // to_string(camera2d.offset.y) + "\n" +
-  //"Camera2D rotation: " + to_string(camera2d.rotation) + "\n" +
-  //"Camera2D zoom: " + to_string(camera2d.zoom) + "\n" +
-  //"Player Position: " + to_string(sprites[player_id]->get_x()) + ", " +
-  // to_string(sprites[player_id]->get_y()) + "\n" +
-  //"Player Velocity: " + to_string(sprites[player_id]->get_vx()) + ", " +
-  // to_string(sprites[player_id]->get_vy()) + "\n" +
-  //"Player Acceleration: " + to_string(sprites[player_id]->get_ax()) + ", " +
-  // to_string(sprites[player_id]->get_ay()) + "\n" +
-  DrawRectangle(0, 0, 500, 200, Fade(BLACK, 0.5f));
-  DrawTextEx(global_font, camera_info_str.c_str(), (Vector2){10, 10}, 16, 0.5f,
-             WHITE);
-}
+void Scene::draw_debug_panel() {}
 
 void Scene::set_global_scale(float s) {
   assert(s > 0);
@@ -301,6 +180,56 @@ entity_id Scene::spawn_player(float x, float y) {
   mPrint("Spawning player...");
   entity_id id = spawn_entity("skull", x, y, SPRITETYPE_PLAYER, false);
   player_id = id;
+
+  const int player_starting_hp = 3;
+  const int player_max_hp = 3;
+  sprites[player_id]->set_maxhp(player_max_hp);
+  sprites[player_id]->set_hp(player_starting_hp);
+
+  return id;
+}
+
+entity_id Scene::spawn_bat(const float x, const float y) {
+  mPrint("Spawning bat...");
+  entity_id id = spawn_entity("bat", x, y, SPRITETYPE_ENEMY, true);
+  sprites[id]->set_vx(2.0f);
+  sprites[id]->set_vy(0.0f);
+  sprites[id]->set_ax(0.0f);
+  sprites[id]->set_ay(0.0f);
+  sprites[id]->set_hp(1);
+  sprites[id]->set_maxhp(1);
+  return id;
+}
+
+entity_id Scene::spawn_knife() {
+  mPrint("Spawning knife...");
+  // calculate offsets
+  // half the width of the sprite
+  const float o_x = sprites[player_id]->get_width();
+  const float o_y = sprites[player_id]->get_height() / 2.0;
+  float x = sprites[player_id]->get_x();
+  float y = sprites[player_id]->get_y() + o_y;
+  // get the width of the knife texture
+  const float knife_width = textures["knife"].texture.width;
+  if (sprites[player_id]->get_is_flipped()) {
+    x -= knife_width * global_scale;
+  } else {
+    x += o_x;
+  }
+
+  // spawn the knife
+  entity_id id = spawn_entity("knife", x, y, SPRITETYPE_KNIFE, false);
+  // set variables
+  if (sprites[player_id]->get_is_flipped()) {
+    sprites[id]->set_vx(-1);
+    sprites[id]->set_is_flipped(true);
+  } else {
+    sprites[id]->set_vx(1);
+  }
+
+  sprites[id]->set_vy(0);
+  sprites[id]->set_ax(0);
+  sprites[id]->set_ay(0);
   return id;
 }
 
@@ -334,9 +263,7 @@ void Scene::add_star() {
 }
 
 void Scene::set_control_mode(control_mode cm) { controlmode = cm; }
-
 bool Scene::get_has_been_initialized() { return has_been_initialized; }
-
 void Scene::set_has_been_initialized(bool b) { has_been_initialized = b; }
 
 unordered_map<entity_id, shared_ptr<Sprite>> &Scene::get_sprites() {
@@ -344,29 +271,28 @@ unordered_map<entity_id, shared_ptr<Sprite>> &Scene::get_sprites() {
 }
 
 unordered_map<string, texture_info> &Scene::get_textures() { return textures; }
-
 float Scene::get_global_scale() { return global_scale; }
-
 void Scene::set_scene_transition(scene_transition st) { transition = st; }
-
 scene_transition Scene::get_scene_transition() { return transition; }
-
 void Scene::set_alpha(float a) { alpha = a; }
-
 const float Scene::get_alpha() const { return alpha; }
-
 void Scene::set_id(scene_id i) { id = i; }
-
 scene_id Scene::get_id() { return id; }
-
 Camera2D &Scene::get_camera2d() { return camera2d; }
-
 unsigned int Scene::get_current_frame() { return current_frame; }
-
 control_mode Scene::get_control_mode() { return controlmode; }
-
 Font &Scene::get_global_font() { return global_font; }
-
 void Scene::set_player_id(entity_id id) { player_id = id; }
-
 entity_id Scene::get_player_id() { return player_id; }
+void Scene::set_scene_type(scene_type st) { scenetype = st; }
+scene_type Scene::get_scene_type() { return scenetype; }
+unordered_map<entity_id, Vector2> &Scene::get_stars() { return stars; }
+
+void Scene::update_stars_vx(const float vx) {
+  for (auto &s : stars) {
+    s.second.x += vx;
+    if (s.second.x < 0) {
+      s.second.x = GetScreenWidth();
+    }
+  }
+}

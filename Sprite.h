@@ -67,6 +67,11 @@ public:
   void set_ax(const float ax);
   void set_ay(const float ay);
 
+  void set_hp(const int hp);
+  void set_maxhp(const int maxhp);
+  const int get_hp() const;
+  const int get_maxhp() const;
+
   void flip();
 
   void update();
@@ -90,6 +95,9 @@ private:
   bool is_flipped;
 
   sprite_type type;
+
+  int hp;
+  int maxhp;
 
   void init_rects();
 };

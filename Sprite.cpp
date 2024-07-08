@@ -153,3 +153,8 @@ void Sprite::update() {
 }
 
 void Sprite::flip() { set_is_flipped(!get_is_flipped()); }
+
+void Sprite::set_hp(const int hp) { this->hp = hp; }
+void Sprite::set_maxhp(const int maxhp) { this->maxhp = maxhp; }
+const int Sprite::get_hp() const { return hp; }
+const int Sprite::get_maxhp() const { return maxhp; }

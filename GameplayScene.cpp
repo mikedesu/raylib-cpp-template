@@ -9,11 +9,14 @@ GameplayScene::GameplayScene() {
   set_texture_filepath("game_textures.txt");
   set_global_scale(4.0f);
   set_scene_transition(SCENE_TRANSITION_IN);
+  set_scene_type(SCENE_TYPE_GAMEPLAY);
 }
 
 GameplayScene::~GameplayScene() { mPrint("GameplayScene destructor"); }
 
 void GameplayScene::update() {
+  update_stars_vx(-1.0f);
+
   for (auto &s : get_sprites()) {
     if (s.second->get_type() == SPRITETYPE_PLAYER) {
       s.second->incr_ay(0.0032f);
@@ -26,6 +29,9 @@ void GameplayScene::update() {
       if (bottom_of_sprite >= GetScreenHeight()) {
         s.second->set_y(GetScreenHeight() - height);
       }
+    } else {
+      s.second->update();
+      s.second->set_x(s.second->get_x() + s.second->get_vx());
     }
   }
 
@@ -53,17 +59,23 @@ void GameplayScene::handle_input() {
     set_control_mode(CONTROL_MODE_CAMERA);
   }
 
+  if (IsKeyPressed(KEY_Z)) {
+    // fire a knife
+    spawn_knife();
+  }
+
   if (IsKeyPressed(KEY_SPACE)) {
     get_sprites()[get_player_id()]->set_ay(0.00f);
 
     // this value affects how high skull 'flaps' or jumps
-    const float vy = -4.0f;
-    // const float vy = -32.0f;
-    //  eventually skull will be able to make big jumps
-    //  by acquiring powerups to modify this value
-    //  this will mean less spacebar presses or taps
-    //  which will encourage players to get the powerup
-    //  but for testing we can play with this value
+    const float vy = -6.0f;
+    // const float vy = -4.0f;
+    //  const float vy = -32.0f;
+    //   eventually skull will be able to make big jumps
+    //   by acquiring powerups to modify this value
+    //   this will mean less spacebar presses or taps
+    //   which will encourage players to get the powerup
+    //   but for testing we can play with this value
     get_sprites()[get_player_id()]->set_vy(vy);
     get_sprites()[get_player_id()]->update();
   }
@@ -101,11 +113,23 @@ bool GameplayScene::init() {
     const int sprite_height = get_textures()["skull"].texture.height;
     const float x = (float)GetScreenWidth() / 2 - (float)sprite_width;
     const float y = (float)GetScreenHeight() / 2 - (float)sprite_height;
+    // 10000;
+    // const float y = -100;
     spawn_player(x, y);
 
     for (int i = 0; i < 1000; i++) {
-      add_soulshard();
+      // add_soulshard();
+      add_star();
     }
+
+    const int bat_width = get_textures()["bat"].texture.width;
+    const int bat_height = get_textures()["bat"].texture.height;
+    // const float bat_x = (float)GetScreenWidth() / 2 - (float)bat_width;
+    const float bat_x = -bat_width;
+
+    const float bat_y = (float)GetScreenHeight() / 2 - (float)bat_height + 300;
+
+    spawn_bat(bat_x, bat_y);
 
     set_has_been_initialized(true);
   }
@@ -118,9 +142,12 @@ void GameplayScene::draw_debug_panel() {
       "Control mode: " + to_string(get_control_mode()) + "\n" +
       "Player Position: " + to_string(get_sprites()[get_player_id()]->get_x()) +
       ", " + to_string(get_sprites()[get_player_id()]->get_y()) + "\n" +
+      "Player HP: " + to_string(get_sprites()[get_player_id()]->get_hp()) +
+      "/" + to_string(get_sprites()[get_player_id()]->get_maxhp()) + "\n" +
       // to_string(sprites[player_id]->get_y()) + "\n" +
       "Camera target: " + to_string(get_camera2d().target.x) + ", " +
-      to_string(get_camera2d().target.y) + "\n" + "GameplayScene";
+      to_string(get_camera2d().target.y) + "\n" + "GameplayScene" +
+      "Sprites: " + to_string(get_sprites().size()) + "\n";
   //"Current Frame: " + to_string(current_frame) + "\n" +
   //"Camera2D target: " + to_string(camera2d.target.x) + ", " +
   // to_string(camera2d.target.y) + "\n" +
@@ -139,14 +166,10 @@ void GameplayScene::draw_debug_panel() {
              0.5f, WHITE);
 }
 
-void GameplayScene::add_soulshard() {
-  const int x = GetRandomValue(0, GetScreenWidth());
-  const int y = GetRandomValue(-GetScreenHeight() * 100, GetScreenHeight());
-
-  entity_id id =
-      spawn_entity("soulshard", (float)x, (float)y, SPRITETYPE_SOULSHARD, true);
-
-  // stars[next_entity_id] = (Vector2){(float)x, (float)y};
-  // mPrint("Star added at: " + to_string(x) + ", " + to_string(y));
-  // next_entity_id++;
-}
+// void GameplayScene::add_soulshard() {
+//   const int x = GetRandomValue(0, GetScreenWidth());
+//   const int y = GetRandomValue(-GetScreenHeight() * 100, GetScreenHeight());
+//   entity_id id =
+//       spawn_entity("soulshard", (float)x, (float)y, SPRITETYPE_SOULSHARD,
+//       true);
+// }
