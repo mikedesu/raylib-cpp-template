@@ -301,3 +301,9 @@ void Scene::update_stars_vx(const float vx) {
 void Scene::cleanup() {}
 
 vector<entity_id> &Scene::get_entity_ids() { return entity_ids; }
+
+void Scene::pause() { is_paused = true; }
+
+void Scene::unpause() { is_paused = false; }
+
+bool Scene::get_paused() const { return is_paused; }

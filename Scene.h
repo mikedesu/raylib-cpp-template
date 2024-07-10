@@ -105,6 +105,11 @@ public:
 
   void draw_ground();
   void draw_stars();
+
+  void pause();
+  void unpause();
+  bool get_paused() const;
+
   virtual void cleanup();
 
 private:
@@ -135,4 +140,6 @@ private:
 
   scene_id id;
   scene_type scenetype;
+
+  bool is_paused;
 };

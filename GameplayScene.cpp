@@ -115,23 +115,27 @@ void GameplayScene::handle_knife_collisions() {
 
 void GameplayScene::update() {
   const float star_move_speed = -1.0f;
-  update_stars_vx(star_move_speed);
 
-  update_player_movement();
-  update_enemy_movement();
-  update_knife_movement();
+  if (!get_paused()) {
 
-  handle_offscreen();
-  handle_player_collision();
-  handle_knife_collisions();
+    update_stars_vx(star_move_speed);
 
-  // we want the camera to follow the player in such a way that
-  // the player is always in the center of the screen
-  // except for the game beginning, when they begin flapping at the bottom
-  // once they hit the center, the camera should follow them
-  Camera2D &camera2d = get_camera2d();
-  camera2d.target.y = get_sprites()[get_player_id()]->get_y();
-  // camera2d.offset.y = GetScreenHeight() / 2.0f;
+    update_player_movement();
+    update_enemy_movement();
+    update_knife_movement();
+
+    handle_offscreen();
+    handle_player_collision();
+    handle_knife_collisions();
+
+    // we want the camera to follow the player in such a way that
+    // the player is always in the center of the screen
+    // except for the game beginning, when they begin flapping at the bottom
+    // once they hit the center, the camera should follow them
+    Camera2D &camera2d = get_camera2d();
+    camera2d.target.y = get_sprites()[get_player_id()]->get_y();
+    // camera2d.offset.y = GetScreenHeight() / 2.0f;
+  }
 }
 
 void GameplayScene::handle_input() {
@@ -145,38 +149,51 @@ void GameplayScene::handle_input() {
     flip_debug_panel();
   }
 
-  if (IsKeyPressed(KEY_C)) {
-    set_control_mode(CONTROL_MODE_CAMERA);
-  }
+  if (!get_paused()) {
 
-  if (IsKeyPressed(KEY_B)) {
-    const int bat_width = get_textures()["bat"].texture.width;
-    const int bat_height = get_textures()["bat"].texture.height;
-    const float bat_x = -bat_width;
-    const float bat_y = (float)GetScreenHeight() / 2 - (float)bat_height + 300;
-    spawn_bat(bat_x, bat_y);
-  }
-
-  if (IsKeyPressed(KEY_Z)) {
-    // fire a knife
-    spawn_knife();
-  }
-
-  if (IsKeyPressed(KEY_SPACE)) {
-    player->set_ay(ay);
-    player->set_vy(vy);
-    player->update();
-  }
-
-  if (IsKeyDown(KEY_LEFT)) {
-    player->set_x(player->get_x() - move_speed);
-    if (!player->get_is_flipped()) {
-      player->flip();
+    if (IsKeyPressed(KEY_C)) {
+      set_control_mode(CONTROL_MODE_CAMERA);
     }
-  } else if (IsKeyDown(KEY_RIGHT)) {
-    player->set_x(player->get_x() + move_speed);
-    if (player->get_is_flipped()) {
-      player->flip();
+
+    if (IsKeyPressed(KEY_B)) {
+      const int bat_width = get_textures()["bat"].texture.width;
+      const int bat_height = get_textures()["bat"].texture.height;
+      const float bat_x = -bat_width;
+      const float bat_y =
+          (float)GetScreenHeight() / 2 - (float)bat_height + 300;
+      spawn_bat(bat_x, bat_y);
+    }
+
+    if (IsKeyPressed(KEY_Z)) {
+      // fire a knife
+      spawn_knife();
+    }
+
+    if (IsKeyPressed(KEY_SPACE)) {
+      player->set_ay(ay);
+      player->set_vy(vy);
+      player->update();
+    }
+
+    if (IsKeyDown(KEY_LEFT)) {
+      player->set_x(player->get_x() - move_speed);
+      if (!player->get_is_flipped()) {
+        player->flip();
+      }
+    } else if (IsKeyDown(KEY_RIGHT)) {
+      player->set_x(player->get_x() + move_speed);
+      if (player->get_is_flipped()) {
+        player->flip();
+      }
+    }
+
+    if (IsKeyPressed(KEY_P)) {
+      pause();
+    }
+
+  } else {
+    if (IsKeyPressed(KEY_P)) {
+      unpause();
     }
   }
 }
@@ -227,7 +244,8 @@ void GameplayScene::draw_debug_panel() {
       "/" + to_string(get_sprites()[get_player_id()]->get_maxhp()) + "\n" +
       "Camera target: " + to_string(get_camera2d().target.x) + ", " +
       to_string(get_camera2d().target.y) + "\n" + "GameplayScene" +
-      "Sprites: " + to_string(get_sprites().size()) + "\n";
+      "Sprites: " + to_string(get_sprites().size()) + "\n" +
+      "IsPaused: " + to_string(get_paused()) + "\n";
   DrawRectangle(0, 0, 500, 200, Fade(BLACK, 0.5f));
   DrawTextEx(get_global_font(), camera_info_str.c_str(), (Vector2){10, 10}, 16,
              0.5f, WHITE);
