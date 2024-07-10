@@ -44,6 +44,7 @@ public:
   void close();
   void handle_transition_in();
   void handle_transition_out();
+  void cleanup();
   ~Game();
 
 private:

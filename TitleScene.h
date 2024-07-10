@@ -26,6 +26,7 @@ public:
   bool init();
   void handle_input();
   void draw_debug_panel();
+  void cleanup();
 
 private:
 };

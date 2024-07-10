@@ -180,6 +180,7 @@ void Game::run() {
       handle_input();
       update();
       draw();
+      cleanup();
     }
     mPrint("Window closed.");
   }
@@ -202,3 +203,5 @@ void Game::close() {
   }
   mPrint("Game closed.");
 }
+
+void Game::cleanup() { scenes[current_scene_id]->cleanup(); }

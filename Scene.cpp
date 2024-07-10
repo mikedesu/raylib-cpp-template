@@ -247,6 +247,7 @@ entity_id Scene::spawn_entity(const char *texture_key, float x, float y,
   s->set_is_animating(is_anim);
 
   sprites[next_entity_id] = s;
+  entity_ids.push_back(next_entity_id);
   return next_entity_id++;
 }
 
@@ -296,3 +297,7 @@ void Scene::update_stars_vx(const float vx) {
     }
   }
 }
+
+void Scene::cleanup() {}
+
+vector<entity_id> &Scene::get_entity_ids() { return entity_ids; }

@@ -79,3 +79,5 @@ void TitleScene::draw_debug_panel() {
   DrawTextEx(get_global_font(), camera_info_str.c_str(), (Vector2){10, 10}, 16,
              0.5f, WHITE);
 }
+
+void TitleScene::cleanup() {}

@@ -14,43 +14,133 @@ GameplayScene::GameplayScene() {
 
 GameplayScene::~GameplayScene() { mPrint("GameplayScene destructor"); }
 
-void GameplayScene::update() {
-  update_stars_vx(-1.0f);
+void GameplayScene::update_player_movement() {
+  shared_ptr<Sprite> player = get_sprites()[get_player_id()];
+  player->incr_ay(0.0032f);
+  player->update();
+  player->set_y(player->get_y() + player->get_vy());
+  const int height = player->get_height();
+  const int width = player->get_width();
+  const int bottom_of_sprite = player->get_y() + height;
+  // lock the player to a relative "ground" location
+  if (bottom_of_sprite >= GetScreenHeight()) {
+    player->set_y(GetScreenHeight() - height);
+  }
+  // prevent player from moving off-screen
+  if (player->get_x() < 0) {
+    player->set_x(0);
+  }
+  if (player->get_x() > GetScreenWidth() - width) {
+    player->set_x(GetScreenWidth() - width);
+  }
+}
 
+void GameplayScene::update_enemy_movement() {
   for (auto &s : get_sprites()) {
-    if (s.second->get_type() == SPRITETYPE_PLAYER) {
-      s.second->incr_ay(0.0032f);
-      s.second->update();
-      s.second->set_y(s.second->get_y() + s.second->get_vy());
-
-      // lock the player to a relative "ground" location
-      const int height = s.second->get_height();
-      const int bottom_of_sprite = s.second->get_y() + height;
-      if (bottom_of_sprite >= GetScreenHeight()) {
-        s.second->set_y(GetScreenHeight() - height);
-      }
-    } else {
+    switch (s.second->get_type()) {
+    case SPRITETYPE_ENEMY:
       s.second->update();
       s.second->set_x(s.second->get_x() + s.second->get_vx());
+      break;
     }
   }
+}
+
+void GameplayScene::update_knife_movement() {
+  for (auto &s : get_sprites()) {
+    switch (s.second->get_type()) {
+    case SPRITETYPE_KNIFE:
+      s.second->update();
+      s.second->set_x(s.second->get_x() + s.second->get_vx());
+      break;
+    }
+  }
+}
+
+void GameplayScene::handle_offscreen() {
+  for (auto &s : get_sprites()) {
+    const int width = s.second->get_width() * 2;
+    // if sprite moves beyond screen, mark for deletion
+    // we use 2*width to help create a buffer zone
+    // so we can spawn new entities within the buffer
+    // while allowing old entities to move outside of it
+    // and get marked for deletion
+    if (s.second->get_x() > GetScreenWidth() + width ||
+        s.second->get_x() < -width) {
+      s.second->mark_for_deletion();
+    }
+  }
+}
+
+void GameplayScene::handle_player_collision() {
+  shared_ptr<Sprite> player = get_sprites()[get_player_id()];
+  for (auto &s : get_sprites()) {
+    sprite_type t = s.second->get_type();
+    switch (t) {
+    case SPRITETYPE_ENEMY:
+    case SPRITETYPE_KNIFE:
+      if (CheckCollisionRecs(player->get_dest(), s.second->get_dest())) {
+        s.second->mark_for_deletion();
+      }
+      break;
+    default:
+      break;
+    }
+  }
+}
+
+void GameplayScene::handle_knife_collisions() {
+  for (auto &knife : get_sprites()) {
+    sprite_type t = knife.second->get_type();
+    switch (t) {
+    case SPRITETYPE_KNIFE: {
+      for (auto &s : get_sprites()) {
+        sprite_type t2 = s.second->get_type();
+        switch (t2) {
+        case SPRITETYPE_ENEMY: {
+          if (CheckCollisionRecs(knife.second->get_dest(),
+                                 s.second->get_dest())) {
+            s.second->mark_for_deletion();
+            knife.second->mark_for_deletion();
+          }
+          break;
+        }
+        }
+      }
+      break;
+    }
+    }
+  }
+}
+
+void GameplayScene::update() {
+  const float star_move_speed = -1.0f;
+  update_stars_vx(star_move_speed);
+
+  update_player_movement();
+  update_enemy_movement();
+  update_knife_movement();
+
+  handle_offscreen();
+  handle_player_collision();
+  handle_knife_collisions();
 
   // we want the camera to follow the player in such a way that
   // the player is always in the center of the screen
   // except for the game beginning, when they begin flapping at the bottom
   // once they hit the center, the camera should follow them
-
-  // if (sprites[player_id]->get_y() < 3 * GetScreenHeight() / 4) {
-  // } else if (sprites[player_id]->get_y() > 3 * GetScreenHeight() / 4 &&
-  //            camera2d.target.y < 0) {
-  //   camera2d.target.y = 0;
-  // }
   Camera2D &camera2d = get_camera2d();
   camera2d.target.y = get_sprites()[get_player_id()]->get_y();
-  camera2d.offset.y = GetScreenHeight() / 2;
+  // camera2d.offset.y = GetScreenHeight() / 2.0f;
 }
 
 void GameplayScene::handle_input() {
+  shared_ptr<Sprite> player = get_sprites()[get_player_id()];
+  // this value affects how high skull 'flaps' or jumps
+  const float vy = -6.75f;
+  const float ay = 0.0f;
+  const float move_speed = 2.0f;
+
   if (IsKeyPressed(KEY_D)) {
     flip_debug_panel();
   }
@@ -59,39 +149,34 @@ void GameplayScene::handle_input() {
     set_control_mode(CONTROL_MODE_CAMERA);
   }
 
+  if (IsKeyPressed(KEY_B)) {
+    const int bat_width = get_textures()["bat"].texture.width;
+    const int bat_height = get_textures()["bat"].texture.height;
+    const float bat_x = -bat_width;
+    const float bat_y = (float)GetScreenHeight() / 2 - (float)bat_height + 300;
+    spawn_bat(bat_x, bat_y);
+  }
+
   if (IsKeyPressed(KEY_Z)) {
     // fire a knife
     spawn_knife();
   }
 
   if (IsKeyPressed(KEY_SPACE)) {
-    get_sprites()[get_player_id()]->set_ay(0.00f);
-
-    // this value affects how high skull 'flaps' or jumps
-    const float vy = -6.0f;
-    // const float vy = -4.0f;
-    //  const float vy = -32.0f;
-    //   eventually skull will be able to make big jumps
-    //   by acquiring powerups to modify this value
-    //   this will mean less spacebar presses or taps
-    //   which will encourage players to get the powerup
-    //   but for testing we can play with this value
-    get_sprites()[get_player_id()]->set_vy(vy);
-    get_sprites()[get_player_id()]->update();
+    player->set_ay(ay);
+    player->set_vy(vy);
+    player->update();
   }
 
   if (IsKeyDown(KEY_LEFT)) {
-    get_sprites()[get_player_id()]->set_x(
-        get_sprites()[get_player_id()]->get_x() - 2.0f);
-
-    if (!get_sprites()[get_player_id()]->get_is_flipped()) {
-      get_sprites()[get_player_id()]->flip();
+    player->set_x(player->get_x() - move_speed);
+    if (!player->get_is_flipped()) {
+      player->flip();
     }
   } else if (IsKeyDown(KEY_RIGHT)) {
-    get_sprites()[get_player_id()]->set_x(
-        get_sprites()[get_player_id()]->get_x() + 2.0f);
-    if (get_sprites()[get_player_id()]->get_is_flipped()) {
-      get_sprites()[get_player_id()]->flip();
+    player->set_x(player->get_x() + move_speed);
+    if (player->get_is_flipped()) {
+      player->flip();
     }
   }
 }
@@ -113,23 +198,19 @@ bool GameplayScene::init() {
     const int sprite_height = get_textures()["skull"].texture.height;
     const float x = (float)GetScreenWidth() / 2 - (float)sprite_width;
     const float y = (float)GetScreenHeight() / 2 - (float)sprite_height;
-    // 10000;
-    // const float y = -100;
     spawn_player(x, y);
 
     for (int i = 0; i < 1000; i++) {
-      // add_soulshard();
       add_star();
     }
 
     const int bat_width = get_textures()["bat"].texture.width;
     const int bat_height = get_textures()["bat"].texture.height;
-    // const float bat_x = (float)GetScreenWidth() / 2 - (float)bat_width;
     const float bat_x = -bat_width;
-
     const float bat_y = (float)GetScreenHeight() / 2 - (float)bat_height + 300;
-
     spawn_bat(bat_x, bat_y);
+
+    get_camera2d().offset.y = GetScreenHeight() / 2.0f;
 
     set_has_been_initialized(true);
   }
@@ -144,32 +225,24 @@ void GameplayScene::draw_debug_panel() {
       ", " + to_string(get_sprites()[get_player_id()]->get_y()) + "\n" +
       "Player HP: " + to_string(get_sprites()[get_player_id()]->get_hp()) +
       "/" + to_string(get_sprites()[get_player_id()]->get_maxhp()) + "\n" +
-      // to_string(sprites[player_id]->get_y()) + "\n" +
       "Camera target: " + to_string(get_camera2d().target.x) + ", " +
       to_string(get_camera2d().target.y) + "\n" + "GameplayScene" +
       "Sprites: " + to_string(get_sprites().size()) + "\n";
-  //"Current Frame: " + to_string(current_frame) + "\n" +
-  //"Camera2D target: " + to_string(camera2d.target.x) + ", " +
-  // to_string(camera2d.target.y) + "\n" +
-  //"Camera2D offset: " + to_string(camera2d.offset.x) + ", " +
-  // to_string(camera2d.offset.y) + "\n" +
-  //"Camera2D rotation: " + to_string(camera2d.rotation) + "\n" +
-  //"Camera2D zoom: " + to_string(camera2d.zoom) + "\n" +
-  //"Player Position: " + to_string(sprites[player_id]->get_x()) + ", " +
-  // to_string(sprites[player_id]->get_y()) + "\n" +
-  //"Player Velocity: " + to_string(sprites[player_id]->get_vx()) + ", " +
-  // to_string(sprites[player_id]->get_vy()) + "\n" +
-  //"Player Acceleration: " + to_string(sprites[player_id]->get_ax()) + ", " +
-  // to_string(sprites[player_id]->get_ay()) + "\n" +
   DrawRectangle(0, 0, 500, 200, Fade(BLACK, 0.5f));
   DrawTextEx(get_global_font(), camera_info_str.c_str(), (Vector2){10, 10}, 16,
              0.5f, WHITE);
 }
 
-// void GameplayScene::add_soulshard() {
-//   const int x = GetRandomValue(0, GetScreenWidth());
-//   const int y = GetRandomValue(-GetScreenHeight() * 100, GetScreenHeight());
-//   entity_id id =
-//       spawn_entity("soulshard", (float)x, (float)y, SPRITETYPE_SOULSHARD,
-//       true);
-// }
+void GameplayScene::cleanup() {
+  // mPrint("cleanup");
+  for (int i = 0; i < get_entity_ids().size(); i++) {
+    entity_id id = get_entity_ids()[i];
+    if (get_sprites()[id]->get_is_marked_for_deletion()) {
+      get_sprites().erase(id);
+      // also need to erase from entity_ids
+      get_entity_ids().erase(get_entity_ids().begin() + i);
+      // update the index so that we don't skip any
+      i--;
+    }
+  }
+}

@@ -89,6 +89,8 @@ public:
   void set_scene_transition(scene_transition st);
   scene_transition get_scene_transition();
 
+  vector<entity_id> &get_entity_ids();
+
   void set_alpha(float a);
   const float get_alpha() const;
 
@@ -103,6 +105,7 @@ public:
 
   void draw_ground();
   void draw_stars();
+  virtual void cleanup();
 
 private:
   unordered_map<string, texture_info> textures;
