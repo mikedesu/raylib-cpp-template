@@ -114,6 +114,19 @@ void Sprite::draw() {
 void Sprite::draw_hitbox() {
   // DrawRectangleLines(dest.x, dest.y, dest.width, dest.height, RED);
 
+  // drawing an extra line to help debug the hitbox/rotation problem with knives
+  int x = hitbox.x;
+  int y = hitbox.y;
+  int w = hitbox.width;
+  int h = hitbox.height;
+  const int w2 = w / 2;
+  const int h2 = h / 2;
+  const int x0 = x + w2;
+  const int y0 = y + h2;
+  const int x1 = x - w2;
+  const int y1 = y + h2;
+  DrawLine(x0, y0, x1, y1, BLUE);
+
   DrawRectangleLines(hitbox.x, hitbox.y, hitbox.width, hitbox.height, RED);
 
   // DrawRectanglePro(hitbox, (Vector2){0, 0}, rotation_angle, RED);
