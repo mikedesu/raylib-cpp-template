@@ -80,4 +80,11 @@ void TitleScene::draw_debug_panel() {
              0.5f, WHITE);
 }
 
-void TitleScene::cleanup() {}
+void TitleScene::cleanup() {
+  // mPrint("Cleaning up TitleScene...");
+  //  for (auto &sprite : get_sprites()) {
+  //  }
+  //  get_sprites().clear();
+  //  get_textures().clear();
+  //  set_has_been_initialized(false);
+}

@@ -112,6 +112,13 @@ public:
 
   virtual void cleanup();
 
+  const Vector2 get_starting_knife_speed() const;
+  void set_knife_speed(const Vector2 speed);
+  const Vector2 get_knife_speed() const;
+
+  void set_knife_catches(const unsigned int catches);
+  const unsigned int get_knife_catches() const;
+
 private:
   unordered_map<string, texture_info> textures;
   unordered_map<entity_id, shared_ptr<Sprite>> sprites;
@@ -142,4 +149,9 @@ private:
   scene_type scenetype;
 
   bool is_paused;
+
+  const Vector2 starting_knife_speed = {1, 0};
+  Vector2 knife_speed = {1, 0};
+
+  unsigned int knife_catches = 0;
 };

@@ -1,4 +1,5 @@
 #include "GameplayScene.h"
+#include "Sprite.h"
 #include "mPrint.h"
 
 static entity_id next_entity_id = 0;
@@ -79,8 +80,14 @@ void GameplayScene::handle_player_collision() {
     switch (t) {
     case SPRITETYPE_ENEMY:
     case SPRITETYPE_KNIFE:
-      if (CheckCollisionRecs(player->get_dest(), s.second->get_dest())) {
+      // if (CheckCollisionRecs(player->get_dest(), s.second->get_dest())) {
+      if (CheckCollisionRecs(player->get_hitbox(), s.second->get_hitbox())) {
         s.second->mark_for_deletion();
+
+        if (t == SPRITETYPE_KNIFE) {
+          set_knife_catches(get_knife_catches() + 1);
+        } else {
+        }
       }
       break;
     default:
@@ -98,8 +105,11 @@ void GameplayScene::handle_knife_collisions() {
         sprite_type t2 = s.second->get_type();
         switch (t2) {
         case SPRITETYPE_ENEMY: {
-          if (CheckCollisionRecs(knife.second->get_dest(),
-                                 s.second->get_dest())) {
+          // if (CheckCollisionRecs(knife.second->get_dest(),
+          // s.second->get_dest())) {
+          if (CheckCollisionRecs(knife.second->get_hitbox(),
+                                 s.second->get_hitbox())) {
+
             s.second->mark_for_deletion();
             knife.second->mark_for_deletion();
           }
@@ -245,6 +255,7 @@ void GameplayScene::draw_debug_panel() {
       "Camera target: " + to_string(get_camera2d().target.x) + ", " +
       to_string(get_camera2d().target.y) + "\n" + "GameplayScene" +
       "Sprites: " + to_string(get_sprites().size()) + "\n" +
+      "Knife Catches: " + to_string(get_knife_catches()) + "\n" +
       "IsPaused: " + to_string(get_paused()) + "\n";
   DrawRectangle(0, 0, 500, 200, Fade(BLACK, 0.5f));
   DrawTextEx(get_global_font(), camera_info_str.c_str(), (Vector2){10, 10}, 16,

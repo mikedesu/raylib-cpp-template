@@ -15,6 +15,7 @@ Sprite::Sprite(const char *filepath, const int anim_frames, const float x,
   is_animating = false;
   is_flipped = false;
   type = t;
+  is_spinning = false;
 }
 
 Sprite::Sprite(Texture2D &texture, const int anim_frames, const float x,
@@ -32,6 +33,7 @@ Sprite::Sprite(Texture2D &texture, const int anim_frames, const float x,
   is_animating = false;
   is_flipped = false;
   type = t;
+  is_spinning = false;
 }
 
 void Sprite::mark_for_deletion() { is_marked_for_deletion = true; }
@@ -83,13 +85,24 @@ void Sprite::init_rects() {
   dest =
       (Rectangle){dest.x, dest.y, ((float)texture.width / anim_frames) * scale,
                   (float)texture.height * scale};
+
+  hitbox = (Rectangle){dest.x, dest.y, dest.width, dest.height};
+
+  // origin = (Vector2){dest.width / 2, dest.height / 2};
 }
 
 Sprite::~Sprite() {}
 
 void Sprite::draw() {
-  DrawTexturePro(texture, is_flipped ? flipped_src : src, dest, origin, 0,
-                 WHITE);
+
+  const Color color = WHITE;
+
+  if (is_flipped) {
+    DrawTexturePro(texture, flipped_src, dest, origin, rotation_angle, color);
+
+  } else {
+    DrawTexturePro(texture, src, dest, origin, rotation_angle, color);
+  }
 
   if (is_animating && frame_counter % 10 == 0) {
     incr_frame();
@@ -99,7 +112,11 @@ void Sprite::draw() {
 }
 
 void Sprite::draw_hitbox() {
-  DrawRectangleLines(dest.x, dest.y, dest.width, dest.height, RED);
+  // DrawRectangleLines(dest.x, dest.y, dest.width, dest.height, RED);
+
+  DrawRectangleLines(hitbox.x, hitbox.y, hitbox.width, hitbox.height, RED);
+
+  // DrawRectanglePro(hitbox, (Vector2){0, 0}, rotation_angle, RED);
 }
 
 void Sprite::move(const float x, const float y) {
@@ -150,6 +167,24 @@ void Sprite::update() {
   // update the position
   // dest.x += velocity.x;
   // dest.y += velocity.y;
+  // update the rotation_angle
+
+  // hitbox = (Rectangle){origin.x, origin.y, dest.width, dest.height};
+  hitbox = (Rectangle){dest.x, dest.y, dest.width, dest.height};
+
+  // origin = (Vector2){-dest.width / 2, -dest.height / 2};
+  // origin = (Vector2){dest.width / 2, dest.height / 2};
+  origin = (Vector2){0, 0};
+
+  if (is_spinning) {
+    // hitbox = (Rectangle){dest.x + dest.width / 2.0f,
+    hitbox = (Rectangle){dest.x, dest.y - dest.height / 2.0f, dest.width,
+                         dest.height};
+
+    origin = (Vector2){dest.width / 2, dest.height / 2};
+
+    rotation_angle += velocity.x;
+  }
 }
 
 void Sprite::flip() { set_is_flipped(!get_is_flipped()); }
@@ -158,3 +193,33 @@ void Sprite::set_hp(const int hp) { this->hp = hp; }
 void Sprite::set_maxhp(const int maxhp) { this->maxhp = maxhp; }
 const int Sprite::get_hp() const { return hp; }
 const int Sprite::get_maxhp() const { return maxhp; }
+
+void Sprite::decr_hp(const int hp) {
+
+  if (this->hp - hp <= 0) {
+    this->hp = 0;
+    // mark_for_deletion();
+  } else {
+    this->hp -= hp;
+  }
+}
+
+void Sprite::incr_hp(const int hp) {
+  if (this->hp + hp >= maxhp) {
+    this->hp = maxhp;
+  } else {
+    this->hp += hp;
+  }
+}
+
+void Sprite::set_rotation_angle(const float angle) { rotation_angle = angle; }
+const float Sprite::get_rotation_angle() const { return rotation_angle; }
+
+void Sprite::set_is_spinning(const bool is_spinning) {
+
+  this->is_spinning = is_spinning;
+}
+
+const bool Sprite::get_is_spinning() const { return is_spinning; }
+
+const Rectangle Sprite::get_hitbox() const { return hitbox; }

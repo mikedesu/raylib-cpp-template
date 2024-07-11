@@ -28,7 +28,15 @@ void Scene::close() {
   textures.clear();
   mPrint("Clearing sprites...");
   sprites.clear();
+  bgsprites.clear();
+  mPrint("Clearing entity ids...");
+  entity_ids.clear();
+  bg_entity_ids.clear();
+  mPrint("Unloading font...");
   UnloadFont(global_font);
+  mPrint("Clearing stars...");
+  stars.clear();
+  mPrint("Scene closed.");
 }
 
 void Scene::update() {}
@@ -221,15 +229,28 @@ entity_id Scene::spawn_knife() {
   entity_id id = spawn_entity("knife", x, y, SPRITETYPE_KNIFE, false);
   // set variables
   if (sprites[player_id]->get_is_flipped()) {
-    sprites[id]->set_vx(-1);
+    sprites[id]->set_vx(-1 * knife_speed.x);
     sprites[id]->set_is_flipped(true);
   } else {
-    sprites[id]->set_vx(1);
+    sprites[id]->set_vx(knife_speed.x);
   }
 
-  sprites[id]->set_vy(0);
+  sprites[id]->set_vy(knife_speed.y);
   sprites[id]->set_ax(0);
   sprites[id]->set_ay(0);
+
+  // set rotation_angle based on knife_catches
+  // if (knife_catches > 0) {
+  //  sprites[id]->set_rotation_angle(45.0f);
+  //} else {
+  sprites[id]->set_rotation_angle(0.0f);
+
+  const bool is_spinning = knife_catches > 0;
+  if (is_spinning) {
+    sprites[id]->set_is_spinning(true);
+    knife_catches = 0;
+  }
+
   return id;
 }
 
@@ -307,3 +328,18 @@ void Scene::pause() { is_paused = true; }
 void Scene::unpause() { is_paused = false; }
 
 bool Scene::get_paused() const { return is_paused; }
+
+const Vector2 Scene::get_starting_knife_speed() const {
+  return starting_knife_speed;
+}
+
+void Scene::set_knife_speed(const Vector2 speed) { knife_speed = speed; }
+
+const Vector2 Scene::get_knife_speed() const { return knife_speed; }
+
+void Scene::set_knife_catches(const unsigned int catches) {
+
+  knife_catches = catches;
+}
+
+const unsigned int Scene::get_knife_catches() const { return knife_catches; }
