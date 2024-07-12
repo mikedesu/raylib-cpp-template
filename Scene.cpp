@@ -246,6 +246,7 @@ entity_id Scene::spawn_knife() {
     sprites[id]->set_vx(sprites[id]->get_vx() * (1 + knife_catches));
     sprites[id]->set_is_spinning(true);
     sprites[id]->set_rotation_speed(1.0f * knife_catches);
+    knife_catches -= 1;
   }
 
   sprites[id]->set_vy(knife_speed.y);
