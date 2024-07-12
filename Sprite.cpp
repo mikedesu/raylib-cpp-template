@@ -1,4 +1,6 @@
 #include "Sprite.h"
+#include "raymath.h"
+#include "rlgl.h"
 
 Sprite::Sprite(const char *filepath, const int anim_frames, const float x,
                const float y, sprite_type t) {
@@ -15,7 +17,8 @@ Sprite::Sprite(const char *filepath, const int anim_frames, const float x,
   is_animating = false;
   is_flipped = false;
   type = t;
-  is_spinning = false;
+  // is_spinning = false;
+  is_spinning = true;
 }
 
 Sprite::Sprite(Texture2D &texture, const int anim_frames, const float x,
@@ -33,7 +36,8 @@ Sprite::Sprite(Texture2D &texture, const int anim_frames, const float x,
   is_animating = false;
   is_flipped = false;
   type = t;
-  is_spinning = false;
+  // is_spinning = false;
+  is_spinning = true;
 }
 
 void Sprite::mark_for_deletion() { is_marked_for_deletion = true; }
@@ -97,12 +101,58 @@ void Sprite::draw() {
 
   const Color color = WHITE;
 
+  // rlPushMatrix();
+
+  // rlSetTexture(texture.id);
+  //   rlSetTexture(0);
+  //  rlBegin(RL_QUADS);
+
+  // rlColor4ub(color.r, color.g, color.b, color.a);
+
+  // rlTranslatef(0, 0, 0);
+  // rlTranslatef(0, 0, 0);
+
+  // rlPushMatrix();
+  //  rlTranslatef(dest.x + dest.width / 2, 0, 0);
+  // rlTranslatef(dest.x + dest.width / 2, dest.y + dest.height / 2, 0);
+
+  // rlRotatef(rotation_angle, 0, 0, 0);
+  // rlPopMatrix();
+
+  //       rlTranslatef(-dest.x - dest.width / 2, -dest.y - dest.height / 2, 0);
+  // rlRotatef(45.0f, 0, 0, -1);
+
+  // rlTexCoord2f(src.x / texture.width, src.y / texture.height);
+  // rlVertex2f(dest.x, dest.y);
+  // rlTexCoord2f(src.x / texture.width, (src.y + src.height) / texture.height);
+  // rlVertex2f(dest.x, dest.y + dest.height);
+  // rlTexCoord2f((src.x + src.width) / texture.width,
+  //              (src.y + src.height) / texture.height);
+  // rlVertex2f(dest.x + dest.width, dest.y + dest.height);
+  // rlTexCoord2f((src.x + src.width) / texture.width, src.y / texture.height);
+  // rlVertex2f(dest.x + dest.width, dest.y);
+
+  // rlPopMatrix();
+
+  // rlTranslatef(dest.x + dest.width / 2, dest.y + dest.height / 2, 0);
+  //  rlEnd();
+
+  rlPushMatrix();
+  rlTranslatef(dest.x + dest.width / 2, dest.y + dest.height / 2, 0);
+  rlRotatef(rotation_angle, 0, 0, 1);
+  // rlTranslatef(0, 0, 0);
+  rlTranslatef(-dest.x - dest.width / 2, -dest.y - dest.height / 2, 0);
+
   if (is_flipped) {
-    DrawTexturePro(texture, flipped_src, dest, origin, rotation_angle, color);
+    DrawTexturePro(texture, flipped_src, dest, origin, 0.0f, color);
 
   } else {
-    DrawTexturePro(texture, src, dest, origin, rotation_angle, color);
+    DrawTexturePro(texture, src, dest, origin, 0.0f, color);
   }
+
+  rlPopMatrix();
+
+  // rlSetTexture(0);
 
   if (is_animating && frame_counter % 10 == 0) {
     incr_frame();
@@ -121,14 +171,33 @@ void Sprite::draw_hitbox() {
   int h = hitbox.height;
   const int w2 = w / 2;
   const int h2 = h / 2;
-  const int x0 = x + w2;
-  const int y0 = y + h2;
+  const int w4 = w / 4;
+  const int h4 = h / 4;
+
+  // const int x0 = x - w2;
+  const int x0 = x - w2;
+  const int y0 = y;
+  // const int y0 = y - h2;
   const int x1 = x - w2;
   const int y1 = y + h2;
-  DrawLine(x0, y0, x1, y1, BLUE);
 
+  rlPushMatrix();
+  rlTranslatef(dest.x + dest.width / 2, dest.y + dest.height / 2, 0);
+  rlRotatef(rotation_angle, 0, 0, 1);
+  // rlTranslatef(0, 0, 0);
+  rlTranslatef(-dest.x - dest.width / 2, -dest.y - dest.height / 2, 0);
+
+  // draw box at offset from hitbox
+  // the offset is half the width and height of the hitbox
+  DrawRectangleLines(x0, y0, w, h, BLUE);
+
+  // draw the hitbox
   DrawRectangleLines(hitbox.x, hitbox.y, hitbox.width, hitbox.height, RED);
 
+  // draw the dest box
+  DrawRectangleLines(dest.x, dest.y, dest.width, dest.height, GREEN);
+
+  rlPopMatrix();
   // DrawRectanglePro(hitbox, (Vector2){0, 0}, rotation_angle, RED);
 }
 
@@ -191,12 +260,13 @@ void Sprite::update() {
 
   if (is_spinning) {
     // hitbox = (Rectangle){dest.x + dest.width / 2.0f,
-    hitbox = (Rectangle){dest.x, dest.y - dest.height / 2.0f, dest.width,
-                         dest.height};
+    hitbox = (Rectangle){dest.x - dest.width / 2.0f,
+                         dest.y - dest.height / 2.0f, dest.width, dest.height};
 
-    origin = (Vector2){dest.width / 2, dest.height / 2};
+    // origin = (Vector2){dest.width / 2, dest.height / 2};
 
-    rotation_angle += velocity.x;
+    rotation_angle += 1.0f;
+    // rotation_angle += velocity.x;
   }
 }
 

@@ -1,6 +1,8 @@
 #include "Game.h"
 #include "mPrint.h"
 #include "raylib.h"
+#include "raymath.h"
+#include "rlgl.h"
 #include <cassert>
 
 static scene_id next_scene_id = 0;
@@ -61,6 +63,11 @@ bool Game::init() {
 
     // seed the RNG
     SetRandomSeed(GetTime());
+
+    // init rlgl
+    mPrint("Initializing rlgl...");
+
+    rlglInit(screen_rect.width, -screen_rect.height);
 
     has_been_initialized = true;
   }
@@ -192,6 +199,8 @@ void Game::close() {
   // CloseWindow() must be the LAST raylib call before exiting
 
   scenes[current_scene_id]->close();
+
+  // rlglClose();
 
   if (IsRenderTextureReady(target)) {
     mPrint("Unloading render texture...");

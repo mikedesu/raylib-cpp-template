@@ -1,5 +1,7 @@
 #include "Scene.h"
 #include "mPrint.h"
+#include "raymath.h"
+#include "rlgl.h"
 #include <cassert>
 #include <cstring>
 
