@@ -81,7 +81,8 @@ void GameplayScene::handle_player_collision() {
     case SPRITETYPE_ENEMY:
     case SPRITETYPE_KNIFE:
       // if (CheckCollisionRecs(player->get_dest(), s.second->get_dest())) {
-      if (CheckCollisionRecs(player->get_hitbox(), s.second->get_hitbox())) {
+      // if (CheckCollisionRecs(player->get_hitbox(), s.second->get_hitbox())) {
+      if (CheckCollisionRecs(player->get_dest(), s.second->get_dest())) {
         s.second->mark_for_deletion();
 
         if (t == SPRITETYPE_KNIFE) {
@@ -107,8 +108,8 @@ void GameplayScene::handle_knife_collisions() {
         case SPRITETYPE_ENEMY: {
           // if (CheckCollisionRecs(knife.second->get_dest(),
           // s.second->get_dest())) {
-          if (CheckCollisionRecs(knife.second->get_hitbox(),
-                                 s.second->get_hitbox())) {
+          if (CheckCollisionRecs(knife.second->get_dest(),
+                                 s.second->get_dest())) {
 
             s.second->mark_for_deletion();
             knife.second->mark_for_deletion();
@@ -185,13 +186,20 @@ void GameplayScene::handle_input() {
       player->update();
     }
 
+    bool shift = IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT);
+    int new_move_speed = move_speed;
+    if (shift) {
+      new_move_speed = move_speed * 2;
+    }
+
     if (IsKeyDown(KEY_LEFT)) {
-      player->set_x(player->get_x() - move_speed);
+      player->set_x(player->get_x() - new_move_speed);
       if (!player->get_is_flipped()) {
         player->flip();
       }
     } else if (IsKeyDown(KEY_RIGHT)) {
-      player->set_x(player->get_x() + move_speed);
+
+      player->set_x(player->get_x() + new_move_speed);
       if (player->get_is_flipped()) {
         player->flip();
       }

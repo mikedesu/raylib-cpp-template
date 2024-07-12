@@ -17,8 +17,8 @@ Sprite::Sprite(const char *filepath, const int anim_frames, const float x,
   is_animating = false;
   is_flipped = false;
   type = t;
-  // is_spinning = false;
-  is_spinning = true;
+  is_spinning = false;
+  // is_spinning = true;
 }
 
 Sprite::Sprite(Texture2D &texture, const int anim_frames, const float x,
@@ -36,8 +36,8 @@ Sprite::Sprite(Texture2D &texture, const int anim_frames, const float x,
   is_animating = false;
   is_flipped = false;
   type = t;
-  // is_spinning = false;
-  is_spinning = true;
+  is_spinning = false;
+  // is_spinning = true;
 }
 
 void Sprite::mark_for_deletion() { is_marked_for_deletion = true; }
@@ -189,10 +189,10 @@ void Sprite::draw_hitbox() {
 
   // draw box at offset from hitbox
   // the offset is half the width and height of the hitbox
-  DrawRectangleLines(x0, y0, w, h, BLUE);
+  // DrawRectangleLines(x0, y0, w, h, BLUE);
 
   // draw the hitbox
-  DrawRectangleLines(hitbox.x, hitbox.y, hitbox.width, hitbox.height, RED);
+  // DrawRectangleLines(hitbox.x, hitbox.y, hitbox.width, hitbox.height, RED);
 
   // draw the dest box
   DrawRectangleLines(dest.x, dest.y, dest.width, dest.height, GREEN);
@@ -252,7 +252,7 @@ void Sprite::update() {
   // update the rotation_angle
 
   // hitbox = (Rectangle){origin.x, origin.y, dest.width, dest.height};
-  hitbox = (Rectangle){dest.x, dest.y, dest.width, dest.height};
+  // hitbox = (Rectangle){dest.x, dest.y, dest.width, dest.height};
 
   // origin = (Vector2){-dest.width / 2, -dest.height / 2};
   // origin = (Vector2){dest.width / 2, dest.height / 2};
@@ -260,8 +260,9 @@ void Sprite::update() {
 
   if (is_spinning) {
     // hitbox = (Rectangle){dest.x + dest.width / 2.0f,
-    hitbox = (Rectangle){dest.x - dest.width / 2.0f,
-                         dest.y - dest.height / 2.0f, dest.width, dest.height};
+    // hitbox = (Rectangle){dest.x - dest.width / 2.0f,
+    //                     dest.y - dest.height / 2.0f, dest.width,
+    //                     dest.height};
 
     // origin = (Vector2){dest.width / 2, dest.height / 2};
 

@@ -229,10 +229,20 @@ entity_id Scene::spawn_knife() {
 
   // spawn the knife
   entity_id id = spawn_entity("knife", x, y, SPRITETYPE_KNIFE, false);
-  // set variables
-  if (sprites[player_id]->get_is_flipped()) {
-    sprites[id]->set_vx(-1 * knife_speed.x);
+  const bool is_spinning = knife_catches > 0;
+  const bool is_flipped = sprites[player_id]->get_is_flipped();
+
+  if (is_flipped && is_spinning) {
+    sprites[id]->set_vx(-2 * knife_speed.x);
     sprites[id]->set_is_flipped(true);
+    sprites[id]->set_is_spinning(true);
+    knife_catches = 0;
+  } else if (is_flipped) {
+    sprites[id]->set_vx(-knife_speed.x);
+    sprites[id]->set_is_flipped(true);
+  } else if (is_spinning) {
+    sprites[id]->set_vx(knife_speed.x);
+    sprites[id]->set_is_spinning(true);
   } else {
     sprites[id]->set_vx(knife_speed.x);
   }
@@ -240,18 +250,7 @@ entity_id Scene::spawn_knife() {
   sprites[id]->set_vy(knife_speed.y);
   sprites[id]->set_ax(0);
   sprites[id]->set_ay(0);
-
-  // set rotation_angle based on knife_catches
-  // if (knife_catches > 0) {
-  //  sprites[id]->set_rotation_angle(45.0f);
-  //} else {
   sprites[id]->set_rotation_angle(0.0f);
-
-  const bool is_spinning = knife_catches > 0;
-  if (is_spinning) {
-    sprites[id]->set_is_spinning(true);
-    knife_catches = 0;
-  }
 
   return id;
 }

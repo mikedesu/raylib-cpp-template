@@ -148,7 +148,7 @@ private:
   scene_id id;
   scene_type scenetype;
 
-  bool is_paused;
+  bool is_paused = false;
 
   const Vector2 starting_knife_speed = {1, 0};
   Vector2 knife_speed = {1, 0};

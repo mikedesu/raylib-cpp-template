@@ -1,12 +1,13 @@
 #pragma once
 
-// #include "Scene.h"
-#include "GameplayScene.h"
-#include "Sprite.h"
-#include "TitleScene.h"
 #include "control_mode.h"
 #include "entity_id.h"
 #include "texture_info.h"
+
+#include "GameplayScene.h"
+#include "Sprite.h"
+#include "TitleScene.h"
+
 #include <functional>
 #include <memory>
 #include <string>
@@ -65,10 +66,6 @@ private:
   Camera2D camera2d;
   RenderTexture target;
   Rectangle screen_rect;
-
-  // Scene scene;
-  // TitleScene scene;
-  // GameplayScene scene;
 
   unordered_map<scene_id, shared_ptr<Scene>> scenes;
   unordered_map<string, scene_id> scene_keys;
