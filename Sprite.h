@@ -93,6 +93,9 @@ public:
   void set_is_spinning(const bool is_spinning);
   const bool get_is_spinning() const;
 
+  void set_rotation_speed(const float speed);
+  const float get_rotation_speed() const;
+
 private:
   Texture2D texture;
 
@@ -122,6 +125,8 @@ private:
   int maxhp;
 
   bool is_spinning = false;
+
+  float rotation_speed = 1.0f;
 
   void init_rects();
 };

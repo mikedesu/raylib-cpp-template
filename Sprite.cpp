@@ -98,44 +98,7 @@ void Sprite::init_rects() {
 Sprite::~Sprite() {}
 
 void Sprite::draw() {
-
   const Color color = WHITE;
-
-  // rlPushMatrix();
-
-  // rlSetTexture(texture.id);
-  //   rlSetTexture(0);
-  //  rlBegin(RL_QUADS);
-
-  // rlColor4ub(color.r, color.g, color.b, color.a);
-
-  // rlTranslatef(0, 0, 0);
-  // rlTranslatef(0, 0, 0);
-
-  // rlPushMatrix();
-  //  rlTranslatef(dest.x + dest.width / 2, 0, 0);
-  // rlTranslatef(dest.x + dest.width / 2, dest.y + dest.height / 2, 0);
-
-  // rlRotatef(rotation_angle, 0, 0, 0);
-  // rlPopMatrix();
-
-  //       rlTranslatef(-dest.x - dest.width / 2, -dest.y - dest.height / 2, 0);
-  // rlRotatef(45.0f, 0, 0, -1);
-
-  // rlTexCoord2f(src.x / texture.width, src.y / texture.height);
-  // rlVertex2f(dest.x, dest.y);
-  // rlTexCoord2f(src.x / texture.width, (src.y + src.height) / texture.height);
-  // rlVertex2f(dest.x, dest.y + dest.height);
-  // rlTexCoord2f((src.x + src.width) / texture.width,
-  //              (src.y + src.height) / texture.height);
-  // rlVertex2f(dest.x + dest.width, dest.y + dest.height);
-  // rlTexCoord2f((src.x + src.width) / texture.width, src.y / texture.height);
-  // rlVertex2f(dest.x + dest.width, dest.y);
-
-  // rlPopMatrix();
-
-  // rlTranslatef(dest.x + dest.width / 2, dest.y + dest.height / 2, 0);
-  //  rlEnd();
 
   rlPushMatrix();
   rlTranslatef(dest.x + dest.width / 2, dest.y + dest.height / 2, 0);
@@ -152,53 +115,21 @@ void Sprite::draw() {
 
   rlPopMatrix();
 
-  // rlSetTexture(0);
-
-  if (is_animating && frame_counter % 10 == 0) {
+  const int frame_freq = 10;
+  if (is_animating && frame_counter % frame_freq == 0) {
     incr_frame();
-    // frame_counter = 0;
   }
   frame_counter++;
 }
 
 void Sprite::draw_hitbox() {
-  // DrawRectangleLines(dest.x, dest.y, dest.width, dest.height, RED);
-
-  // drawing an extra line to help debug the hitbox/rotation problem with knives
-  int x = hitbox.x;
-  int y = hitbox.y;
-  int w = hitbox.width;
-  int h = hitbox.height;
-  const int w2 = w / 2;
-  const int h2 = h / 2;
-  const int w4 = w / 4;
-  const int h4 = h / 4;
-
-  // const int x0 = x - w2;
-  const int x0 = x - w2;
-  const int y0 = y;
-  // const int y0 = y - h2;
-  const int x1 = x - w2;
-  const int y1 = y + h2;
-
   rlPushMatrix();
   rlTranslatef(dest.x + dest.width / 2, dest.y + dest.height / 2, 0);
   rlRotatef(rotation_angle, 0, 0, 1);
-  // rlTranslatef(0, 0, 0);
   rlTranslatef(-dest.x - dest.width / 2, -dest.y - dest.height / 2, 0);
-
-  // draw box at offset from hitbox
-  // the offset is half the width and height of the hitbox
-  // DrawRectangleLines(x0, y0, w, h, BLUE);
-
-  // draw the hitbox
-  // DrawRectangleLines(hitbox.x, hitbox.y, hitbox.width, hitbox.height, RED);
-
   // draw the dest box
   DrawRectangleLines(dest.x, dest.y, dest.width, dest.height, GREEN);
-
   rlPopMatrix();
-  // DrawRectanglePro(hitbox, (Vector2){0, 0}, rotation_angle, RED);
 }
 
 void Sprite::move(const float x, const float y) {
@@ -246,28 +177,9 @@ void Sprite::update() {
   // update the velocity
   velocity.x += acceleration.x;
   velocity.y += acceleration.y;
-  // update the position
-  // dest.x += velocity.x;
-  // dest.y += velocity.y;
-  // update the rotation_angle
-
-  // hitbox = (Rectangle){origin.x, origin.y, dest.width, dest.height};
-  // hitbox = (Rectangle){dest.x, dest.y, dest.width, dest.height};
-
-  // origin = (Vector2){-dest.width / 2, -dest.height / 2};
-  // origin = (Vector2){dest.width / 2, dest.height / 2};
   origin = (Vector2){0, 0};
-
   if (is_spinning) {
-    // hitbox = (Rectangle){dest.x + dest.width / 2.0f,
-    // hitbox = (Rectangle){dest.x - dest.width / 2.0f,
-    //                     dest.y - dest.height / 2.0f, dest.width,
-    //                     dest.height};
-
-    // origin = (Vector2){dest.width / 2, dest.height / 2};
-
-    rotation_angle += 1.0f;
-    // rotation_angle += velocity.x;
+    rotation_angle += rotation_speed;
   }
 }
 
@@ -307,3 +219,7 @@ void Sprite::set_is_spinning(const bool is_spinning) {
 const bool Sprite::get_is_spinning() const { return is_spinning; }
 
 const Rectangle Sprite::get_hitbox() const { return hitbox; }
+
+void Sprite::set_rotation_speed(const float speed) { rotation_speed = speed; }
+
+const float Sprite::get_rotation_speed() const { return rotation_speed; }

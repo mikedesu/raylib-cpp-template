@@ -12,6 +12,9 @@ Scene::Scene() {
   controlmode = CONTROL_MODE_PLAYER;
   texture_filepath = "";
   debug_panel_on = false;
+  // starting_knife_speed.x = 1.0f;
+  // starting_knife_speed.y = 0.0f;
+  // knife_speed = starting_knife_speed;
 }
 
 void Scene::set_texture_filepath(const char *filepath) {
@@ -222,7 +225,7 @@ entity_id Scene::spawn_knife() {
   // get the width of the knife texture
   const float knife_width = textures["knife"].texture.width;
   if (sprites[player_id]->get_is_flipped()) {
-    x -= knife_width * global_scale;
+    x -= knife_width * global_scale + 1;
   } else {
     x += o_x;
   }
@@ -232,19 +235,17 @@ entity_id Scene::spawn_knife() {
   const bool is_spinning = knife_catches > 0;
   const bool is_flipped = sprites[player_id]->get_is_flipped();
 
-  if (is_flipped && is_spinning) {
-    sprites[id]->set_vx(-2 * knife_speed.x);
+  if (is_flipped) {
     sprites[id]->set_is_flipped(true);
-    sprites[id]->set_is_spinning(true);
-    knife_catches = 0;
-  } else if (is_flipped) {
     sprites[id]->set_vx(-knife_speed.x);
-    sprites[id]->set_is_flipped(true);
-  } else if (is_spinning) {
-    sprites[id]->set_vx(knife_speed.x);
-    sprites[id]->set_is_spinning(true);
   } else {
     sprites[id]->set_vx(knife_speed.x);
+  }
+
+  if (is_spinning) {
+    sprites[id]->set_vx(sprites[id]->get_vx() * (1 + knife_catches));
+    sprites[id]->set_is_spinning(true);
+    sprites[id]->set_rotation_speed(1.0f * knife_catches);
   }
 
   sprites[id]->set_vy(knife_speed.y);
