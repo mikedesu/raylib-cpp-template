@@ -11,6 +11,8 @@ GameplayScene::GameplayScene() {
   set_global_scale(4.0f);
   set_scene_transition(SCENE_TRANSITION_IN);
   set_scene_type(SCENE_TYPE_GAMEPLAY);
+
+  load_music("/home/darkmage/Music/darkmage/lets-fkn-go.mp3");
 }
 
 GameplayScene::~GameplayScene() { mPrint("GameplayScene destructor"); }
@@ -146,6 +148,9 @@ void GameplayScene::update() {
     Camera2D &camera2d = get_camera2d();
     camera2d.target.y = get_sprites()[get_player_id()]->get_y();
     // camera2d.offset.y = GetScreenHeight() / 2.0f;
+    //
+
+    UpdateMusicStream(get_music());
   }
 }
 

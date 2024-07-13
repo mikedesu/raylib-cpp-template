@@ -96,7 +96,6 @@ void Scene::draw() {
 
   // draw stars
   // want: real stars
-
   if (scenetype != SCENE_TYPE_TITLE) {
 
     draw_stars();
@@ -109,6 +108,20 @@ void Scene::draw() {
       s.second->draw_hitbox();
     }
   }
+
+  if (scenetype == SCENE_TYPE_TITLE) {
+
+    const float x =
+        GetScreenWidth() / 2.0f - textures["title"].texture.width / 2.0f;
+
+    const float y0 = GetScreenHeight() / 4.0f;
+    const float y1 = GetScreenHeight() * 3.0f / 4.0f;
+
+    DrawTextEx(global_font, "@evildojo666 presents", (Vector2){x, y0}, 32, 0.5f,
+               WHITE);
+    DrawTextEx(global_font, "by darkmage", (Vector2){x, y1}, 32, 0.5f, WHITE);
+  }
+
   EndMode2D();
 
   // draw debug panel

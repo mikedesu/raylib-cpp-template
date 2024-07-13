@@ -115,7 +115,8 @@ void Game::handle_transition_out() {
   const float a = scenes[current_scene_id]->get_alpha();
   const int w = GetScreenWidth();
   const int h = GetScreenHeight();
-  const float transition_speed = 0.020f;
+  // const float transition_speed = 0.020f;
+  const float transition_speed = 0.040f;
 
   if (a < 1.0f) {
     DrawRectangle(0, 0, w, h, Fade(c, a));
@@ -133,7 +134,7 @@ void Game::handle_transition_in() {
   const float a = scenes[current_scene_id]->get_alpha();
   const int w = GetScreenWidth();
   const int h = GetScreenHeight();
-  const float transition_speed = 0.020f;
+  const float transition_speed = 0.040f;
 
   if (a > 0.0f) {
     DrawRectangle(0, 0, w, h, Fade(c, a));
