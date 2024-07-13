@@ -1,29 +1,33 @@
 CC=g++
 OBJ_FILES=main.o Game.o Sprite.o Scene.o TitleScene.o GameplayScene.o
 
+FLAGS=-Wall
+
+LIBS=-lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+
 all: game
 
 
 game: $(OBJ_FILES)
-	$(CC) $^ -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -o $@
+	$(CC) $^ $(FLAGS) $(LIBS) -o $@
 
 Game.o: Game.cpp
-	$(CC) $^ -c -o $@
+	$(CC) $^ $(FLAGS) -c -o $@
 
 TitleScene.o: TitleScene.cpp
-	$(CC) $^ -c -o $@
+	$(CC) $^ $(FLAGS) -c -o $@
 
 GameplayScene.o: GameplayScene.cpp
-	$(CC) $^ -c -o $@
+	$(CC) $^ $(FLAGS) -c -o $@
 
 Scene.o: Scene.cpp
-	$(CC) $^ -c -o $@
+	$(CC) $^ $(FLAGS) -c -o $@
 
 Sprite.o: Sprite.cpp
-	$(CC) $^ -c -o $@
+	$(CC) $^ $(FLAGS) -c -o $@
 
 main.o: main.cpp
-	$(CC) $^ -c -o $@
+	$(CC) $^ $(FLAGS) -c -o $@
 
 
 clean:

@@ -4,7 +4,7 @@
 // #include <cassert>
 // #include <cstring>
 
-static entity_id next_entity_id = 0;
+// static entity_id next_entity_id = 0;
 
 TitleScene::TitleScene() {
   mPrint("TitleScene constructor");
@@ -41,13 +41,15 @@ bool TitleScene::init() {
     }
 
     const int w = get_textures()["title"].texture.width;
-    const int h = get_textures()["title"].texture.height;
-    const int off_w = 0;
-    const int off_h = h / 2;
+    // const int h = get_textures()["title"].texture.height;
+    //  const int off_w = 0;
+    //  const int off_h = h / 2;
 
     const int x = w / 8 * get_global_scale();
     const int y = GetScreenHeight() / 4;
-    entity_id title_id = spawn_entity("title", x, y, SPRITETYPE_PLAYER, false);
+    // entity_id title_id = spawn_entity("title", x, y, SPRITETYPE_PLAYER,
+    // false);
+    spawn_entity("title", x, y, SPRITETYPE_PLAYER, false);
 
     set_has_been_initialized(true);
   }
