@@ -119,6 +119,9 @@ public:
   void set_knife_catches(const unsigned int catches);
   const unsigned int get_knife_catches() const;
 
+  Music &get_music();
+  void load_music(const char *path);
+
 private:
   unordered_map<string, texture_info> textures;
   unordered_map<entity_id, shared_ptr<Sprite>> sprites;
@@ -154,4 +157,6 @@ private:
   Vector2 knife_speed = {1, 0};
 
   unsigned int knife_catches = 0;
+
+  Music music;
 };

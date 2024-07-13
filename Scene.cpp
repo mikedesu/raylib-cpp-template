@@ -1,9 +1,10 @@
 #include "Scene.h"
 #include "mPrint.h"
-#include "raymath.h"
+// #include "raymath.h"
 #include "rlgl.h"
 #include <cassert>
 #include <cstring>
+#include <raylib.h>
 
 static entity_id next_entity_id = 0;
 
@@ -41,6 +42,16 @@ void Scene::close() {
   UnloadFont(global_font);
   mPrint("Clearing stars...");
   stars.clear();
+  // if (IsMusicPlaying(music)) {
+  // if (IsMusicStreamPlaying(music)) {
+  //  mPrint("Stopping music...");
+  //  StopMusicStream(music);
+  //}
+  // if (IsMusicReady(music)) {
+  //  mPrint("Unloading music...");
+  //  UnloadMusicStream(music);
+  //}
+
   mPrint("Scene closed.");
 }
 
@@ -105,6 +116,9 @@ void Scene::draw() {
     DrawFPS(GetScreenWidth() - 80, 10);
     draw_debug_panel();
   }
+
+  // update music frame
+
   current_frame++;
 }
 
@@ -283,7 +297,7 @@ void Scene::add_star() {
   const int x = GetRandomValue(0, GetScreenWidth());
   const int y = GetRandomValue(-GetScreenHeight() * 100, GetScreenHeight());
   stars[next_entity_id] = (Vector2){(float)x, (float)y};
-  mPrint("Star added at: " + to_string(x) + ", " + to_string(y));
+  // mPrint("Star added at: " + to_string(x) + ", " + to_string(y));
   next_entity_id++;
 }
 
@@ -346,3 +360,18 @@ void Scene::set_knife_catches(const unsigned int catches) {
 }
 
 const unsigned int Scene::get_knife_catches() const { return knife_catches; }
+
+Music &Scene::get_music() { return music; }
+
+void Scene::load_music(const char *path) {
+  music = LoadMusicStream(path);
+
+  if (IsMusicReady(music)) {
+    mPrint("### MUSIC IS READY ###");
+    SetMusicVolume(music, 1.0f);
+    PlayMusicStream(music);
+    // UpdateMusicStream(get_music());
+  } else {
+    mPrint("### MUSIC NOT READY ###");
+  }
+}

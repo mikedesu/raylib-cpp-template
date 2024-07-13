@@ -29,4 +29,5 @@ public:
   void cleanup();
 
 private:
+  // Music music;
 };

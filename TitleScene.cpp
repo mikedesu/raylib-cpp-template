@@ -13,11 +13,14 @@ TitleScene::TitleScene() {
   set_global_scale(32.0f);
   set_scene_transition(SCENE_TRANSITION_IN);
   set_scene_type(SCENE_TYPE_TITLE);
+
+  load_music("/home/darkmage/Music/darkmage/lets-fkn-go.mp3");
+  // music = LoadMusicStream("/home/darkmage/Music/darkmage/lets-fkn-go.mp3");
 }
 
 TitleScene::~TitleScene() { mPrint("TitleScene destructor"); }
 
-void TitleScene::update() {}
+void TitleScene::update() { UpdateMusicStream(get_music()); }
 
 void TitleScene::handle_input() {
   if (IsKeyPressed(KEY_D)) {
@@ -50,6 +53,15 @@ bool TitleScene::init() {
     // entity_id title_id = spawn_entity("title", x, y, SPRITETYPE_PLAYER,
     // false);
     spawn_entity("title", x, y, SPRITETYPE_PLAYER, false);
+
+    // if (IsMusicReady(get_music())) {
+    //   mPrint("### MUSIC IS READY ###");
+    //   SetMusicVolume(get_music(), 1.0f);
+    //   PlayMusicStream(get_music());
+    //  UpdateMusicStream(get_music());
+    //} else {
+    //  mPrint("### MUSIC NOT READY ###");
+    //}
 
     set_has_been_initialized(true);
   }

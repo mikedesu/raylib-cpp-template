@@ -24,6 +24,8 @@ bool Game::init() {
     mPrint("Initializing window...");
     InitWindow(screen_rect.width, -screen_rect.height,
                get_window_title().c_str());
+
+    InitAudioDevice();
     mPrint("Initializing camera...");
     set_camera_default_values();
     SetTargetFPS(60); // Set our game to run at 60 frames-per-second
@@ -206,6 +208,14 @@ void Game::close() {
     mPrint("Unloading render texture...");
     UnloadRenderTexture(target);
   }
+
+  // if (IsAudioStreamPlaying(get_music())) {
+  //   mPrint("Stopping music...");
+  // StopMusicStream(get_music());
+  //}
+
+  // CloseAudioDevice();
+
   if (IsWindowReady()) {
     mPrint("Closing window...");
     CloseWindow();
