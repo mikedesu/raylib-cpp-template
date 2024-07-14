@@ -13,7 +13,6 @@ GameplayScene::GameplayScene() {
   set_scene_type(SCENE_TYPE_GAMEPLAY);
 
   // load_music("/home/darkmage/Music/darkmage/lets-fkn-go.mp3");
-  // load_music("audio/skull-title.wav");
 }
 
 GameplayScene::~GameplayScene() { mPrint("GameplayScene destructor"); }
@@ -117,6 +116,7 @@ void GameplayScene::handle_knife_collisions() {
 
             s.second->mark_for_deletion();
             knife.second->mark_for_deletion();
+            Mix_PlayChannel(-1, sfx_knife_hit, 0);
           }
           break;
         }
@@ -185,6 +185,8 @@ void GameplayScene::handle_input() {
     if (IsKeyPressed(KEY_Z)) {
       // fire a knife
       spawn_knife();
+
+      Mix_PlayChannel(-1, sfx_knife_throw, 0);
     }
 
     if (IsKeyPressed(KEY_SPACE)) {
@@ -254,7 +256,16 @@ bool GameplayScene::init() {
 
     get_camera2d().offset.y = GetScreenHeight() / 2.0f;
 
+    load_music("audio/skull-title-0.mp3");
     Mix_PlayMusic(get_music(), -1);
+
+    sfx_knife_throw = Mix_LoadWAV("audio/knife-throw.mp3");
+    sfx_knife_hit = Mix_LoadWAV("audio/knife-hit.mp3");
+
+    if (sfx_knife_throw == nullptr || sfx_knife_hit == nullptr) {
+      mPrint("Error loading sound effects. Exiting...");
+      return false;
+    }
 
     set_has_been_initialized(true);
   }

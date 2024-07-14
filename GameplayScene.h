@@ -22,4 +22,7 @@ public:
 
 private:
   const float gravity = 0.0032f;
+
+  Mix_Chunk *sfx_knife_throw = nullptr;
+  Mix_Chunk *sfx_knife_hit = nullptr;
 };
