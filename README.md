@@ -23,3 +23,10 @@ make
 ./game
 ```
 
+-----
+
+## known bugs
+
+- audio does not work correctly in `raylib`, so I have integrated `SDL2_mixer` as an audio dependency.
+- as of `14 Jul 2024`, audio works using `SDL2`.
+
