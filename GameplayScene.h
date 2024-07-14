@@ -21,4 +21,5 @@ public:
   void handle_knife_collisions();
 
 private:
+  const float gravity = 0.0032f;
 };

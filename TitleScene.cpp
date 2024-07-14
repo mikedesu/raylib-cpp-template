@@ -14,13 +14,18 @@ TitleScene::TitleScene() {
   set_scene_transition(SCENE_TRANSITION_IN);
   set_scene_type(SCENE_TYPE_TITLE);
 
-  load_music("/home/darkmage/Music/darkmage/lets-fkn-go.mp3");
-  // music = LoadMusicStream("/home/darkmage/Music/darkmage/lets-fkn-go.mp3");
+  // load_music("audio/skull-title.wav");
+  //  load_music("audio/skull-title-0.mp3");
+  //   load_music("/home/darkmage/Music/darkmage/lets-fkn-go.mp3");
+  //    music =
+  //    LoadMusicStream("/home/darkmage/Music/darkmage/lets-fkn-go.mp3");
 }
 
 TitleScene::~TitleScene() { mPrint("TitleScene destructor"); }
 
-void TitleScene::update() { UpdateMusicStream(get_music()); }
+void TitleScene::update() {
+  // UpdateMusicStream(get_music());
+}
 
 void TitleScene::handle_input() {
   if (IsKeyPressed(KEY_D)) {
@@ -62,6 +67,10 @@ bool TitleScene::init() {
     //} else {
     //  mPrint("### MUSIC NOT READY ###");
     //}
+
+    // play_music();
+
+    // Mix_PlayMusic(get_music(), -1);
 
     set_has_been_initialized(true);
   }

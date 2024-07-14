@@ -5,6 +5,8 @@
 #include "entity_id.h"
 #include "raylib.h"
 #include "texture_info.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -119,8 +121,11 @@ public:
   void set_knife_catches(const unsigned int catches);
   const unsigned int get_knife_catches() const;
 
-  Music &get_music();
+  Mix_Music *get_music();
   void load_music(const char *path);
+
+  void set_music_path(const char *path);
+  const string get_music_path() const;
 
 private:
   unordered_map<string, texture_info> textures;
@@ -158,5 +163,8 @@ private:
 
   unsigned int knife_catches = 0;
 
-  Music music;
+  string music_path;
+  Mix_Music *music = NULL;
+
+  // Music music;
 };

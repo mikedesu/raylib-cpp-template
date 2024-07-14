@@ -12,14 +12,16 @@ GameplayScene::GameplayScene() {
   set_scene_transition(SCENE_TRANSITION_IN);
   set_scene_type(SCENE_TYPE_GAMEPLAY);
 
-  load_music("/home/darkmage/Music/darkmage/lets-fkn-go.mp3");
+  // load_music("/home/darkmage/Music/darkmage/lets-fkn-go.mp3");
+  // load_music("audio/skull-title.wav");
 }
 
 GameplayScene::~GameplayScene() { mPrint("GameplayScene destructor"); }
 
 void GameplayScene::update_player_movement() {
   shared_ptr<Sprite> player = get_sprites()[get_player_id()];
-  player->incr_ay(0.0032f);
+  // player->incr_ay(0.0032f);
+  player->incr_ay(gravity);
   player->update();
   player->set_y(player->get_y() + player->get_vy());
   const int height = player->get_height();
@@ -150,7 +152,7 @@ void GameplayScene::update() {
     // camera2d.offset.y = GetScreenHeight() / 2.0f;
     //
 
-    UpdateMusicStream(get_music());
+    // UpdateMusicStream(get_music());
   }
 }
 
@@ -252,6 +254,8 @@ bool GameplayScene::init() {
 
     get_camera2d().offset.y = GetScreenHeight() / 2.0f;
 
+    Mix_PlayMusic(get_music(), -1);
+
     set_has_been_initialized(true);
   }
   return true;
@@ -277,7 +281,7 @@ void GameplayScene::draw_debug_panel() {
 
 void GameplayScene::cleanup() {
   // mPrint("cleanup");
-  for (int i = 0; i < get_entity_ids().size(); i++) {
+  for (int i = 0; i < (int)get_entity_ids().size(); i++) {
     entity_id id = get_entity_ids()[i];
     if (get_sprites()[id]->get_is_marked_for_deletion()) {
       get_sprites().erase(id);

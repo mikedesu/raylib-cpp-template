@@ -2,9 +2,15 @@
 #include "mPrint.h"
 // #include "raymath.h"
 #include "rlgl.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #include <cassert>
 #include <cstring>
 #include <raylib.h>
+#include <string>
+
+using std::string;
+using std::to_string;
 
 static entity_id next_entity_id = 0;
 
@@ -42,6 +48,13 @@ void Scene::close() {
   UnloadFont(global_font);
   mPrint("Clearing stars...");
   stars.clear();
+
+  if (music != NULL) {
+    // stop music
+    Mix_PauseMusic();
+    Mix_FreeMusic(music);
+  }
+
   // if (IsMusicPlaying(music)) {
   // if (IsMusicStreamPlaying(music)) {
   //  mPrint("Stopping music...");
@@ -114,7 +127,7 @@ void Scene::draw() {
     const float x =
         GetScreenWidth() / 2.0f - textures["title"].texture.width / 2.0f;
 
-    const float y0 = GetScreenHeight() / 4.0f;
+    const float y0 = GetScreenHeight() / 4.0f - 32.0f;
     const float y1 = GetScreenHeight() * 3.0f / 4.0f;
 
     DrawTextEx(global_font, "@evildojo666 presents", (Vector2){x, y0}, 32, 0.5f,
@@ -374,17 +387,30 @@ void Scene::set_knife_catches(const unsigned int catches) {
 
 const unsigned int Scene::get_knife_catches() const { return knife_catches; }
 
-Music &Scene::get_music() { return music; }
+Mix_Music *Scene::get_music() { return music; }
 
 void Scene::load_music(const char *path) {
-  music = LoadMusicStream(path);
 
-  if (IsMusicReady(music)) {
-    mPrint("### MUSIC IS READY ###");
-    SetMusicVolume(music, 1.0f);
-    PlayMusicStream(music);
-    // UpdateMusicStream(get_music());
-  } else {
-    mPrint("### MUSIC NOT READY ###");
+  music = Mix_LoadMUS(path);
+
+  if (music == NULL) {
+    string err = Mix_GetError();
+    mPrint("Mix_LoadMUS: " + err);
+    return;
   }
+
+  // music = LoadMusicStream(path);
+  //
+  //  if (IsMusicReady(music)) {
+  //    mPrint("### MUSIC IS READY ###");
+  //    SetMusicVolume(music, 0.8f);
+  //    PlayMusicStream(music);
+  //    // UpdateMusicStream(get_music());
+  //  } else {
+  //    mPrint("### MUSIC NOT READY ###");
+  //  }
 }
+
+void Scene::set_music_path(const char *path) { music_path = path; }
+
+const string Scene::get_music_path() const { return music_path; }

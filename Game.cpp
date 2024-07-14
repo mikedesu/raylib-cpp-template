@@ -3,6 +3,8 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "rlgl.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #include <cassert>
 
 static scene_id next_scene_id = 0;
@@ -25,7 +27,19 @@ bool Game::init() {
     InitWindow(screen_rect.width, -screen_rect.height,
                get_window_title().c_str());
 
-    InitAudioDevice();
+    // init SDL2 for audio
+
+    if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+      mPrint("SDL2 audio could not be initialized. Exiting...");
+      return false;
+    }
+
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+      mPrint("SDL2 audio could not be initialized. Exiting...");
+      return false;
+    }
+
+    // InitAudioDevice();
     mPrint("Initializing camera...");
     set_camera_default_values();
     SetTargetFPS(60); // Set our game to run at 60 frames-per-second
@@ -124,7 +138,15 @@ void Game::handle_transition_out() {
                                         transition_speed);
   } else {
     DrawRectangle(0, 0, w, h, Fade(c, a));
+
+    // stop the music for the scene
+    // if (scenes[current_scene_id]->get_music() != nullptr) {
+    //  Mix_HaltMusic();
+    //}
+    scenes[current_scene_id]->close();
+
     current_scene_id = scene_keys["gameplay"];
+
     // scenes[current_scene_id]->set_scene_transition(SCENE_TRANSITION_NONE);
   }
 }
@@ -188,8 +210,10 @@ void Game::run() {
   } else {
     while (!WindowShouldClose()) {
       handle_input();
-      update();
+
       draw();
+      update();
+
       cleanup();
     }
     mPrint("Window closed.");
@@ -216,6 +240,11 @@ void Game::close() {
   //}
 
   // CloseAudioDevice();
+
+  mPrint("Closing SDL2 audio...");
+  Mix_CloseAudio();
+  mPrint("Quitting SDL2 audio...");
+  SDL_Quit();
 
   if (IsWindowReady()) {
     mPrint("Closing window...");
