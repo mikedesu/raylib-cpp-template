@@ -18,6 +18,12 @@ Sprite::Sprite(const char *filepath, const int anim_frames, const float x,
   is_flipped = false;
   type = t;
   is_spinning = false;
+
+  velocity.x = 0;
+  velocity.y = 0;
+  acceleration.x = 0;
+  acceleration.y = 0;
+
   // is_spinning = true;
 }
 
@@ -38,6 +44,11 @@ Sprite::Sprite(Texture2D &texture, const int anim_frames, const float x,
   type = t;
   is_spinning = false;
   // is_spinning = true;
+
+  velocity.x = 0;
+  velocity.y = 0;
+  acceleration.x = 0;
+  acceleration.y = 0;
 }
 
 void Sprite::mark_for_deletion() { is_marked_for_deletion = true; }

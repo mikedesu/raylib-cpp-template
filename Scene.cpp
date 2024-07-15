@@ -79,12 +79,15 @@ void Scene::draw_stars() {
     DrawRectangle(s.second.x, s.second.y, 4, 4, WHITE);
   }
 }
+
 void Scene::draw_ground() {
   // want a real ground sprite texture
   const int w = GetScreenWidth();
   const int h = GetScreenHeight();
   Color c = BROWN;
-  DrawRectangle(0, GetScreenHeight() - 10, w, h, c);
+  const int offset_h = 20;
+  DrawRectangle(0, GetScreenHeight() - offset_h, w, h, c);
+  // DrawRectangle(0, GetScreenHeight() - 10, w, h, c);
 }
 
 void Scene::draw() {
@@ -227,6 +230,18 @@ void Scene::load_fonts() {
   global_font = LoadFont(font_path);
 }
 
+entity_id Scene::spawn_redbrick(const float x, const float y) {
+  mPrint("Spawning redbrick...");
+  entity_id id = spawn_entity("redbrick", x, y, SPRITETYPE_RED_BRICK, false);
+  sprites[id]->set_vx(0.0f);
+  sprites[id]->set_vy(0.0f);
+  sprites[id]->set_ax(0.0f);
+  sprites[id]->set_ay(0.0f);
+  sprites[id]->set_hp(1);
+  sprites[id]->set_maxhp(1);
+  return id;
+}
+
 entity_id Scene::spawn_player(float x, float y) {
   mPrint("Attempting to spawn player...");
   if (player_id != -1) {
@@ -254,6 +269,18 @@ entity_id Scene::spawn_bat(const float x, const float y) {
   sprites[id]->set_ay(0.0f);
   sprites[id]->set_hp(1);
   sprites[id]->set_maxhp(1);
+  return id;
+}
+
+entity_id Scene::spawn_pipebase(const float x, const float y) {
+  mPrint("Spawning pipebase...");
+  entity_id id = spawn_entity("pipebase", x, y, SPRITETYPE_PIPEBASE, false);
+  sprites[id]->set_vx(1.0f);
+  sprites[id]->set_vy(0.0f);
+  sprites[id]->set_ax(0.0f);
+  sprites[id]->set_ay(0.0f);
+  sprites[id]->set_hp(10);
+  sprites[id]->set_maxhp(10);
   return id;
 }
 

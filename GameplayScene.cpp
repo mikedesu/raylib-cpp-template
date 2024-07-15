@@ -21,15 +21,20 @@ void GameplayScene::update_player_movement() {
   shared_ptr<Sprite> player = get_sprites()[get_player_id()];
   // player->incr_ay(0.0032f);
   player->incr_ay(gravity);
-  player->update();
+  // player->incr_ay(gravity);
   player->set_y(player->get_y() + player->get_vy());
+  player->update();
+  // player->set_y(player->get_y() + player->get_vy());
+
   const int height = player->get_height();
   const int width = player->get_width();
   const int bottom_of_sprite = player->get_y() + height;
   // lock the player to a relative "ground" location
-  if (bottom_of_sprite >= GetScreenHeight()) {
-    player->set_y(GetScreenHeight() - height);
+  const int bottom_of_screen = GetScreenHeight();
+  if (bottom_of_sprite >= bottom_of_screen) {
+    player->set_y(bottom_of_screen - height);
   }
+
   // prevent player from moving off-screen
   if (player->get_x() < 0) {
     player->set_x(0);
@@ -43,6 +48,10 @@ void GameplayScene::update_enemy_movement() {
   for (auto &s : get_sprites()) {
     switch (s.second->get_type()) {
     case SPRITETYPE_ENEMY:
+    case SPRITETYPE_PIPEBASE:
+      s.second->update();
+      s.second->set_x(s.second->get_x() + s.second->get_vx());
+      break;
       s.second->update();
       s.second->set_x(s.second->get_x() + s.second->get_vx());
       break;
@@ -86,17 +95,20 @@ void GameplayScene::handle_player_collision() {
       // if (CheckCollisionRecs(player->get_dest(), s.second->get_dest())) {
       // if (CheckCollisionRecs(player->get_hitbox(), s.second->get_hitbox())) {
       if (CheckCollisionRecs(player->get_dest(), s.second->get_dest())) {
-        s.second->mark_for_deletion();
 
         if (t == SPRITETYPE_KNIFE) {
+          s.second->mark_for_deletion();
           set_knife_catches(get_knife_catches() + 1);
         } else if (t == SPRITETYPE_ENEMY) {
+          s.second->mark_for_deletion();
           player->set_hp(player->get_hp() - 1);
           enemies_killed++;
           // if (player->get_hp() <= 0) {
           //   set_scene_transition(SCENE_TRANSITION_OUT);
           //   set_next_scene_id(SCENE_ID_GAMEOVER);
           // }
+        } else if (t == SPRITETYPE_PIPEBASE) {
+          // player cannot move thru the pipe
         }
       }
       break;
@@ -124,7 +136,7 @@ void GameplayScene::handle_knife_collisions() {
             if (s.second->get_hp() <= 0) {
               s.second->mark_for_deletion();
               knife.second->mark_for_deletion();
-              Mix_PlayChannel(-1, sfx_knife_hit, 0);
+              // Mix_PlayChannel(-1, sfx_knife_hit, 0);
               enemies_killed++;
             }
           }
@@ -192,11 +204,19 @@ void GameplayScene::handle_input() {
       spawn_bat(bat_x, bat_y);
     }
 
+    if (IsKeyPressed(KEY_P)) {
+      const int pipebase_width = get_textures()["pipebase"].texture.width;
+      const int pipebase_height = get_textures()["pipebase"].texture.height;
+      const float pipebase_x = -pipebase_width;
+      const float pipebase_y = GetScreenHeight() - pipebase_height * 4;
+      spawn_pipebase(pipebase_x, pipebase_y);
+    }
+
     if (IsKeyPressed(KEY_Z)) {
       // fire a knife
       spawn_knife();
 
-      Mix_PlayChannel(-1, sfx_knife_throw, 0);
+      // Mix_PlayChannel(-1, sfx_knife_throw, 0);
     }
 
     if (IsKeyPressed(KEY_SPACE)) {
@@ -212,10 +232,12 @@ void GameplayScene::handle_input() {
     }
 
     if (IsKeyDown(KEY_LEFT)) {
+
       player->set_x(player->get_x() - new_move_speed);
       if (!player->get_is_flipped()) {
         player->flip();
       }
+
     } else if (IsKeyDown(KEY_RIGHT)) {
 
       player->set_x(player->get_x() + new_move_speed);
@@ -224,12 +246,12 @@ void GameplayScene::handle_input() {
       }
     }
 
-    if (IsKeyPressed(KEY_P)) {
+    if (IsKeyPressed(KEY_ESCAPE)) {
       pause();
     }
 
   } else {
-    if (IsKeyPressed(KEY_P)) {
+    if (IsKeyPressed(KEY_ESCAPE)) {
       unpause();
     }
   }
@@ -254,7 +276,7 @@ bool GameplayScene::init() {
     const float y = (float)GetScreenHeight() / 2 - (float)sprite_height;
     spawn_player(x, y);
 
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 10000; i++) {
       add_star();
     }
 
@@ -263,6 +285,13 @@ bool GameplayScene::init() {
     const float bat_x = -bat_width;
     const float bat_y = (float)GetScreenHeight() / 2 - (float)bat_height + 300;
     spawn_bat(bat_x, bat_y);
+
+    // spawn a red brick
+    const int redbrick_width = get_textures()["redbrick"].texture.width;
+    const int redbrick_height = get_textures()["redbrick"].texture.height;
+    const float redbrick_x = GetScreenWidth() / 2.0 - redbrick_width;
+    const float redbrick_y = 0;
+    spawn_redbrick(redbrick_x, redbrick_y);
 
     get_camera2d().offset.y = GetScreenHeight() / 2.0f;
 
@@ -288,6 +317,12 @@ void GameplayScene::draw_debug_panel() {
       "Control mode: " + to_string(get_control_mode()) + "\n" +
       "Player Position: " + to_string(get_sprites()[get_player_id()]->get_x()) +
       ", " + to_string(get_sprites()[get_player_id()]->get_y()) + "\n" +
+      "Player Velocity: " +
+      to_string(get_sprites()[get_player_id()]->get_vx()) + ", " +
+      to_string(get_sprites()[get_player_id()]->get_vy()) + "\n" +
+      "Player Acceleration: " +
+      to_string(get_sprites()[get_player_id()]->get_ax()) + ", " +
+      to_string(get_sprites()[get_player_id()]->get_ay()) + "\n" +
       "Player HP: " + to_string(get_sprites()[get_player_id()]->get_hp()) +
       "/" + to_string(get_sprites()[get_player_id()]->get_maxhp()) + "\n" +
       "Camera target: " + to_string(get_camera2d().target.x) + ", " +
@@ -330,4 +365,18 @@ void GameplayScene::cleanup() {
       i--;
     }
   }
+}
+
+bool GameplayScene::ccw(float x1, float y1, float x2, float y2, float x3,
+                        float y3) {
+  float a = x1 * (y2 - y3) - y1 * (x2 - x3) + (x2 * y3 - x3 * y2);
+  return a < 0;
+}
+
+bool GameplayScene::line_did_cross_line(Vector4 &line1, Vector4 &line2) {
+
+  return ccw(line1.x, line1.y, line2.x, line2.y, line2.z, line2.w) !=
+             ccw(line1.z, line1.w, line2.x, line2.y, line2.z, line2.w) &&
+         ccw(line1.x, line1.y, line1.z, line1.w, line2.x, line2.y) !=
+             ccw(line1.x, line1.y, line1.z, line1.w, line2.z, line2.w);
 }

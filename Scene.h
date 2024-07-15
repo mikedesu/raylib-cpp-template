@@ -69,9 +69,13 @@ public:
 
   entity_id spawn_entity(const char *texture_key, float x, float y,
                          sprite_type type, bool is_anim);
+
   entity_id spawn_player(float x, float y);
   entity_id spawn_bat(const float x, const float y);
   entity_id spawn_knife();
+  entity_id spawn_pipebase(const float x, const float y);
+  entity_id spawn_redbrick(const float x, const float y);
+
   void set_texture_filepath(const char *filepath);
 
   void add_star();
