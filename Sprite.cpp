@@ -188,7 +188,12 @@ void Sprite::update() {
   // update the velocity
   velocity.x += acceleration.x;
   velocity.y += acceleration.y;
-  origin = (Vector2){0, 0};
+
+  // update the position
+  dest.x += velocity.x;
+  dest.y += velocity.y;
+
+  // origin = (Vector2){0, 0};
   if (is_spinning) {
     rotation_angle += rotation_speed;
   }
