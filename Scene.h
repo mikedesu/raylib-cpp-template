@@ -127,6 +127,8 @@ public:
   void set_music_path(const char *path);
   const string get_music_path() const;
 
+  virtual void draw_hud();
+
 private:
   unordered_map<string, texture_info> textures;
   unordered_map<entity_id, shared_ptr<Sprite>> sprites;
@@ -165,6 +167,8 @@ private:
 
   string music_path;
   Mix_Music *music = NULL;
+
+  bool hud_on = true;
 
   // Music music;
 };

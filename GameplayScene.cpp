@@ -90,7 +90,13 @@ void GameplayScene::handle_player_collision() {
 
         if (t == SPRITETYPE_KNIFE) {
           set_knife_catches(get_knife_catches() + 1);
-        } else {
+        } else if (t == SPRITETYPE_ENEMY) {
+          player->set_hp(player->get_hp() - 1);
+          enemies_killed++;
+          // if (player->get_hp() <= 0) {
+          //   set_scene_transition(SCENE_TRANSITION_OUT);
+          //   set_next_scene_id(SCENE_ID_GAMEOVER);
+          // }
         }
       }
       break;
@@ -114,9 +120,13 @@ void GameplayScene::handle_knife_collisions() {
           if (CheckCollisionRecs(knife.second->get_dest(),
                                  s.second->get_dest())) {
 
-            s.second->mark_for_deletion();
-            knife.second->mark_for_deletion();
-            Mix_PlayChannel(-1, sfx_knife_hit, 0);
+            s.second->set_hp(s.second->get_hp() - 1);
+            if (s.second->get_hp() <= 0) {
+              s.second->mark_for_deletion();
+              knife.second->mark_for_deletion();
+              Mix_PlayChannel(-1, sfx_knife_hit, 0);
+              enemies_killed++;
+            }
           }
           break;
         }
@@ -288,6 +298,24 @@ void GameplayScene::draw_debug_panel() {
   DrawRectangle(0, 0, 500, 200, Fade(BLACK, 0.5f));
   DrawTextEx(get_global_font(), camera_info_str.c_str(), (Vector2){10, 10}, 16,
              0.5f, WHITE);
+}
+
+void GameplayScene::draw_hud() {
+  const int player_hp = get_sprites()[get_player_id()]->get_hp();
+  const int player_maxhp = get_sprites()[get_player_id()]->get_maxhp();
+  const string hp_str =
+      "HP: " + to_string(player_hp) + "/" + to_string(player_maxhp);
+
+  const int knife_catches = get_knife_catches();
+  const string knife_catches_str = "Knife Catches: " + to_string(knife_catches);
+  const string enemies_killed_str = "Killed: " + to_string(enemies_killed);
+
+  const string full_str = hp_str + " " + knife_catches_str + " " +
+                          enemies_killed_str + " " + "\nPress Z to throw knife";
+
+  // DrawRectangle(0, 0, 500, 20, Fade(BLACK, 0.5f));
+  DrawTextEx(get_global_font(), full_str.c_str(), (Vector2){10, 10}, 20, 0.5f,
+             WHITE);
 }
 
 void GameplayScene::cleanup() {

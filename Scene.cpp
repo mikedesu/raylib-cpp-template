@@ -141,6 +141,8 @@ void Scene::draw() {
   if (debug_panel_on) {
     DrawFPS(GetScreenWidth() - 80, 10);
     draw_debug_panel();
+  } else if (hud_on) {
+    draw_hud();
   }
 
   // update music frame
@@ -212,6 +214,7 @@ void Scene::set_camera_default_values() {
 }
 
 void Scene::draw_debug_panel() {}
+void Scene::draw_hud() {}
 
 void Scene::set_global_scale(float s) {
   assert(s > 0);

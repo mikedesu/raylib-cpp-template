@@ -10,7 +10,10 @@ public:
   void update();
   bool init();
   void handle_input();
+
   void draw_debug_panel();
+  void draw_hud();
+
   void cleanup();
 
   void update_player_movement();
@@ -25,4 +28,6 @@ private:
 
   Mix_Chunk *sfx_knife_throw = nullptr;
   Mix_Chunk *sfx_knife_hit = nullptr;
+
+  unsigned int enemies_killed = 0;
 };
