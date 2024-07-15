@@ -24,8 +24,8 @@ public:
   void handle_knife_collisions();
 
 private:
-  // const float gravity = 0.0032f;
-  const float gravity = 0.0064f;
+  const float gravity = 0.0032f;
+  // const float gravity = 0.0064f;
 
   Mix_Chunk *sfx_knife_throw = nullptr;
   Mix_Chunk *sfx_knife_hit = nullptr;

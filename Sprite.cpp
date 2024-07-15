@@ -185,17 +185,19 @@ void Sprite::set_is_flipped(const bool is_flipped) {
 }
 
 void Sprite::update() {
-  // update the velocity
-  velocity.x += acceleration.x;
-  velocity.y += acceleration.y;
+  if (do_update) {
+    // update the velocity
+    velocity.x += acceleration.x;
+    velocity.y += acceleration.y;
 
-  // update the position
-  dest.x += velocity.x;
-  dest.y += velocity.y;
+    // update the position
+    dest.x += velocity.x;
+    dest.y += velocity.y;
 
-  // origin = (Vector2){0, 0};
-  if (is_spinning) {
-    rotation_angle += rotation_speed;
+    // origin = (Vector2){0, 0};
+    if (is_spinning) {
+      rotation_angle += rotation_speed;
+    }
   }
 }
 
@@ -239,3 +241,9 @@ const Rectangle Sprite::get_hitbox() const { return hitbox; }
 void Sprite::set_rotation_speed(const float speed) { rotation_speed = speed; }
 
 const float Sprite::get_rotation_speed() const { return rotation_speed; }
+
+void Sprite::set_do_update(const bool do_update) {
+  this->do_update = do_update;
+}
+
+const bool Sprite::get_do_update() const { return do_update; }
