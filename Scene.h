@@ -46,7 +46,8 @@ public:
   // virtual void handle_cam_input();
   // virtual void handle_player_input();
 
-  void draw();
+  // void draw();
+  virtual void draw();
 
   bool load_texture(const char *asset_name, const char *asset_path,
                     const int num_frames, const int is_player);
@@ -86,7 +87,10 @@ public:
   void set_has_been_initialized(bool b);
 
   unordered_map<entity_id, shared_ptr<Sprite>> &get_sprites();
+
   unordered_map<string, texture_info> &get_textures();
+  texture_info &get_texture_info(const string key);
+
   Camera2D &get_camera2d();
   unsigned int get_current_frame();
   control_mode get_control_mode();
@@ -132,6 +136,11 @@ public:
   const string get_music_path() const;
 
   virtual void draw_hud();
+
+  void increment_frame();
+
+  void set_hud_on(bool b);
+  bool get_hud_on();
 
 private:
   unordered_map<string, texture_info> textures;

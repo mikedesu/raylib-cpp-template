@@ -3,7 +3,7 @@ OBJ_FILES=main.o Game.o Sprite.o Scene.o TitleScene.o GameplayScene.o
 
 FLAGS=-Wall
 
-LIBS=-lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -lSDL2 -lSDL2_mixer
+LIBS=-lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -lSDL2 -lSDL2_mixer -lbox2d
 
 all: game
 

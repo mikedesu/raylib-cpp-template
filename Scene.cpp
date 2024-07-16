@@ -444,3 +444,12 @@ void Scene::load_music(const char *path) {
 void Scene::set_music_path(const char *path) { music_path = path; }
 
 const string Scene::get_music_path() const { return music_path; }
+
+void Scene::increment_frame() { current_frame++; }
+
+texture_info &Scene::get_texture_info(const string key) {
+  return textures[key];
+}
+
+void Scene::set_hud_on(bool b) { hud_on = b; }
+bool Scene::get_hud_on() { return hud_on; }

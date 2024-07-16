@@ -111,3 +111,38 @@ void TitleScene::cleanup() {
   //  get_textures().clear();
   //  set_has_been_initialized(false);
 }
+
+void TitleScene::draw() {
+  BeginMode2D(get_camera2d());
+  ClearBackground(BLACK);
+  // no background yet, but lets mock one up with shapes
+  // draw a large rectangle to represent a scene
+  // but lets make the dimension ratio 720x1280
+  for (auto &s : get_sprites()) {
+    s.second->draw();
+    if (get_debug_panel_on()) {
+      s.second->draw_hitbox();
+    }
+  }
+
+  const float x =
+      GetScreenWidth() / 2.0f - get_textures()["title"].texture.width / 2.0f;
+
+  const float y0 = GetScreenHeight() / 4.0f - 32.0f;
+  const float y1 = GetScreenHeight() * 3.0f / 4.0f;
+
+  DrawTextEx(get_global_font(), "@evildojo666 presents", (Vector2){x, y0}, 32,
+             0.5f, WHITE);
+  DrawTextEx(get_global_font(), "by darkmage", (Vector2){x, y1}, 32, 0.5f,
+             WHITE);
+
+  EndMode2D();
+
+  // draw debug panel
+  if (get_debug_panel_on()) {
+    DrawFPS(GetScreenWidth() - 80, 10);
+    draw_debug_panel();
+  }
+
+  increment_frame();
+}
