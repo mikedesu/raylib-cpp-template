@@ -178,6 +178,10 @@ void Game::draw() {
   EndTextureMode();
 
   DrawTextureRec(target.texture, screen_rect, (Vector2){0, 0}, WHITE);
+  // DrawTextureRec(target.texture,
+  //(Rectangle){0, 0, (float)target.texture.width,
+  //             (float)-target.texture.height},
+  //(Vector2){0, 0}, WHITE);
 
   // if (scenes[current_scene_id]->get_scene_transition() ==
   //     SCENE_TRANSITION_OUT) {
@@ -210,9 +214,8 @@ void Game::run() {
   } else {
     while (!WindowShouldClose()) {
       handle_input();
-
-      draw();
       update();
+      draw();
 
       cleanup();
     }

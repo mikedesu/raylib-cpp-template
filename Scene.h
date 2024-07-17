@@ -69,7 +69,8 @@ public:
   void close();
 
   entity_id spawn_entity(const char *texture_key, float x, float y,
-                         sprite_type type, bool is_anim);
+                         sprite_type type, bool is_anim, b2World *world);
+  // sprite_type type, bool is_anim);
 
   entity_id spawn_player(float x, float y);
   entity_id spawn_bat(const float x, const float y);
@@ -113,7 +114,6 @@ public:
   void set_scene_type(scene_type st);
   scene_type get_scene_type();
 
-  void draw_ground();
   void draw_stars();
 
   void pause();

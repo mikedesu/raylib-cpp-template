@@ -21,9 +21,9 @@ class Sprite {
 
 public:
   Sprite(const char *filepath, const int anim_frames, const float x,
-         const float y, sprite_type t);
+         const float y, sprite_type t, b2World *world);
   Sprite(Texture2D &texture, const int anim_frames, const float x,
-         const float y, sprite_type t);
+         const float y, sprite_type t, b2World *world, const float scale);
   ~Sprite();
 
   void draw();
@@ -103,20 +103,24 @@ public:
   void set_do_update(const bool do_update);
   const bool get_do_update() const;
 
-private:
-  Texture2D texture;
+  b2Body *get_body();
 
+private:
+  // raylib stuff
+  Texture2D texture;
   Rectangle src;
   Rectangle flipped_src;
   Rectangle dest;
   Rectangle hitbox = {0, 0, 0, 0};
-
   Vector2 origin;
+
+  // box2d stuff
+  b2Body *body = nullptr;
+
   int anim_frames;
   int current_frame;
   int frame_counter;
   float scale;
-
   float rotation_angle = 0.0f;
 
   Vector2 velocity;

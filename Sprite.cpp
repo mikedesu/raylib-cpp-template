@@ -3,14 +3,30 @@
 #include "rlgl.h"
 
 Sprite::Sprite(const char *filepath, const int anim_frames, const float x,
-               const float y, sprite_type t) {
+               const float y, sprite_type t, b2World *world) {
   texture = LoadTexture(filepath);
   this->anim_frames = anim_frames;
   set_scale(1.0f);
   init_rects();
+  dest.x = x;
+  dest.y = y;
+
+  // init the b2body
+  if (world) {
+    b2BodyDef bodyDef;
+    bodyDef.type = b2_dynamicBody;
+    bodyDef.position.Set(x, y);
+    body = world->CreateBody(&bodyDef);
+    b2PolygonShape dynamicBox;
+    dynamicBox.SetAsBox(1.0f, 1.0f);
+    b2FixtureDef fixtureDef;
+    fixtureDef.shape = &dynamicBox;
+    fixtureDef.density = 1.0f;
+    fixtureDef.friction = 0.3f;
+    body->CreateFixture(&fixtureDef);
+  }
+
   origin = (Vector2){0, 0};
-  this->dest.x = x;
-  this->dest.y = y;
   current_frame = 0;
   velocity = (Vector2){0, 0};
   is_marked_for_deletion = false;
@@ -28,14 +44,34 @@ Sprite::Sprite(const char *filepath, const int anim_frames, const float x,
 }
 
 Sprite::Sprite(Texture2D &texture, const int anim_frames, const float x,
-               const float y, sprite_type t) {
+               const float y, sprite_type t, b2World *world,
+               const float scale) {
   this->texture = texture;
   this->anim_frames = anim_frames;
-  set_scale(1.0f);
+  set_scale(scale);
   init_rects();
   origin = (Vector2){0, 0};
-  this->dest.x = x;
-  this->dest.y = y;
+  dest.x = x;
+  dest.y = y;
+
+  // init the b2body
+  if (world) {
+    b2BodyDef bodyDef;
+    bodyDef.type = b2_dynamicBody;
+    bodyDef.position.Set(x, y);
+    body = world->CreateBody(&bodyDef);
+
+    b2PolygonShape dynamicBox;
+    // dynamicBox.SetAsBox(1.0f, 1.0f);
+    dynamicBox.SetAsBox(dest.width, dest.height);
+
+    b2FixtureDef fixtureDef;
+    fixtureDef.shape = &dynamicBox;
+    fixtureDef.density = 1.0f;
+    fixtureDef.friction = 0.3f;
+    body->CreateFixture(&fixtureDef);
+  }
+
   current_frame = 0;
   velocity = (Vector2){0, 0};
   is_marked_for_deletion = false;
@@ -111,20 +147,38 @@ Sprite::~Sprite() {}
 void Sprite::draw() {
   const Color color = WHITE;
 
-  rlPushMatrix();
-  rlTranslatef(dest.x + dest.width / 2, dest.y + dest.height / 2, 0);
-  rlRotatef(rotation_angle, 0, 0, 1);
-  // rlTranslatef(0, 0, 0);
-  rlTranslatef(-dest.x - dest.width / 2, -dest.y - dest.height / 2, 0);
+  //  rlPushMatrix();
+  //  rlTranslatef(dest.x + dest.width / 2, dest.y + dest.height / 2, 0);
+  //  rlRotatef(rotation_angle, 0, 0, 1);
+  //  rlTranslatef(-dest.x - dest.width / 2, -dest.y - dest.height / 2, 0);
 
+  // we need an upside-down dest to handle flipping the sprites to correct
+  // orientation
+  // flippedv_dest.y += dest.height;
+
+  // if (body != nullptr) {
   if (is_flipped) {
     DrawTexturePro(texture, flipped_src, dest, origin, 0.0f, color);
+    // Rectangle flippedv_src = flipped_src;
+    // flippedv_src.height *= -1.0f;
+    // DrawTexturePro(texture, flippedv_src, dest, origin, 0.0f, color);
 
   } else {
     DrawTexturePro(texture, src, dest, origin, 0.0f, color);
+    // Rectangle flippedv_src = src;
+    // flippedv_src.height *= -1.0f;
+    // DrawTexturePro(texture, flippedv_src, dest, origin, 0.0f, color);
   }
+  // }
 
-  rlPopMatrix();
+  // else {
+  // if (body != nullptr) {
+  //  b2Vec2 v1 = body->GetPosition();
+  //}
+
+  // }
+
+  //  rlPopMatrix();
 
   const int frame_freq = 10;
   if (is_animating && frame_counter % frame_freq == 0) {
@@ -134,13 +188,20 @@ void Sprite::draw() {
 }
 
 void Sprite::draw_hitbox() {
-  rlPushMatrix();
-  rlTranslatef(dest.x + dest.width / 2, dest.y + dest.height / 2, 0);
-  rlRotatef(rotation_angle, 0, 0, 1);
-  rlTranslatef(-dest.x - dest.width / 2, -dest.y - dest.height / 2, 0);
-  // draw the dest box
+  // rlPushMatrix();
+  // rlTranslatef(dest.x + dest.width / 2, dest.y + dest.height / 2, 0);
+  // rlRotatef(rotation_angle, 0, 0, 1);
+  // rlTranslatef(-dest.x - dest.width / 2, -dest.y - dest.height / 2, 0);
+  //  draw the dest box
   DrawRectangleLines(dest.x, dest.y, dest.width, dest.height, GREEN);
-  rlPopMatrix();
+
+  // b2Body *body = get_body();
+  // if (body != nullptr) {
+  //  b2Vec2 v1 = body->GetPosition();
+  //  DrawRectangleLines(v1.x, v1.y, get_width(), get_height(), RED);
+  //}
+
+  // rlPopMatrix();
 }
 
 void Sprite::move(const float x, const float y) {
@@ -186,18 +247,26 @@ void Sprite::set_is_flipped(const bool is_flipped) {
 
 void Sprite::update() {
   if (do_update) {
+
+    if (body != nullptr) {
+      b2Vec2 position = body->GetPosition();
+      dest.x = position.x;
+      dest.y = position.y;
+    } else {
+      dest.x += velocity.x;
+      dest.y += velocity.y;
+    }
+
     // update the velocity
-    velocity.x += acceleration.x;
-    velocity.y += acceleration.y;
+    // velocity.x += acceleration.x;
+    // velocity.y += acceleration.y;
 
     // update the position
-    dest.x += velocity.x;
-    dest.y += velocity.y;
 
     // origin = (Vector2){0, 0};
-    if (is_spinning) {
-      rotation_angle += rotation_speed;
-    }
+    // if (is_spinning) {
+    //  rotation_angle += rotation_speed;
+    //}
   }
 }
 
@@ -247,3 +316,5 @@ void Sprite::set_do_update(const bool do_update) {
 }
 
 const bool Sprite::get_do_update() const { return do_update; }
+
+b2Body *Sprite::get_body() { return body; }
