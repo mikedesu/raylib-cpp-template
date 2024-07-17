@@ -28,6 +28,8 @@ public:
 
   entity_id spawn_player(float x, float y);
   void draw_ground();
+  void create_solid_ground(const float x, const float y, const float w,
+                           const float h);
 
 private:
   // const float gravity = 0.0032f;
@@ -42,6 +44,8 @@ private:
 
   // b2Body *groundBody = world.CreateBody(&groundBodyDef);
   b2Body *groundBody = nullptr;
+
+  vector<b2Body *> bodies;
 
   // const float gravity = 0.0064f;
 

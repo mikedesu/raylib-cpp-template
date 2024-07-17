@@ -14,22 +14,42 @@ GameplayScene::GameplayScene() {
 
   // do box2d stuff
   // init world with gravity
-  gravity = b2Vec2(0.0f, 100.0f);
+  // const float grav_y = 0.0f;
+  const float grav_y = 10.0f;
+  const float grav_x = 0.0f;
+  gravity = b2Vec2(grav_x, grav_y);
   // gravity = b2Vec2(0.0f, -10.0f);
   world = new b2World(gravity);
 
   // define ground and place it
-  b2BodyDef groundBodyDef;
-
+  // b2BodyDef groundBodyDef;
   // groundBodyDef.position.Set(0.0f, 0.0f);
-  groundBodyDef.position.Set(0.0f, GetScreenHeight() - 200.0f);
+  // groundBodyDef.position.Set(0.0f, GetScreenHeight() - 200.0f);
+  // groundBody = world->CreateBody(&groundBodyDef);
+  // b2PolygonShape groundBox;
+  // groundBox.SetAsBox(GetScreenWidth(), 10.0f);
+  // groundBody->CreateFixture(&groundBox, 0.0f);
 
-  groundBody = world->CreateBody(&groundBodyDef);
-  b2PolygonShape groundBox;
-  groundBox.SetAsBox(GetScreenWidth(), 10.0f);
-  groundBody->CreateFixture(&groundBox, 0.0f);
+  create_solid_ground(GetScreenWidth() / 2.0f, GetScreenHeight() - 100.0f,
+                      100.0f, 100.0f);
+
+  // create_solid_ground(GetScreenWidth() / 2.0f, GetScreenHeight(),
+  //                     GetScreenWidth() / 2.0f, 10.0f);
 
   // load_music("/home/darkmage/Music/darkmage/lets-fkn-go.mp3");
+}
+
+void GameplayScene::create_solid_ground(const float x, const float y,
+                                        const float w, const float h) {
+  b2BodyDef groundBodyDef;
+  // groundBodyDef.position.Set(0.0f, 0.0f);
+  groundBodyDef.position.Set(x, y);
+  b2Body *groundBody = world->CreateBody(&groundBodyDef);
+  b2PolygonShape groundBox;
+  groundBox.SetAsBox(w, h);
+  groundBody->CreateFixture(&groundBox, 0.0f);
+
+  bodies.push_back(groundBody);
 }
 
 GameplayScene::~GameplayScene() { mPrint("GameplayScene destructor"); }
@@ -226,7 +246,9 @@ void GameplayScene::handle_input() {
   const float move_speed = 2.0f;
 
   // just fucking with the values rn
-  const float jump_speed = -200.0f;
+  const float jump_speed = -20.0f;
+  // const float jump_speed = -3200.0f;
+  //  const float jump_speed = -3200.0f;
 
   if (IsKeyPressed(KEY_D)) {
     flip_debug_panel();
@@ -292,9 +314,9 @@ bool GameplayScene::init() {
     const int sprite_height = get_textures()["skull"].texture.height;
 
     // const float x = (float)GetScreenWidth() / 2 - (float)sprite_width;
-    // const float y = (float)GetScreenHeight() / 2 - (float)sprite_height;
     const float x = (float)GetScreenWidth() / 2 - (float)sprite_width;
-    const float y = (float)-GetScreenHeight();
+    const float y = (float)GetScreenHeight() / 2 - (float)sprite_height;
+    // const float y = (float)-GetScreenHeight();
 
     spawn_player(x, y);
 
@@ -469,10 +491,19 @@ entity_id GameplayScene::spawn_player(float x, float y) {
 
 void GameplayScene::draw_ground() {
   // draw red rectangle lines around the groundBody
-  b2Vec2 v1 = groundBody->GetPosition();
+  // b2Vec2 v1 = groundBody->GetPosition();
   // get width and height of groundBody
-  const int width = GetScreenWidth();
-  const int height = 10;
+  // const int width = GetScreenWidth();
+  // const int height = 10;
 
-  DrawRectangleLines(v1.x, v1.y - height, width, height, RED);
+  // DrawRectangleLines(v1.x, v1.y - height, width, height, RED);
+  const int width = 100;
+  const int height = 100;
+
+  for (auto groundBody : bodies) {
+    b2Vec2 v1 = groundBody->GetPosition();
+    // get width and height of groundBody
+
+    DrawRectangleLines(v1.x, v1.y - height, width, height, RED);
+  }
 }
