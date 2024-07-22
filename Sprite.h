@@ -1,7 +1,6 @@
 #pragma once
 
 #include "raylib.h"
-#include <box2d/box2d.h>
 
 typedef enum {
   SPRITETYPE_NONE,

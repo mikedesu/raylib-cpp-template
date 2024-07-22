@@ -2,14 +2,11 @@
 
 #include "Scene.h"
 
-#include <box2d/box2d.h>
-
 class GameplayScene : public Scene {
 public:
   GameplayScene();
   ~GameplayScene();
 
-  void draw();
   void update();
   bool init();
   void handle_input();
@@ -27,15 +24,7 @@ public:
   void handle_knife_collisions();
 
 private:
-  // const float gravity = 0.0032f;
-
-  // Define the gravity vector.
-  b2Vec2 gravity;
-  b2World *world = nullptr;
-
-  // b2Body *groundBody = world.CreateBody(&groundBodyDef);
-  b2Body *groundBody = nullptr;
-
+  const float gravity = 0.0032f;
   // const float gravity = 0.0064f;
 
   Mix_Chunk *sfx_knife_throw = nullptr;
