@@ -42,8 +42,6 @@ void GameplayScene::update_player_movement() {
   if (player->get_x() > GetScreenWidth() - width) {
     player->set_x(GetScreenWidth() - width);
   }
-
-  player->set_do_update(true);
 }
 
 void GameplayScene::update_enemy_movement() {
@@ -94,7 +92,6 @@ void GameplayScene::handle_player_collision() {
     switch (t) {
     case SPRITETYPE_ENEMY:
     case SPRITETYPE_KNIFE:
-    case SPRITETYPE_RED_BRICK:
       // if (CheckCollisionRecs(player->get_dest(), s.second->get_dest())) {
       // if (CheckCollisionRecs(player->get_hitbox(), s.second->get_hitbox())) {
       if (CheckCollisionRecs(player->get_dest(), s.second->get_dest())) {
@@ -112,21 +109,6 @@ void GameplayScene::handle_player_collision() {
           // }
         } else if (t == SPRITETYPE_PIPEBASE) {
           // player cannot move thru the pipe
-        } else if (t == SPRITETYPE_RED_BRICK) {
-
-          // create a 2nd thin rectangle area at the top of the brick
-          // need to research Box2D for collision stuff possibly...
-          Rectangle top_of_brick = s.second->get_dest();
-          top_of_brick.height /= 2.0f;
-          Rectangle bottom_of_player = player->get_dest();
-          bottom_of_player.y += player->get_height() / 2.0f;
-          bottom_of_player.height /= 2.0f;
-
-          if (CheckCollisionRecs(bottom_of_player, top_of_brick)) {
-            // player->set_y(s.second->get_y() - player->get_height());
-            // player->set_y(s.second->get_y() - player->get_height());
-            player->set_do_update(false);
-          }
         }
       }
       break;
@@ -173,21 +155,15 @@ void GameplayScene::update() {
 
   if (!get_paused()) {
 
-    handle_offscreen();
-    handle_player_collision();
-    handle_knife_collisions();
-
     update_stars_vx(star_move_speed);
 
     update_player_movement();
     update_enemy_movement();
     update_knife_movement();
 
-    /*
     handle_offscreen();
     handle_player_collision();
     handle_knife_collisions();
-    */
 
     // we want the camera to follow the player in such a way that
     // the player is always in the center of the screen
@@ -206,7 +182,6 @@ void GameplayScene::handle_input() {
   shared_ptr<Sprite> player = get_sprites()[get_player_id()];
   // this value affects how high skull 'flaps' or jumps
   const float vy = -6.75f;
-  // const float vy = -6.75f;
   const float ay = 0.0f;
   const float move_speed = 2.0f;
 
@@ -245,33 +220,30 @@ void GameplayScene::handle_input() {
     }
 
     if (IsKeyPressed(KEY_SPACE)) {
-      player->set_ay(0.0f);
+      player->set_ay(ay);
       player->set_vy(vy);
       player->update();
     }
 
     bool shift = IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT);
-    float new_move_speed = move_speed;
+    int new_move_speed = move_speed;
     if (shift) {
-      new_move_speed = new_move_speed * 2;
+      new_move_speed = move_speed * 2;
     }
 
     if (IsKeyDown(KEY_LEFT)) {
 
-      // player->set_x(player->get_x() - new_move_speed);
-      // player->set_vx(-1.0f);
-      player->set_vx(-new_move_speed);
+      player->set_x(player->get_x() - new_move_speed);
       if (!player->get_is_flipped()) {
         player->flip();
       }
+
     } else if (IsKeyDown(KEY_RIGHT)) {
-      player->set_vx(new_move_speed);
-      // player->set_x(player->get_x() + new_move_speed);
+
+      player->set_x(player->get_x() + new_move_speed);
       if (player->get_is_flipped()) {
         player->flip();
       }
-    } else {
-      player->set_vx(0.0f);
     }
 
     if (IsKeyPressed(KEY_ESCAPE)) {

@@ -99,9 +99,6 @@ public:
   void set_rotation_speed(const float speed);
   const float get_rotation_speed() const;
 
-  void set_do_update(const bool do_update);
-  const bool get_do_update() const;
-
 private:
   Texture2D texture;
 
@@ -135,6 +132,4 @@ private:
   float rotation_speed = 1.0f;
 
   void init_rects();
-
-  bool do_update = true;
 };
