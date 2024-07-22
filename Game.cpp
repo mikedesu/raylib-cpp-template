@@ -56,6 +56,11 @@ bool Game::init() {
     scenes[gameplay_scene->get_id()] = gameplay_scene;
     scene_keys["gameplay"] = gameplay_scene->get_id();
 
+    shared_ptr<Scene> gameover_scene = make_shared<GameoverScene>();
+    gameover_scene->set_id(next_scene_id++);
+    scenes[gameover_scene->get_id()] = gameover_scene;
+    scene_keys["gameover"] = gameover_scene->get_id();
+
     for (auto &scene : scenes) {
       mPrint("Initializing scenes...");
       bool result = scene.second->init();
@@ -145,6 +150,8 @@ void Game::handle_transition_out() {
     //}
     scenes[current_scene_id]->close();
 
+    // this makes the assumption that we will ALWAYS transition into the
+    // gameplay scene and that we are on the title scene this is untrue!
     current_scene_id = scene_keys["gameplay"];
 
     // scenes[current_scene_id]->set_scene_transition(SCENE_TRANSITION_NONE);

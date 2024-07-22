@@ -4,6 +4,7 @@
 #include "entity_id.h"
 #include "texture_info.h"
 
+#include "GameoverScene.h"
 #include "GameplayScene.h"
 #include "Sprite.h"
 #include "TitleScene.h"
