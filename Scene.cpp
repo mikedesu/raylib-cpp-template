@@ -309,7 +309,8 @@ entity_id Scene::spawn_knife() {
   // get the width of the knife texture
   const float knife_width = textures["knife"].texture.width;
   if (sprites[player_id]->get_is_flipped()) {
-    x -= knife_width * global_scale + 1;
+    // x -= knife_width * global_scale + 1;
+    x -= knife_width * global_scale + knife_speed.x * 2.0f;
   } else {
     x += o_x;
   }
@@ -319,20 +320,28 @@ entity_id Scene::spawn_knife() {
   const bool is_spinning = knife_catches > 0;
   const bool is_flipped = sprites[player_id]->get_is_flipped();
 
+  float vx = knife_speed.x;
+  // const float vy = knife_speed.y;
+
   if (is_flipped) {
     sprites[id]->set_is_flipped(true);
-    sprites[id]->set_vx(-knife_speed.x);
-  } else {
-    sprites[id]->set_vx(knife_speed.x);
+    // sprites[id]->set_vx(-knife_speed.x);
+    // sprites[id]->set_vx(-vx);
+    vx = -vx;
   }
+  // else {
+  // sprites[id]->set_vx(vx);
+  //}
 
   if (is_spinning) {
-    sprites[id]->set_vx(sprites[id]->get_vx() * (1 + knife_catches));
+    // sprites[id]->set_vx(sprites[id]->get_vx() * (1 + knife_catches));
+    vx = vx * (1 + knife_catches);
     sprites[id]->set_is_spinning(true);
     sprites[id]->set_rotation_speed(1.0f * knife_catches);
     knife_catches -= 1;
   }
 
+  sprites[id]->set_vx(vx);
   sprites[id]->set_vy(knife_speed.y);
   sprites[id]->set_ax(0);
   sprites[id]->set_ay(0);
