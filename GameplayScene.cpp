@@ -295,8 +295,8 @@ bool GameplayScene::init() {
 
     get_camera2d().offset.y = GetScreenHeight() / 2.0f;
 
-    load_music("audio/skull-title-0.mp3");
-    Mix_PlayMusic(get_music(), -1);
+    // load_music("audio/skull-title-0.mp3");
+    // Mix_PlayMusic(get_music(), -1);
 
     sfx_knife_throw = Mix_LoadWAV("audio/knife-throw.mp3");
     sfx_knife_hit = Mix_LoadWAV("audio/knife-hit.mp3");
