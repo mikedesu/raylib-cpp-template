@@ -23,9 +23,7 @@ GameoverScene::GameoverScene() {
 
 GameoverScene::~GameoverScene() { mPrint("GameoverScene destructor"); }
 
-void GameoverScene::update() {
-  // UpdateMusicStream(get_music());
-}
+void GameoverScene::update() {}
 
 void GameoverScene::handle_input() {
   if (IsKeyPressed(KEY_D)) {
@@ -47,39 +45,17 @@ bool GameoverScene::init() {
       mPrint("Error loading textures. Exiting...");
       return false;
     }
-    const int w = get_textures()["gameover"].texture.width;
-    const int h = get_textures()["gameover"].texture.height;
-    //  const int off_w = 0;
-    //  const int off_h = h / 2;
-    const int x = GetScreenWidth() / 2 - w * get_global_scale() / 2;
-    const int y = GetScreenHeight() / 4;
-
+    int w = get_textures()["gameover"].texture.width;
+    int h = get_textures()["gameover"].texture.height;
+    int x = GetScreenWidth() / 2.0 - w * get_global_scale() / 2;
+    int y = GetScreenHeight() / 4;
+    float scale = 8.0f;
     spawn_entity("gameover", x, y, SPRITETYPE_PLAYER, false);
-
-    // const int w = get_textures()["title"].texture.width;
-    //  const int h = get_textures()["title"].texture.height;
-    //   const int off_w = 0;
-    //   const int off_h = h / 2;
-
-    // const int x = w / 8 * get_global_scale();
-    // const int y = GetScreenHeight() / 4;
-    //  entity_id title_id = spawn_entity("title", x, y, SPRITETYPE_PLAYER,
-    //  false);
-    // spawn_entity("title", x, y, SPRITETYPE_PLAYER, false);
-
-    // if (IsMusicReady(get_music())) {
-    //   mPrint("### MUSIC IS READY ###");
-    //   SetMusicVolume(get_music(), 1.0f);
-    //   PlayMusicStream(get_music());
-    //  UpdateMusicStream(get_music());
-    //} else {
-    //  mPrint("### MUSIC NOT READY ###");
-    //}
-
-    // play_music();
-
-    // Mix_PlayMusic(get_music(), -1);
-
+    y += h * get_global_scale();
+    w = get_textures()["press-space-to-return"].texture.width;
+    x = GetScreenWidth() / 2.0 - w * scale / 2;
+    spawn_entity("press-space-to-return", x, y, SPRITETYPE_PLAYER, false,
+                 scale);
     set_has_been_initialized(true);
   }
   return true;
@@ -89,23 +65,8 @@ void GameoverScene::draw_debug_panel() {
   string camera_info_str =
       "Current Frame: " + to_string(get_current_frame()) + "\n" +
       "Control mode: " + to_string(get_control_mode()) + "\n" +
-      //"Player Position: " + to_string(sprites[player_id]->get_x()) + ", " +
-      // to_string(sprites[player_id]->get_y()) + "\n" +
       "Camera target: " + to_string(get_camera2d().target.x) + ", " +
       to_string(get_camera2d().target.y) + "\n" + "GameoverScene";
-  //"Current Frame: " + to_string(current_frame) + "\n" +
-  //"Camera2D target: " + to_string(camera2d.target.x) + ", " +
-  // to_string(camera2d.target.y) + "\n" +
-  //"Camera2D offset: " + to_string(camera2d.offset.x) + ", " +
-  // to_string(camera2d.offset.y) + "\n" +
-  //"Camera2D rotation: " + to_string(camera2d.rotation) + "\n" +
-  //"Camera2D zoom: " + to_string(camera2d.zoom) + "\n" +
-  //"Player Position: " + to_string(sprites[player_id]->get_x()) + ", " +
-  // to_string(sprites[player_id]->get_y()) + "\n" +
-  //"Player Velocity: " + to_string(sprites[player_id]->get_vx()) + ", " +
-  // to_string(sprites[player_id]->get_vy()) + "\n" +
-  //"Player Acceleration: " + to_string(sprites[player_id]->get_ax()) + ", " +
-  // to_string(sprites[player_id]->get_ay()) + "\n" +
   DrawRectangle(0, 0, 500, 200, Fade(BLACK, 0.5f));
   DrawTextEx(get_global_font(), camera_info_str.c_str(), (Vector2){10, 10}, 16,
              0.5f, WHITE);
@@ -118,4 +79,26 @@ void GameoverScene::cleanup() {
   //  get_sprites().clear();
   //  get_textures().clear();
   //  set_has_been_initialized(false);
+}
+
+void GameoverScene::draw() {
+  BeginMode2D(get_camera2d());
+
+  for (auto &s : get_sprites()) {
+    s.second->draw();
+    if (get_debug_panel_on()) {
+      s.second->draw_hitbox();
+    }
+  }
+
+  if (get_debug_panel_on()) {
+    DrawFPS(GetScreenWidth() - 80, 10);
+    draw_debug_panel();
+  } else if (get_hud_on()) {
+    draw_hud();
+  }
+
+  EndMode2D();
+
+  incr_current_frame();
 }

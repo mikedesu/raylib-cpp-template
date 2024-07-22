@@ -76,8 +76,8 @@ bool Game::init() {
     }
 
     // current_scene_id = scene_keys["title"];
-    //  current_scene_id = scene_keys["gameplay"];
-    current_scene_id = scene_keys["gameover"];
+    current_scene_id = scene_keys["gameplay"];
+    // current_scene_id = scene_keys["gameover"];
 
     mPrint("Loading render texture...");
     target = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());

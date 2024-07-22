@@ -17,6 +17,8 @@ GameplayScene::GameplayScene() {
 
 GameplayScene::~GameplayScene() { mPrint("GameplayScene destructor"); }
 
+void GameplayScene::gameover() { set_scene_transition(SCENE_TRANSITION_OUT); }
+
 void GameplayScene::update_player_movement() {
   shared_ptr<Sprite> player = get_sprites()[get_player_id()];
   // player->incr_ay(0.0032f);
@@ -32,7 +34,10 @@ void GameplayScene::update_player_movement() {
   // lock the player to a relative "ground" location
   const int bottom_of_screen = GetScreenHeight();
   if (bottom_of_sprite >= bottom_of_screen) {
-    player->set_y(bottom_of_screen - height);
+
+    gameover();
+
+    // player->set_y(bottom_of_screen - height);
   }
 
   // prevent player from moving off-screen
@@ -109,11 +114,8 @@ void GameplayScene::handle_player_collision() {
 
           if (player->get_hp() <= 0) {
             set_scene_transition(SCENE_TRANSITION_OUT);
-            //   set_next_scene_id(SCENE_ID_GAMEOVER);
           }
         }
-        // else if (t == SPRITETYPE_RED_BRICK) {
-        //}
       }
       break;
     default:
@@ -202,12 +204,13 @@ void GameplayScene::handle_input() {
     }
 
     if (IsKeyPressed(KEY_B)) {
-      const int bat_width = get_textures()["bat"].texture.width;
-      const int bat_height = get_textures()["bat"].texture.height;
-      const float bat_x = -bat_width;
-      const float bat_y =
-          (float)GetScreenHeight() / 2 - (float)bat_height + 300;
-      spawn_bat(bat_x, bat_y);
+      // const int bat_width = get_textures()["bat"].texture.width;
+      // const int bat_height = get_textures()["bat"].texture.height;
+      // const float bat_x = -bat_width;
+      // const float bat_y =
+      //     (float)GetScreenHeight() / 2 - (float)bat_height + 300;
+      // spawn_bat(bat_x, bat_y);
+      spawn_bat();
     }
 
     // if (IsKeyPressed(KEY_P)) {
@@ -283,22 +286,9 @@ bool GameplayScene::init() {
     const float y = (float)GetScreenHeight() / 2 - (float)sprite_height;
     spawn_player(x, y);
 
-    for (int i = 0; i < 10000; i++) {
+    for (int i = 0; i < 1000; i++) {
       add_star();
     }
-
-    // const int bat_width = get_textures()["bat"].texture.width;
-    // const int bat_height = get_textures()["bat"].texture.height;
-    // const float bat_x = -bat_width;
-    // const float bat_y = (float)GetScreenHeight() / 2 - (float)bat_height +
-    // 300; spawn_bat(bat_x, bat_y);
-
-    // spawn a red brick
-    // const int redbrick_width = get_textures()["redbrick"].texture.width;
-    // const int redbrick_height = get_textures()["redbrick"].texture.height;
-    // const float redbrick_x = GetScreenWidth() / 2.0 - redbrick_width;
-    // const float redbrick_y = 0;
-    // spawn_redbrick(redbrick_x, redbrick_y);
 
     get_camera2d().offset.y = GetScreenHeight() / 2.0f;
 
@@ -389,4 +379,82 @@ bool GameplayScene::line_did_cross_line(Vector4 &line1, Vector4 &line2) {
              ccw(line1.z, line1.w, line2.x, line2.y, line2.z, line2.w) &&
          ccw(line1.x, line1.y, line1.z, line1.w, line2.x, line2.y) !=
              ccw(line1.x, line1.y, line1.z, line1.w, line2.z, line2.w);
+}
+
+void GameplayScene::draw() {
+  BeginMode2D(get_camera2d());
+  Color clear_color = (Color){0x10, 0x10, 0x10, 0xFF};
+  ClearBackground(clear_color);
+  // no background yet, but lets mock one up with shapes
+  // draw a large rectangle to represent a scene
+  // but lets make the dimension ratio 720x1280
+  // DrawRectangle(GetScreenWidth() / 2 - 405 / 2, 0, 405, 720, BLACK);
+  // draw stars
+  // want: real stars
+  if (get_scene_type() == SCENE_TYPE_GAMEPLAY) {
+    draw_stars();
+    draw_ground();
+  }
+
+  for (auto &s : get_sprites()) {
+    s.second->draw();
+    if (get_debug_panel_on()) {
+      s.second->draw_hitbox();
+    }
+  }
+
+  // if (get_scene_type() == SCENE_TYPE_TITLE) {
+  //   const float x =
+  //       GetScreenWidth() / 2.0f - get_textures()["title"].texture.width
+  //       / 2.0f;
+  //
+  //    const float y0 = GetScreenHeight() / 4.0f - 32.0f;
+  //    const float y1 = GetScreenHeight() * 3.0f / 4.0f;
+  //
+  //    DrawTextEx(get_global_font(), "@evildojo666 presents", (Vector2){x, y0},
+  //    32,
+  //               0.5f, WHITE);
+  //    DrawTextEx(get_global_font(), "by darkmage", (Vector2){x, y1}, 32, 0.5f,
+  //               WHITE);
+  //  }
+
+  EndMode2D();
+
+  // draw debug panel
+  // if (get_debug_panel_on()) {
+  //  DrawFPS(GetScreenWidth() - 80, 10);
+  //  draw_debug_panel();
+  //} else if (get_hud_on()) {
+  //  draw_hud();
+  //}
+
+  handle_draw_debug_panel();
+
+  // update music frame
+  // current_frame++;
+  incr_current_frame();
+}
+
+inline void GameplayScene::handle_draw_debug_panel() {
+  if (get_debug_panel_on()) {
+    DrawFPS(GetScreenWidth() - 80, 10);
+    draw_debug_panel();
+  } else if (get_hud_on()) {
+    draw_hud();
+  }
+}
+
+void GameplayScene::draw_ground() {
+  // want a real ground sprite texture
+  const int w = GetScreenWidth();
+  const int h = GetScreenHeight();
+  const int offset_h = 20;
+  DrawRectangle(0, GetScreenHeight() - offset_h, w, h, RED);
+  // DrawRectangle(0, GetScreenHeight() - 10, w, h, c);
+}
+
+void GameplayScene::draw_stars() {
+  for (auto &s : get_stars()) {
+    DrawRectangle(s.second.x, s.second.y, 4, 4, WHITE);
+  }
 }

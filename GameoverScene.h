@@ -22,6 +22,7 @@ public:
   GameoverScene();
   ~GameoverScene();
 
+  void draw();
   void update();
   bool init();
   void handle_input();

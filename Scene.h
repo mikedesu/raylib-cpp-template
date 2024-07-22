@@ -48,17 +48,22 @@ public:
   virtual void cleanup();
   virtual void draw_hud();
 
-  void draw();
+  virtual void draw();
 
   bool load_texture(const char *asset_name, const char *asset_path,
                     const int num_frames, const int is_player);
   bool load_textures();
   bool get_debug_panel_on();
   float get_global_scale();
+
+  entity_id spawn_entity(const char *texture_key, float x, float y,
+                         sprite_type type, bool is_anim, float scale);
   entity_id spawn_entity(const char *texture_key, float x, float y,
                          sprite_type type, bool is_anim);
+
   entity_id spawn_player(float x, float y);
   entity_id spawn_bat(const float x, const float y);
+  entity_id spawn_bat();
   entity_id spawn_knife();
   unordered_map<entity_id, Vector2> &get_stars();
   unordered_map<entity_id, shared_ptr<Sprite>> &get_sprites();
@@ -91,8 +96,8 @@ public:
   void set_id(scene_id i);
   void set_player_id(entity_id id);
   void set_scene_type(scene_type st);
-  void draw_ground();
-  void draw_stars();
+  // void draw_ground();
+  // void draw_stars();
   void pause();
   void unpause();
   void set_knife_speed(const Vector2 speed);
@@ -109,6 +114,11 @@ public:
   void load_music(const char *path);
   void set_music_path(const char *path);
   const string get_music_path() const;
+
+  const bool get_hud_on() const;
+  void set_hud_on(const bool b);
+
+  void incr_current_frame();
 
 private:
   unordered_map<string, texture_info> textures;

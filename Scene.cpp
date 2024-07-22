@@ -75,23 +75,20 @@ void Scene::update() {}
 
 void Scene::handle_input() {}
 
-void Scene::draw_stars() {
-  for (auto &s : stars) {
-    // DrawPixelV(s.second, WHITE);
-    // cant see them so draw rectangles
-    DrawRectangle(s.second.x, s.second.y, 4, 4, WHITE);
-  }
-}
+// void Scene::draw_stars() {
+//   for (auto &s : stars) {
+//     DrawRectangle(s.second.x, s.second.y, 4, 4, WHITE);
+//   }
+// }
 
-void Scene::draw_ground() {
-  // want a real ground sprite texture
-  const int w = GetScreenWidth();
-  const int h = GetScreenHeight();
-  Color c = BROWN;
-  const int offset_h = 20;
-  DrawRectangle(0, GetScreenHeight() - offset_h, w, h, c);
-  // DrawRectangle(0, GetScreenHeight() - 10, w, h, c);
-}
+// void Scene::draw_ground() {
+//   // want a real ground sprite texture
+//   const int w = GetScreenWidth();
+//   const int h = GetScreenHeight();
+//   const int offset_h = 20;
+//   DrawRectangle(0, GetScreenHeight() - offset_h, w, h, RED);
+//   // DrawRectangle(0, GetScreenHeight() - 10, w, h, c);
+// }
 
 void Scene::draw() {
   BeginMode2D(camera2d);
@@ -100,12 +97,12 @@ void Scene::draw() {
   case SCENE_TYPE_TITLE:
     clear_color = BLACK;
     break;
-  case SCENE_TYPE_GAMEPLAY:
-    clear_color = (Color){0x10, 0x10, 0x10, 0xFF};
-    break;
-  case SCENE_TYPE_GAMEOVER:
-    clear_color = BLACK;
-    break;
+  // case SCENE_TYPE_GAMEPLAY:
+  //   clear_color = (Color){0x10, 0x10, 0x10, 0xFF};
+  //   break;
+  // case SCENE_TYPE_GAMEOVER:
+  //   clear_color = BLACK;
+  //   break;
   default:
     clear_color = BLACK;
     break;
@@ -117,10 +114,10 @@ void Scene::draw() {
   // DrawRectangle(GetScreenWidth() / 2 - 405 / 2, 0, 405, 720, BLACK);
   // draw stars
   // want: real stars
-  if (scenetype == SCENE_TYPE_GAMEPLAY) {
-    draw_stars();
-    draw_ground();
-  }
+  // if (scenetype == SCENE_TYPE_GAMEPLAY) {
+  //  draw_stars();
+  //  draw_ground();
+  //}
 
   for (auto &s : sprites) {
     s.second->draw();
@@ -155,8 +152,6 @@ void Scene::draw() {
   } else if (hud_on) {
     draw_hud();
   }
-
-  // update music frame
 
   current_frame++;
 }
@@ -268,6 +263,17 @@ entity_id Scene::spawn_player(float x, float y) {
   return id;
 }
 
+entity_id Scene::spawn_bat() {
+  // get player position
+  // const float x = sprites[player_id]->get_x();
+  const int bat_width = get_textures()["bat"].texture.width;
+  const float x = -bat_width;
+  const float y = sprites[player_id]->get_y();
+  // const int bat_height = get_textures()["bat"].texture.height;
+  //(float)GetScreenHeight() / 2 - (float)bat_height + 300;
+  return spawn_bat(x, y);
+}
+
 entity_id Scene::spawn_bat(const float x, const float y) {
   mPrint("Spawning bat...");
   entity_id id = spawn_entity("bat", x, y, SPRITETYPE_ENEMY, true);
@@ -337,6 +343,12 @@ entity_id Scene::spawn_knife() {
 
 entity_id Scene::spawn_entity(const char *texture_key, float x, float y,
                               sprite_type type, bool is_anim) {
+  return spawn_entity(texture_key, x, y, type, is_anim, global_scale);
+}
+
+entity_id Scene::spawn_entity(const char *texture_key, float x, float y,
+                              sprite_type type, bool is_anim, float scale) {
+
   mPrint("Spawning entity...");
   shared_ptr<Sprite> s =
       make_shared<Sprite>(textures[texture_key].texture,
@@ -345,7 +357,7 @@ entity_id Scene::spawn_entity(const char *texture_key, float x, float y,
     mPrint("Error creating sprite.");
     return -1;
   }
-  s->set_scale(global_scale);
+  s->set_scale(scale);
   s->set_is_animating(is_anim);
 
   sprites[next_entity_id] = s;
@@ -445,3 +457,8 @@ void Scene::load_music(const char *path) {
 void Scene::set_music_path(const char *path) { music_path = path; }
 
 const string Scene::get_music_path() const { return music_path; }
+
+const bool Scene::get_hud_on() const { return hud_on; }
+void Scene::set_hud_on(const bool b) { hud_on = b; }
+
+void Scene::incr_current_frame() { current_frame++; }

@@ -13,8 +13,11 @@ public:
 
   void draw_debug_panel();
   void draw_hud();
+  void draw();
 
   void cleanup();
+  void gameover();
+  inline void handle_draw_debug_panel();
 
   void update_player_movement();
   void update_knife_movement();
@@ -22,9 +25,10 @@ public:
   void handle_player_collision();
   void handle_offscreen();
   void handle_knife_collisions();
+  void draw_ground();
+  void draw_stars();
 
 private:
-  // const float gravity = 0.0032f;
   const float gravity = 0.0064f;
 
   Mix_Chunk *sfx_knife_throw = nullptr;

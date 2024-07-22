@@ -1,1 +1,2 @@
 gameover 1 0 img/gameover.png 
+press-space-to-return 1 0 img/press-space-to-return.png 
