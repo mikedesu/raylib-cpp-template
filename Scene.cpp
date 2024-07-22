@@ -80,6 +80,16 @@ void Scene::draw_stars() {
   }
 }
 
+void Scene::draw_ground() {
+  // want a real ground sprite texture
+  const int w = GetScreenWidth();
+  const int h = GetScreenHeight();
+  Color c = BROWN;
+  const int offset_h = 20;
+  DrawRectangle(0, GetScreenHeight() - offset_h, w, h, c);
+  // DrawRectangle(0, GetScreenHeight() - 10, w, h, c);
+}
+
 void Scene::draw() {
   BeginMode2D(camera2d);
 
@@ -105,7 +115,7 @@ void Scene::draw() {
   if (scenetype != SCENE_TYPE_TITLE) {
 
     draw_stars();
-    // draw_ground();
+    draw_ground();
   }
 
   for (auto &s : sprites) {
@@ -220,19 +230,18 @@ void Scene::load_fonts() {
   global_font = LoadFont(font_path);
 }
 
-// entity_id Scene::spawn_redbrick(const float x, const float y) {
-//   mPrint("Spawning redbrick...");
-//   entity_id id = spawn_entity("redbrick", x, y, SPRITETYPE_RED_BRICK, false);
-//   sprites[id]->set_vx(0.0f);
-//   sprites[id]->set_vy(0.0f);
-//   sprites[id]->set_ax(0.0f);
-//   sprites[id]->set_ay(0.0f);
-//   sprites[id]->set_hp(1);
-//   sprites[id]->set_maxhp(1);
-//   return id;
-// }
+entity_id Scene::spawn_redbrick(const float x, const float y) {
+  mPrint("Spawning redbrick...");
+  entity_id id = spawn_entity("redbrick", x, y, SPRITETYPE_RED_BRICK, false);
+  sprites[id]->set_vx(0.0f);
+  sprites[id]->set_vy(0.0f);
+  sprites[id]->set_ax(0.0f);
+  sprites[id]->set_ay(0.0f);
+  sprites[id]->set_hp(1);
+  sprites[id]->set_maxhp(1);
+  return id;
+}
 
-/*
 entity_id Scene::spawn_player(float x, float y) {
   mPrint("Attempting to spawn player...");
   if (player_id != -1) {
@@ -242,39 +251,39 @@ entity_id Scene::spawn_player(float x, float y) {
   mPrint("Spawning player...");
   entity_id id = spawn_entity("skull", x, y, SPRITETYPE_PLAYER, false);
   player_id = id;
+
   const int player_starting_hp = 3;
   const int player_max_hp = 3;
   sprites[player_id]->set_maxhp(player_max_hp);
   sprites[player_id]->set_hp(player_starting_hp);
+
   return id;
 }
-*/
 
-// entity_id Scene::spawn_bat(const float x, const float y) {
-//   mPrint("Spawning bat...");
-//   entity_id id = spawn_entity("bat", x, y, SPRITETYPE_ENEMY, true);
-//   sprites[id]->set_vx(2.0f);
-//   sprites[id]->set_vy(0.0f);
-//   sprites[id]->set_ax(0.0f);
-//   sprites[id]->set_ay(0.0f);
-//   sprites[id]->set_hp(1);
-//   sprites[id]->set_maxhp(1);
-//   return id;
-// }
+entity_id Scene::spawn_bat(const float x, const float y) {
+  mPrint("Spawning bat...");
+  entity_id id = spawn_entity("bat", x, y, SPRITETYPE_ENEMY, true);
+  sprites[id]->set_vx(2.0f);
+  sprites[id]->set_vy(0.0f);
+  sprites[id]->set_ax(0.0f);
+  sprites[id]->set_ay(0.0f);
+  sprites[id]->set_hp(1);
+  sprites[id]->set_maxhp(1);
+  return id;
+}
 
-// entity_id Scene::spawn_pipebase(const float x, const float y) {
-//   mPrint("Spawning pipebase...");
-//   entity_id id = spawn_entity("pipebase", x, y, SPRITETYPE_PIPEBASE, false);
-//   sprites[id]->set_vx(1.0f);
-//   sprites[id]->set_vy(0.0f);
-//   sprites[id]->set_ax(0.0f);
-//   sprites[id]->set_ay(0.0f);
-//   sprites[id]->set_hp(10);
-//   sprites[id]->set_maxhp(10);
-//   return id;
-// }
+entity_id Scene::spawn_pipebase(const float x, const float y) {
+  mPrint("Spawning pipebase...");
+  entity_id id = spawn_entity("pipebase", x, y, SPRITETYPE_PIPEBASE, false);
+  sprites[id]->set_vx(1.0f);
+  sprites[id]->set_vy(0.0f);
+  sprites[id]->set_ax(0.0f);
+  sprites[id]->set_ay(0.0f);
+  sprites[id]->set_hp(10);
+  sprites[id]->set_maxhp(10);
+  return id;
+}
 
-/*
 entity_id Scene::spawn_knife() {
   mPrint("Spawning knife...");
   // calculate offsets
@@ -317,20 +326,18 @@ entity_id Scene::spawn_knife() {
 
   return id;
 }
-*/
 
 entity_id Scene::spawn_entity(const char *texture_key, float x, float y,
-                              sprite_type type, bool is_anim, b2World *world) {
+                              sprite_type type, bool is_anim) {
   mPrint("Spawning entity...");
-  shared_ptr<Sprite> s = make_shared<Sprite>(textures[texture_key].texture,
-                                             textures[texture_key].num_frames,
-                                             x, y, type, world, global_scale);
+  shared_ptr<Sprite> s =
+      make_shared<Sprite>(textures[texture_key].texture,
+                          textures[texture_key].num_frames, x, y, type);
   if (s == nullptr) {
     mPrint("Error creating sprite.");
     return -1;
   }
-  // s->set_scale(global_scale);
-  //  s->init_rects();
+  s->set_scale(global_scale);
   s->set_is_animating(is_anim);
 
   sprites[next_entity_id] = s;

@@ -26,15 +26,8 @@ public:
   void handle_offscreen();
   void handle_knife_collisions();
 
-  entity_id spawn_player(float x, float y);
-  void draw_ground();
-
 private:
   // const float gravity = 0.0032f;
-
-  float timeStep = 1.0f / 60.0f;
-  int velocityIterations = 8;
-  int positionIterations = 3;
 
   // Define the gravity vector.
   b2Vec2 gravity;
@@ -50,6 +43,6 @@ private:
 
   unsigned int enemies_killed = 0;
 
-  // bool line_did_cross_line(Vector4 &line1, Vector4 &line2);
-  // bool ccw(float x1, float y1, float x2, float y2, float x3, float y3);
+  bool line_did_cross_line(Vector4 &line1, Vector4 &line2);
+  bool ccw(float x1, float y1, float x2, float y2, float x3, float y3);
 };

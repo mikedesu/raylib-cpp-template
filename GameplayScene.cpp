@@ -14,18 +14,17 @@ GameplayScene::GameplayScene() {
 
   // do box2d stuff
   // init world with gravity
-  gravity = b2Vec2(0.0f, 100.0f);
-  // gravity = b2Vec2(0.0f, -10.0f);
+  gravity = b2Vec2(0.0f, -10.0f);
   world = new b2World(gravity);
 
   // define ground and place it
   b2BodyDef groundBodyDef;
-
-  // groundBodyDef.position.Set(0.0f, 0.0f);
-  groundBodyDef.position.Set(0.0f, GetScreenHeight() - 200.0f);
-
+  groundBodyDef.position.Set(0.0f, 0.0f);
+  // groundBodyDef.position.Set(0.0f, -10.0f);
   groundBody = world->CreateBody(&groundBodyDef);
+
   b2PolygonShape groundBox;
+  // groundBox.SetAsBox(50.0f, 10.0f);
   groundBox.SetAsBox(GetScreenWidth(), 10.0f);
   groundBody->CreateFixture(&groundBox, 0.0f);
 
@@ -178,20 +177,15 @@ void GameplayScene::handle_knife_collisions() {
 }
 
 void GameplayScene::update() {
-  // const float star_move_speed = -1.0f;
+  const float star_move_speed = -1.0f;
 
   if (!get_paused()) {
-    world->Step(timeStep, velocityIterations, positionIterations);
-
-    for (auto &s : get_sprites()) {
-      s.second->update();
-    }
 
     // handle_offscreen();
     // handle_player_collision();
     // handle_knife_collisions();
 
-    // update_stars_vx(star_move_speed);
+    update_stars_vx(star_move_speed);
 
     // update_player_movement();
     // update_enemy_movement();
@@ -225,9 +219,6 @@ void GameplayScene::handle_input() {
   const float ay = 0.0f;
   const float move_speed = 2.0f;
 
-  // just fucking with the values rn
-  const float jump_speed = -200.0f;
-
   if (IsKeyPressed(KEY_D)) {
     flip_debug_panel();
   }
@@ -238,31 +229,52 @@ void GameplayScene::handle_input() {
       set_control_mode(CONTROL_MODE_CAMERA);
     }
 
-    shared_ptr<Sprite> player = get_sprites()[get_player_id()];
-    b2Body *body = player->get_body();
+    // if (IsKeyPressed(KEY_B)) {
+    //   const int bat_width = get_textures()["bat"].texture.width;
+    //   const int bat_height = get_textures()["bat"].texture.height;
+    //   const float bat_x = -bat_width;
+    //   const float bat_y =
+    //       (float)GetScreenHeight() / 2 - (float)bat_height + 300;
+    //   spawn_bat(bat_x, bat_y);
+    // }
 
-    if (IsKeyDown(KEY_LEFT)) {
-      // cout << "Left key pressed" << endl;
-      //
+    // if (IsKeyPressed(KEY_P)) {
+    //   const int pipebase_width = get_textures()["pipebase"].texture.width;
+    //   const int pipebase_height = get_textures()["pipebase"].texture.height;
+    //   const float pipebase_x = -pipebase_width;
+    //   const float pipebase_y = GetScreenHeight() - pipebase_height * 4;
+    //   spawn_pipebase(pipebase_x, pipebase_y);
+    // }
 
-      if (!player->get_is_flipped())
-        player->flip();
+    // if (IsKeyPressed(KEY_Z)) {
+    //   spawn_knife();
+    // }
 
-      body->SetTransform(
-          b2Vec2(body->GetPosition().x - 1, body->GetPosition().y), 0);
-    }
-    if (IsKeyDown(KEY_RIGHT)) {
-      // cout << "Right key pressed" << endl;
-      if (player->get_is_flipped())
-        player->flip();
+    // if (IsKeyPressed(KEY_SPACE)) {
+    //   player->set_ay(0.0f);
+    //   player->set_vy(vy);
+    //   player->update();
+    // }
 
-      body->SetTransform(
-          b2Vec2(body->GetPosition().x + 1, body->GetPosition().y), 0);
-    }
-    if (IsKeyPressed(KEY_SPACE)) {
-      // cout << "Space key pressed" << endl;
-      body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x, jump_speed));
-    }
+    // bool shift = IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT);
+    // float new_move_speed = move_speed;
+    // if (shift) {
+    //   new_move_speed = new_move_speed * 2;
+    // }
+
+    // if (IsKeyDown(KEY_LEFT)) {
+    //   player->set_vx(-new_move_speed);
+    //   if (!player->get_is_flipped()) {
+    //     player->flip();
+    //   }
+    // } else if (IsKeyDown(KEY_RIGHT)) {
+    //   player->set_vx(new_move_speed);
+    //   if (player->get_is_flipped()) {
+    //     player->flip();
+    //   }
+    // } else {
+    //   player->set_vx(0.0f);
+    // }
 
     if (IsKeyPressed(KEY_ESCAPE)) {
       pause();
@@ -290,12 +302,8 @@ bool GameplayScene::init() {
 
     const int sprite_width = get_textures()["skull"].texture.width;
     const int sprite_height = get_textures()["skull"].texture.height;
-
-    // const float x = (float)GetScreenWidth() / 2 - (float)sprite_width;
-    // const float y = (float)GetScreenHeight() / 2 - (float)sprite_height;
     const float x = (float)GetScreenWidth() / 2 - (float)sprite_width;
-    const float y = (float)-GetScreenHeight();
-
+    const float y = (float)GetScreenHeight() / 2 - (float)sprite_height;
     spawn_player(x, y);
 
     for (int i = 0; i < 10000; i++) {
@@ -317,8 +325,8 @@ bool GameplayScene::init() {
 
     get_camera2d().offset.y = GetScreenHeight() / 2.0f;
 
-    // load_music("audio/skull-title-0.mp3");
-    // Mix_PlayMusic(get_music(), -1);
+    load_music("audio/skull-title-0.mp3");
+    Mix_PlayMusic(get_music(), -1);
 
     sfx_knife_throw = Mix_LoadWAV("audio/knife-throw.mp3");
     sfx_knife_hit = Mix_LoadWAV("audio/knife-hit.mp3");
@@ -389,7 +397,6 @@ void GameplayScene::cleanup() {
   }
 }
 
-/*
 bool GameplayScene::ccw(float x1, float y1, float x2, float y2, float x3,
                         float y3) {
   float a = x1 * (y2 - y3) - y1 * (x2 - x3) + (x2 * y3 - x3 * y2);
@@ -403,7 +410,6 @@ bool GameplayScene::line_did_cross_line(Vector4 &line1, Vector4 &line2) {
          ccw(line1.x, line1.y, line1.z, line1.w, line2.x, line2.y) !=
              ccw(line1.x, line1.y, line1.z, line1.w, line2.z, line2.w);
 }
-*/
 
 void GameplayScene::draw() {
   BeginMode2D(get_camera2d());
@@ -422,17 +428,6 @@ void GameplayScene::draw() {
 
   for (auto &s : get_sprites()) {
     s.second->draw();
-
-    // draw rectangle lines around s.second->get_body()
-    /*
-    b2Body *body = s.second->get_body();
-    if (body != nullptr) {
-      b2Vec2 v1 = body->GetPosition();
-      DrawRectangleLines(v1.x, v1.y, s.second->get_width(),
-                         s.second->get_height(), RED);
-    }
-    */
-
     if (get_debug_panel_on()) {
       s.second->draw_hitbox();
     }
@@ -449,30 +444,4 @@ void GameplayScene::draw() {
   }
 
   increment_frame();
-}
-
-entity_id GameplayScene::spawn_player(float x, float y) {
-  mPrint("Attempting to spawn player...");
-  if (get_player_id() != -1) {
-    mPrint("Player already spawned.");
-    return get_player_id();
-  }
-  mPrint("Spawning player...");
-  entity_id id = spawn_entity("skull", x, y, SPRITETYPE_PLAYER, false, world);
-  set_player_id(id);
-  const int player_starting_hp = 3;
-  const int player_max_hp = 3;
-  get_sprites()[get_player_id()]->set_maxhp(player_max_hp);
-  get_sprites()[get_player_id()]->set_hp(player_starting_hp);
-  return id;
-}
-
-void GameplayScene::draw_ground() {
-  // draw red rectangle lines around the groundBody
-  b2Vec2 v1 = groundBody->GetPosition();
-  // get width and height of groundBody
-  const int width = GetScreenWidth();
-  const int height = 10;
-
-  DrawRectangleLines(v1.x, v1.y - height, width, height, RED);
 }

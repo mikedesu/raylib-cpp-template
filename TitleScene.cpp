@@ -57,7 +57,7 @@ bool TitleScene::init() {
     const int y = GetScreenHeight() / 4;
     // entity_id title_id = spawn_entity("title", x, y, SPRITETYPE_PLAYER,
     // false);
-    spawn_entity("title", x, y, SPRITETYPE_PLAYER, false, nullptr);
+    spawn_entity("title", x, y, SPRITETYPE_PLAYER, false);
 
     // if (IsMusicReady(get_music())) {
     //   mPrint("### MUSIC IS READY ###");
