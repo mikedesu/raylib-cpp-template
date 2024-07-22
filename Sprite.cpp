@@ -142,7 +142,7 @@ void Sprite::draw_hitbox() {
   DrawRectangleLines(dest.x, dest.y, dest.width, dest.height, GREEN);
   rlPopMatrix();
 
-  DrawRectangleLines(dest.x, dest.y, dest.width, dest.height, BLUE);
+  // DrawRectangleLines(dest.x, dest.y, dest.width, dest.height, BLUE);
 }
 
 void Sprite::move(const float x, const float y) {

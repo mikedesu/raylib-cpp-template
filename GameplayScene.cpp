@@ -21,23 +21,20 @@ void GameplayScene::gameover() { set_scene_transition(SCENE_TRANSITION_OUT); }
 
 void GameplayScene::update_player_movement() {
   shared_ptr<Sprite> player = get_sprites()[get_player_id()];
-  // player->incr_ay(0.0032f);
+
+  // this handles the 'flappy bird' bounce
   player->incr_ay(gravity);
-  // player->incr_ay(gravity);
   player->set_y(player->get_y() + player->get_vy());
   player->update();
-  // player->set_y(player->get_y() + player->get_vy());
 
   const int height = player->get_height();
   const int width = player->get_width();
   const int bottom_of_sprite = player->get_y() + height;
   // lock the player to a relative "ground" location
-  const int bottom_of_screen = GetScreenHeight();
-  if (bottom_of_sprite >= bottom_of_screen) {
 
+  const int beginning_of_lava = ground_y;
+  if (bottom_of_sprite >= beginning_of_lava) {
     gameover();
-
-    // player->set_y(bottom_of_screen - height);
   }
 
   // prevent player from moving off-screen
@@ -52,13 +49,20 @@ void GameplayScene::update_player_movement() {
 void GameplayScene::update_enemy_movement() {
   for (auto &s : get_sprites()) {
     switch (s.second->get_type()) {
-    case SPRITETYPE_ENEMY:
+    case SPRITETYPE_ENEMY: {
       s.second->update();
       s.second->set_x(s.second->get_x() + s.second->get_vx());
-      break;
-      s.second->update();
-      s.second->set_x(s.second->get_x() + s.second->get_vx());
-      break;
+
+      const int height = s.second->get_height();
+      // const int width = s.second->get_width();
+      const int bottom_of_sprite = s.second->get_y() + height;
+      // lock the s.second to a relative "ground" location
+      const int beginning_of_lava = ground_y;
+      if (bottom_of_sprite >= beginning_of_lava) {
+        s.second->mark_for_deletion();
+      }
+    } break;
+
     default:
       break;
     }
@@ -68,10 +72,21 @@ void GameplayScene::update_enemy_movement() {
 void GameplayScene::update_knife_movement() {
   for (auto &s : get_sprites()) {
     switch (s.second->get_type()) {
-    case SPRITETYPE_KNIFE:
+    case SPRITETYPE_KNIFE: {
       s.second->update();
       s.second->set_x(s.second->get_x() + s.second->get_vx());
-      break;
+
+      const int height = s.second->get_height();
+      // const int width = s.second->get_width();
+      const int bottom_of_sprite = s.second->get_y() + height;
+      // lock the s.second to a relative "ground" location
+      const int beginning_of_lava = ground_y;
+      if (bottom_of_sprite >= beginning_of_lava) {
+        s.second->mark_for_deletion();
+      }
+    }
+
+    break;
     default:
       break;
     }
@@ -182,7 +197,12 @@ void GameplayScene::update() {
     // camera2d.offset.y = GetScreenHeight() / 2.0f;
     //
 
+    ground_y -= 1;
     // UpdateMusicStream(get_music());
+
+    if (get_current_frame() % 60 == 0) {
+      spawn_bat();
+    }
   }
 }
 
@@ -202,6 +222,11 @@ void GameplayScene::handle_input() {
     if (IsKeyPressed(KEY_C)) {
       set_control_mode(CONTROL_MODE_CAMERA);
     }
+
+    // if (IsKeyPressed(KEY_I)) {
+    // if (IsKeyDown(KEY_I)) {
+    //  ground_y -= 1;
+    //}
 
     if (IsKeyPressed(KEY_B)) {
       // const int bat_width = get_textures()["bat"].texture.width;
@@ -255,6 +280,12 @@ void GameplayScene::handle_input() {
       }
     }
 
+    if (IsKeyDown(KEY_UP)) {
+      player->set_y(player->get_y() - new_move_speed);
+    } else if (IsKeyDown(KEY_DOWN)) {
+      player->set_y(player->get_y() + new_move_speed);
+    }
+
     if (IsKeyPressed(KEY_ESCAPE)) {
       pause();
     }
@@ -303,6 +334,8 @@ bool GameplayScene::init() {
       mPrint("Error loading sound effects. Exiting...");
       return false;
     }
+
+    ground_y = GetScreenHeight();
 
     set_has_been_initialized(true);
 
@@ -449,7 +482,9 @@ void GameplayScene::draw_ground() {
   const int w = GetScreenWidth();
   const int h = GetScreenHeight() * 4;
   const int offset_h = 20;
-  DrawRectangle(0, GetScreenHeight() - offset_h, w, h, RED);
+  const int x = 0;
+  const int y = ground_y - offset_h;
+  DrawRectangle(x, y, w, h, RED);
   // DrawRectangle(0, GetScreenHeight() - 10, w, h, c);
 }
 
