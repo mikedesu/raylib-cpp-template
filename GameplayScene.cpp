@@ -362,7 +362,8 @@ void GameplayScene::draw_debug_panel() {
       to_string(get_camera2d().target.y) + "\n" + "GameplayScene" +
       "Sprites: " + to_string(get_sprites().size()) + "\n" +
       "Knife Catches: " + to_string(get_knife_catches()) + "\n" +
-      "IsPaused: " + to_string(get_paused()) + "\n";
+      "IsPaused: " + to_string(get_paused()) + "\n" +
+      "Enemies Killed: " + to_string(enemies_killed) + "\n";
   DrawRectangle(0, 0, 500, 200, Fade(BLACK, 0.5f));
   DrawTextEx(get_global_font(), camera_info_str.c_str(), (Vector2){10, 10}, 16,
              0.5f, WHITE);
@@ -398,20 +399,6 @@ void GameplayScene::cleanup() {
       i--;
     }
   }
-}
-
-bool GameplayScene::ccw(float x1, float y1, float x2, float y2, float x3,
-                        float y3) {
-  float a = x1 * (y2 - y3) - y1 * (x2 - x3) + (x2 * y3 - x3 * y2);
-  return a < 0;
-}
-
-bool GameplayScene::line_did_cross_line(Vector4 &line1, Vector4 &line2) {
-
-  return ccw(line1.x, line1.y, line2.x, line2.y, line2.z, line2.w) !=
-             ccw(line1.z, line1.w, line2.x, line2.y, line2.z, line2.w) &&
-         ccw(line1.x, line1.y, line1.z, line1.w, line2.x, line2.y) !=
-             ccw(line1.x, line1.y, line1.z, line1.w, line2.z, line2.w);
 }
 
 void GameplayScene::draw() {
