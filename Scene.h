@@ -1,5 +1,6 @@
 #pragma once
 
+#include "PopupManager.h"
 #include "Sprite.h"
 #include "control_mode.h"
 #include "entity_id.h"
@@ -49,6 +50,7 @@ public:
   virtual void draw_hud();
 
   virtual void draw();
+  virtual void close();
 
   bool load_texture(const char *asset_name, const char *asset_path,
                     const int num_frames, const int is_player);
@@ -66,7 +68,10 @@ public:
   entity_id spawn_bat();
   entity_id spawn_knife();
   unordered_map<entity_id, Vector2> &get_stars();
+
   unordered_map<entity_id, shared_ptr<Sprite>> &get_sprites();
+  unordered_map<entity_id, shared_ptr<Sprite>> &get_bgsprites();
+
   unordered_map<string, texture_info> &get_textures();
   Camera2D &get_camera2d();
   unsigned int get_current_frame();
@@ -75,6 +80,7 @@ public:
 
   entity_id get_player_id();
   vector<entity_id> &get_entity_ids();
+  vector<entity_id> &get_bg_entity_ids();
 
   scene_transition get_scene_transition();
   scene_id get_id();
@@ -86,7 +92,6 @@ public:
   void set_control_mode(control_mode cm);
   void flip_debug_panel();
   void load_fonts();
-  void close();
   void set_texture_filepath(const char *filepath);
   void add_star();
   void update_stars_vx(const float vx);
@@ -119,6 +124,9 @@ public:
   void set_hud_on(const bool b);
 
   void incr_current_frame();
+
+  shared_ptr<PopupManager> get_popup_manager();
+  void set_popup_manager(shared_ptr<PopupManager> pm);
 
 private:
   unordered_map<string, texture_info> textures;
@@ -160,6 +168,8 @@ private:
   Mix_Music *music = NULL;
 
   bool hud_on = true;
+
+  shared_ptr<PopupManager> popup_manager;
 
   // Music music;
 };

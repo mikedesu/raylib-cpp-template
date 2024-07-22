@@ -43,21 +43,30 @@ bool Game::init() {
     mPrint("Initializing camera...");
     set_camera_default_values();
     SetTargetFPS(60); // Set our game to run at 60 frames-per-second
+
+    // init popupmanager
+    mPrint("Initializing popup manager...");
+    popup_manager = make_shared<PopupManager>();
+    popup_manager->render("Hello, world!");
+
     mPrint("Loading scene...");
 
     shared_ptr<Scene> title_scene = make_shared<TitleScene>();
     title_scene->set_id(next_scene_id++);
+    title_scene->set_popup_manager(popup_manager);
     // title_scene->set_alpha(1.0f);
     scenes[title_scene->get_id()] = title_scene;
     scene_keys["title"] = title_scene->get_id();
 
     shared_ptr<Scene> gameplay_scene = make_shared<GameplayScene>();
     gameplay_scene->set_id(next_scene_id++);
+    gameplay_scene->set_popup_manager(popup_manager);
     scenes[gameplay_scene->get_id()] = gameplay_scene;
     scene_keys["gameplay"] = gameplay_scene->get_id();
 
     shared_ptr<Scene> gameover_scene = make_shared<GameoverScene>();
     gameover_scene->set_id(next_scene_id++);
+    gameover_scene->set_popup_manager(popup_manager);
     scenes[gameover_scene->get_id()] = gameover_scene;
     scene_keys["gameover"] = gameover_scene->get_id();
 

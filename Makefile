@@ -1,5 +1,5 @@
 CC=g++
-OBJ_FILES=main.o Game.o Sprite.o Scene.o TitleScene.o GameplayScene.o GameoverScene.o
+OBJ_FILES=main.o Game.o Sprite.o Scene.o TitleScene.o GameplayScene.o GameoverScene.o PopupManager.o
 
 FLAGS=-Wall
 
@@ -27,6 +27,9 @@ Scene.o: Scene.cpp
 	$(CC) $^ $(FLAGS) -c -o $@
 
 Sprite.o: Sprite.cpp
+	$(CC) $^ $(FLAGS) -c -o $@
+
+PopupManager.o: PopupManager.cpp
 	$(CC) $^ $(FLAGS) -c -o $@
 
 main.o: main.cpp

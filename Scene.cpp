@@ -55,16 +55,6 @@ void Scene::close() {
     Mix_FreeMusic(music);
   }
 
-  // if (IsMusicPlaying(music)) {
-  // if (IsMusicStreamPlaying(music)) {
-  //  mPrint("Stopping music...");
-  //  StopMusicStream(music);
-  //}
-  // if (IsMusicReady(music)) {
-  //  mPrint("Unloading music...");
-  //  UnloadMusicStream(music);
-  //}
-
   has_been_initialized = false;
   player_id = -1;
 
@@ -133,9 +123,13 @@ void Scene::draw() {
     const float y0 = GetScreenHeight() / 4.0f - 32.0f;
     const float y1 = GetScreenHeight() * 3.0f / 4.0f;
 
-    DrawTextEx(global_font, "@evildojo666 presents", (Vector2){x, y0}, 32, 0.5f,
-               WHITE);
-    DrawTextEx(global_font, "by darkmage", (Vector2){x, y1}, 32, 0.5f, WHITE);
+    // DrawTextEx(global_font, "@evildojo666 presents", (Vector2){x, y0}, 32,
+    // 0.5f,
+    //            WHITE);
+    DrawText("@evildojo666 presents", x, y0, 32, WHITE);
+
+    // DrawTextEx(global_font, "by darkmage", (Vector2){x, y1}, 32, 0.5f,
+    // WHITE);
   }
   // else if (scenetype == SCENE_TYPE_GAMEOVER) {
   //   const float x = 0;
@@ -398,6 +392,10 @@ unordered_map<entity_id, shared_ptr<Sprite>> &Scene::get_sprites() {
   return sprites;
 }
 
+unordered_map<entity_id, shared_ptr<Sprite>> &Scene::get_bgsprites() {
+  return bgsprites;
+}
+
 unordered_map<string, texture_info> &Scene::get_textures() { return textures; }
 float Scene::get_global_scale() { return global_scale; }
 void Scene::set_scene_transition(scene_transition st) { transition = st; }
@@ -428,6 +426,8 @@ void Scene::update_stars_vx(const float vx) {
 void Scene::cleanup() {}
 
 vector<entity_id> &Scene::get_entity_ids() { return entity_ids; }
+
+vector<entity_id> &Scene::get_bg_entity_ids() { return bg_entity_ids; }
 
 void Scene::pause() { is_paused = true; }
 
@@ -471,3 +471,8 @@ const bool Scene::get_hud_on() const { return hud_on; }
 void Scene::set_hud_on(const bool b) { hud_on = b; }
 
 void Scene::incr_current_frame() { current_frame++; }
+
+shared_ptr<PopupManager> Scene::get_popup_manager() { return popup_manager; }
+void Scene::set_popup_manager(shared_ptr<PopupManager> pm) {
+  popup_manager = pm;
+}

@@ -15,6 +15,8 @@ public:
   void draw_hud();
   void draw();
 
+  void close();
+
   void cleanup();
   void gameover();
   inline void handle_draw_debug_panel();
@@ -39,6 +41,8 @@ private:
 
   int ground_y = 0;
 
-  bool line_did_cross_line(Vector4 &line1, Vector4 &line2);
-  bool ccw(float x1, float y1, float x2, float y2, float x3, float y3);
+  bool show_test_popup = false;
+
+  // bool line_did_cross_line(Vector4 &line1, Vector4 &line2);
+  // bool ccw(float x1, float y1, float x2, float y2, float x3, float y3);
 };

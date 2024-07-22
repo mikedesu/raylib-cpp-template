@@ -122,6 +122,8 @@ void GameplayScene::handle_player_collision() {
         if (t == SPRITETYPE_KNIFE) {
           s.second->mark_for_deletion();
           set_knife_catches(get_knife_catches() + 1);
+          get_popup_manager()->render("knife catch " +
+                                      to_string(get_knife_catches()));
         } else if (t == SPRITETYPE_ENEMY) {
           s.second->mark_for_deletion();
           player->set_hp(player->get_hp() - 1);
@@ -155,8 +157,12 @@ void GameplayScene::handle_knife_collisions() {
             if (s.second->get_hp() <= 0) {
               s.second->mark_for_deletion();
               knife.second->mark_for_deletion();
+
               // Mix_PlayChannel(-1, sfx_knife_hit, 0);
               enemies_killed++;
+
+              get_popup_manager()->render("enemies killed " +
+                                          to_string(enemies_killed));
             }
           }
           break;
@@ -235,7 +241,17 @@ void GameplayScene::handle_input() {
       // const float bat_y =
       //     (float)GetScreenHeight() / 2 - (float)bat_height + 300;
       // spawn_bat(bat_x, bat_y);
-      spawn_bat();
+      // spawn_bat();
+      // if (get_popup_manager() != nullptr) {
+      //  get_popup_manager()->print("bat");
+      //}
+
+      show_test_popup = !show_test_popup;
+    }
+
+    if (IsKeyPressed(KEY_R)) {
+      static int count = 0;
+      get_popup_manager()->render("test " + to_string(count++));
     }
 
     // if (IsKeyPressed(KEY_P)) {
@@ -383,8 +399,10 @@ void GameplayScene::draw_hud() {
                           enemies_killed_str + " " + "\nPress Z to throw knife";
 
   // DrawRectangle(0, 0, 500, 20, Fade(BLACK, 0.5f));
-  DrawTextEx(get_global_font(), full_str.c_str(), (Vector2){10, 10}, 20, 0.5f,
-             WHITE);
+  // DrawTextEx(get_global_font(), full_str.c_str(), (Vector2){10, 10}, 20,
+  // 0.5f,
+  //           WHITE);
+  DrawText(full_str.c_str(), 10, 10, 20, WHITE);
 }
 
 void GameplayScene::cleanup() {
@@ -450,6 +468,14 @@ void GameplayScene::draw() {
 
   handle_draw_debug_panel();
 
+  if (show_test_popup) {
+    if (get_popup_manager() != nullptr) {
+      const float x = GetScreenWidth() / 2.0f - 100.0f;
+      const float y = GetScreenHeight() / 2.0f - 100.0f;
+      get_popup_manager()->draw(x, y);
+    }
+  }
+
   // update music frame
   // current_frame++;
   incr_current_frame();
@@ -479,4 +505,37 @@ void GameplayScene::draw_stars() {
   for (auto &s : get_stars()) {
     DrawRectangle(s.second.x, s.second.y, 4, 4, WHITE);
   }
+}
+
+void GameplayScene::close() {
+  mPrint("Closing gameplay scene...");
+  mPrint("Unloading textures...");
+  for (auto &t : get_textures()) {
+    UnloadTexture(t.second.texture);
+  }
+  mPrint("Clearing textures...");
+  get_textures().clear();
+  mPrint("Clearing sprites...");
+  get_sprites().clear();
+  get_bgsprites().clear();
+  mPrint("Clearing entity ids...");
+  get_entity_ids().clear();
+  get_bg_entity_ids().clear();
+  mPrint("Unloading font...");
+  UnloadFont(get_global_font());
+  mPrint("Clearing stars...");
+  get_stars().clear();
+
+  // if (music != NULL) {
+  //  stop music
+  //  Mix_PauseMusic();
+  //  Mix_FreeMusic(music);
+  //}
+
+  set_has_been_initialized(false);
+  set_player_id(-1);
+
+  enemies_killed = 0;
+
+  mPrint("Scene closed.");
 }

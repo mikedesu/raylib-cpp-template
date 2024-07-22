@@ -6,6 +6,7 @@
 
 #include "GameoverScene.h"
 #include "GameplayScene.h"
+#include "PopupManager.h"
 #include "Sprite.h"
 #include "TitleScene.h"
 
@@ -73,4 +74,6 @@ private:
 
   scene_id current_scene_id;
   shared_ptr<Scene> current_scene;
+
+  shared_ptr<PopupManager> popup_manager;
 };
