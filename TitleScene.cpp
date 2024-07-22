@@ -53,7 +53,7 @@ bool TitleScene::init() {
     //  const int off_w = 0;
     //  const int off_h = h / 2;
 
-    const int x = w / 8 * get_global_scale();
+    const int x = w / 8.0f * get_global_scale();
     const int y = GetScreenHeight() / 4;
     // entity_id title_id = spawn_entity("title", x, y, SPRITETYPE_PLAYER,
     // false);

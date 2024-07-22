@@ -44,48 +44,23 @@ public:
   virtual void update();
   virtual bool init();
   virtual void handle_input();
-  // virtual void handle_cam_input();
-  // virtual void handle_player_input();
+  virtual void draw_debug_panel();
+  virtual void cleanup();
+  virtual void draw_hud();
 
   void draw();
 
   bool load_texture(const char *asset_name, const char *asset_path,
                     const int num_frames, const int is_player);
   bool load_textures();
-
   bool get_debug_panel_on();
-
-  void set_camera_default_values();
-  void set_debug_panel_on(bool b);
-  void set_global_scale(float s);
   float get_global_scale();
-
-  void set_control_mode(control_mode cm);
-
-  void flip_debug_panel();
-  virtual void draw_debug_panel();
-
-  void load_fonts();
-  void close();
-
   entity_id spawn_entity(const char *texture_key, float x, float y,
                          sprite_type type, bool is_anim);
-
   entity_id spawn_player(float x, float y);
   entity_id spawn_bat(const float x, const float y);
   entity_id spawn_knife();
-  // entity_id spawn_pipebase(const float x, const float y);
-  //  entity_id spawn_redbrick(const float x, const float y);
-
-  void set_texture_filepath(const char *filepath);
-
-  void add_star();
   unordered_map<entity_id, Vector2> &get_stars();
-  void update_stars_vx(const float vx);
-
-  bool get_has_been_initialized();
-  void set_has_been_initialized(bool b);
-
   unordered_map<entity_id, shared_ptr<Sprite>> &get_sprites();
   unordered_map<string, texture_info> &get_textures();
   Camera2D &get_camera2d();
@@ -93,46 +68,47 @@ public:
   control_mode get_control_mode();
   Font &get_global_font();
 
-  void set_scene_transition(scene_transition st);
-  scene_transition get_scene_transition();
-
+  entity_id get_player_id();
   vector<entity_id> &get_entity_ids();
 
-  void set_alpha(float a);
-  const float get_alpha() const;
-
-  void set_id(scene_id i);
+  scene_transition get_scene_transition();
   scene_id get_id();
-
-  void set_player_id(entity_id id);
-  entity_id get_player_id();
-
-  void set_scene_type(scene_type st);
   scene_type get_scene_type();
 
+  void set_camera_default_values();
+  void set_debug_panel_on(bool b);
+  void set_global_scale(float s);
+  void set_control_mode(control_mode cm);
+  void flip_debug_panel();
+  void load_fonts();
+  void close();
+  void set_texture_filepath(const char *filepath);
+  void add_star();
+  void update_stars_vx(const float vx);
+  void set_has_been_initialized(bool b);
+  void set_scene_transition(scene_transition st);
+  void set_alpha(float a);
+  void set_id(scene_id i);
+  void set_player_id(entity_id id);
+  void set_scene_type(scene_type st);
   void draw_ground();
   void draw_stars();
-
   void pause();
   void unpause();
-  bool get_paused() const;
-
-  virtual void cleanup();
-
-  const Vector2 get_starting_knife_speed() const;
   void set_knife_speed(const Vector2 speed);
-  const Vector2 get_knife_speed() const;
-
   void set_knife_catches(const unsigned int catches);
+
+  const bool get_has_been_initialized() const;
+  const bool get_paused() const;
+  const float get_alpha() const;
+  const Vector2 get_starting_knife_speed() const;
+  const Vector2 get_knife_speed() const;
   const unsigned int get_knife_catches() const;
 
   Mix_Music *get_music();
   void load_music(const char *path);
-
   void set_music_path(const char *path);
   const string get_music_path() const;
-
-  virtual void draw_hud();
 
 private:
   unordered_map<string, texture_info> textures;

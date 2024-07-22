@@ -75,7 +75,8 @@ bool Game::init() {
       return false;
     }
 
-    current_scene_id = scene_keys["title"];
+    // current_scene_id = scene_keys["title"];
+    current_scene_id = scene_keys["gameplay"];
 
     mPrint("Loading render texture...");
     target = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
@@ -144,17 +145,35 @@ void Game::handle_transition_out() {
   } else {
     DrawRectangle(0, 0, w, h, Fade(c, a));
 
-    // stop the music for the scene
-    // if (scenes[current_scene_id]->get_music() != nullptr) {
-    //  Mix_HaltMusic();
-    //}
-    scenes[current_scene_id]->close();
+    // scenes[current_scene_id]->close();
 
     // this makes the assumption that we will ALWAYS transition into the
     // gameplay scene and that we are on the title scene this is untrue!
-    current_scene_id = scene_keys["gameplay"];
 
-    // scenes[current_scene_id]->set_scene_transition(SCENE_TRANSITION_NONE);
+    const scene_id title_scene_id = scene_keys["title"];
+    const scene_id gameplay_scene_id = scene_keys["gameplay"];
+    const scene_id gameover_scene_id = scene_keys["gameover"];
+
+    // if (scenes[title_scene_id]->get_has_been_initialized() == false) {
+    //   scenes[title_scene_id]->init();
+    // }
+    // if (scenes[gameover_scene_id]->get_has_been_initialized() == false) {
+    //   scenes[gameover_scene_id]->init();
+    // }
+    // if (scenes[gameplay_scene_id]->get_has_been_initialized() == false) {
+    //   scenes[gameplay_scene_id]->init();
+    // }
+
+    if (current_scene_id == title_scene_id) {
+      scenes[gameplay_scene_id]->set_scene_transition(SCENE_TRANSITION_IN);
+      current_scene_id = gameplay_scene_id;
+    } else if (current_scene_id == gameplay_scene_id) {
+      scenes[gameover_scene_id]->set_scene_transition(SCENE_TRANSITION_IN);
+      current_scene_id = gameover_scene_id;
+    } else if (current_scene_id == gameover_scene_id) {
+      scenes[title_scene_id]->set_scene_transition(SCENE_TRANSITION_IN);
+      current_scene_id = title_scene_id;
+    }
   }
 }
 
@@ -164,6 +183,7 @@ void Game::handle_transition_in() {
   const int w = GetScreenWidth();
   const int h = GetScreenHeight();
   const float transition_speed = 0.040f;
+  // const float transition_speed = 0.001f;
 
   if (a > 0.0f) {
     DrawRectangle(0, 0, w, h, Fade(c, a));

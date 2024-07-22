@@ -106,10 +106,11 @@ void GameplayScene::handle_player_collision() {
           s.second->mark_for_deletion();
           player->set_hp(player->get_hp() - 1);
           enemies_killed++;
-          // if (player->get_hp() <= 0) {
-          //   set_scene_transition(SCENE_TRANSITION_OUT);
-          //   set_next_scene_id(SCENE_ID_GAMEOVER);
-          // }
+
+          if (player->get_hp() <= 0) {
+            set_scene_transition(SCENE_TRANSITION_OUT);
+            //   set_next_scene_id(SCENE_ID_GAMEOVER);
+          }
         }
         // else if (t == SPRITETYPE_RED_BRICK) {
         //}
@@ -264,7 +265,7 @@ void GameplayScene::handle_input() {
 
 bool GameplayScene::init() {
   if (!get_has_been_initialized()) {
-    mPrint("Initializing scene...");
+    mPrint("Initializing gameplay scene...");
     mPrint("Initializing camera...");
     set_camera_default_values();
     mPrint("Loading assets...");
@@ -274,6 +275,7 @@ bool GameplayScene::init() {
       mPrint("Error loading textures. Exiting...");
       return false;
     }
+    mPrint("Spawning player...");
 
     const int sprite_width = get_textures()["skull"].texture.width;
     const int sprite_height = get_textures()["skull"].texture.height;
@@ -302,6 +304,7 @@ bool GameplayScene::init() {
 
     // load_music("audio/skull-title-0.mp3");
     // Mix_PlayMusic(get_music(), -1);
+    mPrint("Loading sound effects...");
 
     sfx_knife_throw = Mix_LoadWAV("audio/knife-throw.mp3");
     sfx_knife_hit = Mix_LoadWAV("audio/knife-hit.mp3");
@@ -312,6 +315,8 @@ bool GameplayScene::init() {
     }
 
     set_has_been_initialized(true);
+
+    mPrint("GameplayScene initialized");
   }
   return true;
 }

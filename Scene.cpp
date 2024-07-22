@@ -65,6 +65,9 @@ void Scene::close() {
   //  UnloadMusicStream(music);
   //}
 
+  has_been_initialized = false;
+  player_id = -1;
+
   mPrint("Scene closed.");
 }
 
@@ -370,7 +373,11 @@ void Scene::add_star() {
 }
 
 void Scene::set_control_mode(control_mode cm) { controlmode = cm; }
-bool Scene::get_has_been_initialized() { return has_been_initialized; }
+
+const bool Scene::get_has_been_initialized() const {
+  return has_been_initialized;
+}
+
 void Scene::set_has_been_initialized(bool b) { has_been_initialized = b; }
 
 unordered_map<entity_id, shared_ptr<Sprite>> &Scene::get_sprites() {
@@ -412,7 +419,7 @@ void Scene::pause() { is_paused = true; }
 
 void Scene::unpause() { is_paused = false; }
 
-bool Scene::get_paused() const { return is_paused; }
+const bool Scene::get_paused() const { return is_paused; }
 
 const Vector2 Scene::get_starting_knife_speed() const {
   return starting_knife_speed;
@@ -440,17 +447,6 @@ void Scene::load_music(const char *path) {
     mPrint("Mix_LoadMUS: " + err);
     return;
   }
-
-  // music = LoadMusicStream(path);
-  //
-  //  if (IsMusicReady(music)) {
-  //    mPrint("### MUSIC IS READY ###");
-  //    SetMusicVolume(music, 0.8f);
-  //    PlayMusicStream(music);
-  //    // UpdateMusicStream(get_music());
-  //  } else {
-  //    mPrint("### MUSIC NOT READY ###");
-  //  }
 }
 
 void Scene::set_music_path(const char *path) { music_path = path; }

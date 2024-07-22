@@ -12,7 +12,7 @@ GameoverScene::GameoverScene() {
   set_texture_filepath("title_textures.txt");
   set_global_scale(32.0f);
   set_scene_transition(SCENE_TRANSITION_IN);
-  set_scene_type(SCENE_TYPE_TITLE);
+  set_scene_type(SCENE_TYPE_GAMEOVER);
 
   // load_music("audio/skull-title.wav");
   //  load_music("audio/skull-title-0.mp3");
