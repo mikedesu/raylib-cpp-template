@@ -22,7 +22,7 @@ void GameplayScene::update_player_movement() {
   // player->incr_ay(0.0032f);
   player->incr_ay(gravity);
   // player->incr_ay(gravity);
-  // player->set_y(player->get_y() + player->get_vy());
+  player->set_y(player->get_y() + player->get_vy());
   player->update();
   // player->set_y(player->get_y() + player->get_vy());
 
@@ -50,10 +50,10 @@ void GameplayScene::update_enemy_movement() {
     case SPRITETYPE_ENEMY:
     case SPRITETYPE_PIPEBASE:
       s.second->update();
-      // s.second->set_x(s.second->get_x() + s.second->get_vx());
+      s.second->set_x(s.second->get_x() + s.second->get_vx());
       break;
       s.second->update();
-      // s.second->set_x(s.second->get_x() + s.second->get_vx());
+      s.second->set_x(s.second->get_x() + s.second->get_vx());
       break;
     }
   }
