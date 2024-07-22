@@ -73,8 +73,8 @@ public:
   entity_id spawn_player(float x, float y);
   entity_id spawn_bat(const float x, const float y);
   entity_id spawn_knife();
-  entity_id spawn_pipebase(const float x, const float y);
-  entity_id spawn_redbrick(const float x, const float y);
+  // entity_id spawn_pipebase(const float x, const float y);
+  //  entity_id spawn_redbrick(const float x, const float y);
 
   void set_texture_filepath(const char *filepath);
 

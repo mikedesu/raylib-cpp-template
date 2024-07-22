@@ -230,17 +230,17 @@ void Scene::load_fonts() {
   global_font = LoadFont(font_path);
 }
 
-entity_id Scene::spawn_redbrick(const float x, const float y) {
-  mPrint("Spawning redbrick...");
-  entity_id id = spawn_entity("redbrick", x, y, SPRITETYPE_RED_BRICK, false);
-  sprites[id]->set_vx(0.0f);
-  sprites[id]->set_vy(0.0f);
-  sprites[id]->set_ax(0.0f);
-  sprites[id]->set_ay(0.0f);
-  sprites[id]->set_hp(1);
-  sprites[id]->set_maxhp(1);
-  return id;
-}
+// entity_id Scene::spawn_redbrick(const float x, const float y) {
+//   mPrint("Spawning redbrick...");
+//   entity_id id = spawn_entity("redbrick", x, y, SPRITETYPE_RED_BRICK, false);
+//   sprites[id]->set_vx(0.0f);
+//   sprites[id]->set_vy(0.0f);
+//   sprites[id]->set_ax(0.0f);
+//   sprites[id]->set_ay(0.0f);
+//   sprites[id]->set_hp(1);
+//   sprites[id]->set_maxhp(1);
+//   return id;
+// }
 
 entity_id Scene::spawn_player(float x, float y) {
   mPrint("Attempting to spawn player...");
@@ -272,17 +272,17 @@ entity_id Scene::spawn_bat(const float x, const float y) {
   return id;
 }
 
-entity_id Scene::spawn_pipebase(const float x, const float y) {
-  mPrint("Spawning pipebase...");
-  entity_id id = spawn_entity("pipebase", x, y, SPRITETYPE_PIPEBASE, false);
-  sprites[id]->set_vx(1.0f);
-  sprites[id]->set_vy(0.0f);
-  sprites[id]->set_ax(0.0f);
-  sprites[id]->set_ay(0.0f);
-  sprites[id]->set_hp(10);
-  sprites[id]->set_maxhp(10);
-  return id;
-}
+// entity_id Scene::spawn_pipebase(const float x, const float y) {
+//   mPrint("Spawning pipebase...");
+//   entity_id id = spawn_entity("pipebase", x, y, SPRITETYPE_PIPEBASE, false);
+//   sprites[id]->set_vx(1.0f);
+//   sprites[id]->set_vy(0.0f);
+//   sprites[id]->set_ax(0.0f);
+//   sprites[id]->set_ay(0.0f);
+//   sprites[id]->set_hp(10);
+//   sprites[id]->set_maxhp(10);
+//   return id;
+// }
 
 entity_id Scene::spawn_knife() {
   mPrint("Spawning knife...");

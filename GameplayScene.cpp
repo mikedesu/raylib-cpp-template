@@ -2,7 +2,7 @@
 #include "Sprite.h"
 #include "mPrint.h"
 
-static entity_id next_entity_id = 0;
+// static entity_id next_entity_id = 0;
 
 GameplayScene::GameplayScene() {
   mPrint("GameplayScene constructor");
@@ -48,12 +48,13 @@ void GameplayScene::update_enemy_movement() {
   for (auto &s : get_sprites()) {
     switch (s.second->get_type()) {
     case SPRITETYPE_ENEMY:
-    case SPRITETYPE_PIPEBASE:
       s.second->update();
       s.second->set_x(s.second->get_x() + s.second->get_vx());
       break;
       s.second->update();
       s.second->set_x(s.second->get_x() + s.second->get_vx());
+      break;
+    default:
       break;
     }
   }
@@ -65,6 +66,8 @@ void GameplayScene::update_knife_movement() {
     case SPRITETYPE_KNIFE:
       s.second->update();
       s.second->set_x(s.second->get_x() + s.second->get_vx());
+      break;
+    default:
       break;
     }
   }
@@ -107,9 +110,9 @@ void GameplayScene::handle_player_collision() {
           //   set_scene_transition(SCENE_TRANSITION_OUT);
           //   set_next_scene_id(SCENE_ID_GAMEOVER);
           // }
-        } else if (t == SPRITETYPE_PIPEBASE) {
-          // player cannot move thru the pipe
         }
+        // else if (t == SPRITETYPE_RED_BRICK) {
+        //}
       }
       break;
     default:
@@ -127,8 +130,6 @@ void GameplayScene::handle_knife_collisions() {
         sprite_type t2 = s.second->get_type();
         switch (t2) {
         case SPRITETYPE_ENEMY: {
-          // if (CheckCollisionRecs(knife.second->get_dest(),
-          // s.second->get_dest())) {
           if (CheckCollisionRecs(knife.second->get_dest(),
                                  s.second->get_dest())) {
 
@@ -142,10 +143,14 @@ void GameplayScene::handle_knife_collisions() {
           }
           break;
         }
+        default:
+          break;
         }
       }
       break;
     }
+    default:
+      break;
     }
   }
 }
@@ -157,13 +162,13 @@ void GameplayScene::update() {
 
     update_stars_vx(star_move_speed);
 
-    update_player_movement();
-    update_enemy_movement();
-    update_knife_movement();
-
     handle_offscreen();
     handle_player_collision();
     handle_knife_collisions();
+
+    update_player_movement();
+    update_enemy_movement();
+    update_knife_movement();
 
     // we want the camera to follow the player in such a way that
     // the player is always in the center of the screen
@@ -204,13 +209,13 @@ void GameplayScene::handle_input() {
       spawn_bat(bat_x, bat_y);
     }
 
-    if (IsKeyPressed(KEY_P)) {
-      const int pipebase_width = get_textures()["pipebase"].texture.width;
-      const int pipebase_height = get_textures()["pipebase"].texture.height;
-      const float pipebase_x = -pipebase_width;
-      const float pipebase_y = GetScreenHeight() - pipebase_height * 4;
-      spawn_pipebase(pipebase_x, pipebase_y);
-    }
+    // if (IsKeyPressed(KEY_P)) {
+    //   const int pipebase_width = get_textures()["pipebase"].texture.width;
+    //   const int pipebase_height = get_textures()["pipebase"].texture.height;
+    //   const float pipebase_x = -pipebase_width;
+    //   const float pipebase_y = GetScreenHeight() - pipebase_height * 4;
+    //   spawn_pipebase(pipebase_x, pipebase_y);
+    // }
 
     if (IsKeyPressed(KEY_Z)) {
       // fire a knife
@@ -280,18 +285,18 @@ bool GameplayScene::init() {
       add_star();
     }
 
-    const int bat_width = get_textures()["bat"].texture.width;
-    const int bat_height = get_textures()["bat"].texture.height;
-    const float bat_x = -bat_width;
-    const float bat_y = (float)GetScreenHeight() / 2 - (float)bat_height + 300;
-    spawn_bat(bat_x, bat_y);
+    // const int bat_width = get_textures()["bat"].texture.width;
+    // const int bat_height = get_textures()["bat"].texture.height;
+    // const float bat_x = -bat_width;
+    // const float bat_y = (float)GetScreenHeight() / 2 - (float)bat_height +
+    // 300; spawn_bat(bat_x, bat_y);
 
     // spawn a red brick
-    const int redbrick_width = get_textures()["redbrick"].texture.width;
-    const int redbrick_height = get_textures()["redbrick"].texture.height;
-    const float redbrick_x = GetScreenWidth() / 2.0 - redbrick_width;
-    const float redbrick_y = 0;
-    spawn_redbrick(redbrick_x, redbrick_y);
+    // const int redbrick_width = get_textures()["redbrick"].texture.width;
+    // const int redbrick_height = get_textures()["redbrick"].texture.height;
+    // const float redbrick_x = GetScreenWidth() / 2.0 - redbrick_width;
+    // const float redbrick_y = 0;
+    // spawn_redbrick(redbrick_x, redbrick_y);
 
     get_camera2d().offset.y = GetScreenHeight() / 2.0f;
 
