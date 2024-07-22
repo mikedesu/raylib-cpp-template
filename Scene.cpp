@@ -95,9 +95,7 @@ void Scene::draw_ground() {
 
 void Scene::draw() {
   BeginMode2D(camera2d);
-
   Color clear_color = BLACK;
-
   switch (scenetype) {
   case SCENE_TYPE_TITLE:
     clear_color = BLACK;
@@ -112,17 +110,14 @@ void Scene::draw() {
     clear_color = BLACK;
     break;
   }
-
   ClearBackground(clear_color);
   // no background yet, but lets mock one up with shapes
   // draw a large rectangle to represent a scene
   // but lets make the dimension ratio 720x1280
   // DrawRectangle(GetScreenWidth() / 2 - 405 / 2, 0, 405, 720, BLACK);
-
   // draw stars
   // want: real stars
   if (scenetype == SCENE_TYPE_GAMEPLAY) {
-
     draw_stars();
     draw_ground();
   }
@@ -144,14 +139,12 @@ void Scene::draw() {
     DrawTextEx(global_font, "@evildojo666 presents", (Vector2){x, y0}, 32, 0.5f,
                WHITE);
     DrawTextEx(global_font, "by darkmage", (Vector2){x, y1}, 32, 0.5f, WHITE);
-  } else if (scenetype == SCENE_TYPE_GAMEOVER) {
-    const float x = 0;
-    // const float x = GetScreenWidth() / 2.0f;
-    const float y = 0;
-    // const float y = GetScreenHeight() / 2.0f;
-
-    DrawTextEx(global_font, "Gameover", (Vector2){x, y}, 64, 0.5f, WHITE);
   }
+  // else if (scenetype == SCENE_TYPE_GAMEOVER) {
+  //   const float x = 0;
+  //   const float y = 0;
+  //   DrawTextEx(global_font, "Gameover", (Vector2){x, y}, 64, 0.5f, WHITE);
+  // }
 
   EndMode2D();
 

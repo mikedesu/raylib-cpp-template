@@ -76,7 +76,8 @@ bool Game::init() {
     }
 
     // current_scene_id = scene_keys["title"];
-    current_scene_id = scene_keys["gameplay"];
+    //  current_scene_id = scene_keys["gameplay"];
+    current_scene_id = scene_keys["gameover"];
 
     mPrint("Loading render texture...");
     target = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
@@ -145,7 +146,7 @@ void Game::handle_transition_out() {
   } else {
     DrawRectangle(0, 0, w, h, Fade(c, a));
 
-    // scenes[current_scene_id]->close();
+    scenes[current_scene_id]->close();
 
     // this makes the assumption that we will ALWAYS transition into the
     // gameplay scene and that we are on the title scene this is untrue!
@@ -154,15 +155,15 @@ void Game::handle_transition_out() {
     const scene_id gameplay_scene_id = scene_keys["gameplay"];
     const scene_id gameover_scene_id = scene_keys["gameover"];
 
-    // if (scenes[title_scene_id]->get_has_been_initialized() == false) {
-    //   scenes[title_scene_id]->init();
-    // }
-    // if (scenes[gameover_scene_id]->get_has_been_initialized() == false) {
-    //   scenes[gameover_scene_id]->init();
-    // }
-    // if (scenes[gameplay_scene_id]->get_has_been_initialized() == false) {
-    //   scenes[gameplay_scene_id]->init();
-    // }
+    if (scenes[title_scene_id]->get_has_been_initialized() == false) {
+      scenes[title_scene_id]->init();
+    }
+    if (scenes[gameover_scene_id]->get_has_been_initialized() == false) {
+      scenes[gameover_scene_id]->init();
+    }
+    if (scenes[gameplay_scene_id]->get_has_been_initialized() == false) {
+      scenes[gameplay_scene_id]->init();
+    }
 
     if (current_scene_id == title_scene_id) {
       scenes[gameplay_scene_id]->set_scene_transition(SCENE_TRANSITION_IN);

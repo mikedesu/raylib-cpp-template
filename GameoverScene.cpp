@@ -9,8 +9,8 @@
 GameoverScene::GameoverScene() {
   mPrint("GameoverScene constructor");
   set_control_mode(CONTROL_MODE_PLAYER);
-  set_texture_filepath("title_textures.txt");
-  set_global_scale(32.0f);
+  set_texture_filepath("gameover_textures.txt");
+  set_global_scale(16.0f);
   set_scene_transition(SCENE_TRANSITION_IN);
   set_scene_type(SCENE_TYPE_GAMEOVER);
 
@@ -47,6 +47,14 @@ bool GameoverScene::init() {
       mPrint("Error loading textures. Exiting...");
       return false;
     }
+    const int w = get_textures()["gameover"].texture.width;
+    const int h = get_textures()["gameover"].texture.height;
+    //  const int off_w = 0;
+    //  const int off_h = h / 2;
+    const int x = GetScreenWidth() / 2 - w * get_global_scale() / 2;
+    const int y = GetScreenHeight() / 4;
+
+    spawn_entity("gameover", x, y, SPRITETYPE_PLAYER, false);
 
     // const int w = get_textures()["title"].texture.width;
     //  const int h = get_textures()["title"].texture.height;
