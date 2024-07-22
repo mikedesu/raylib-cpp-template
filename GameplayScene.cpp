@@ -447,7 +447,7 @@ inline void GameplayScene::handle_draw_debug_panel() {
 void GameplayScene::draw_ground() {
   // want a real ground sprite texture
   const int w = GetScreenWidth();
-  const int h = GetScreenHeight();
+  const int h = GetScreenHeight() * 4;
   const int offset_h = 20;
   DrawRectangle(0, GetScreenHeight() - offset_h, w, h, RED);
   // DrawRectangle(0, GetScreenHeight() - 10, w, h, c);
