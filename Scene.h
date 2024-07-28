@@ -64,8 +64,7 @@ public:
                          sprite_type type, bool is_anim);
 
   entity_id spawn_player(float x, float y);
-  entity_id spawn_bat(const float x, const float y);
-  entity_id spawn_bat();
+
   entity_id spawn_knife();
   unordered_map<entity_id, Vector2> &get_stars();
 

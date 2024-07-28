@@ -257,29 +257,6 @@ entity_id Scene::spawn_player(float x, float y) {
   return id;
 }
 
-entity_id Scene::spawn_bat() {
-  // get player position
-  // const float x = sprites[player_id]->get_x();
-  const int bat_width = get_textures()["bat"].texture.width;
-  const float x = -bat_width;
-  const float y = sprites[player_id]->get_y();
-  // const int bat_height = get_textures()["bat"].texture.height;
-  //(float)GetScreenHeight() / 2 - (float)bat_height + 300;
-  return spawn_bat(x, y);
-}
-
-entity_id Scene::spawn_bat(const float x, const float y) {
-  mPrint("Spawning bat...");
-  entity_id id = spawn_entity("bat", x, y, SPRITETYPE_ENEMY, true);
-  sprites[id]->set_vx(2.0f);
-  sprites[id]->set_vy(0.0f);
-  sprites[id]->set_ax(0.0f);
-  sprites[id]->set_ay(0.0f);
-  sprites[id]->set_hp(1);
-  sprites[id]->set_maxhp(1);
-  return id;
-}
-
 // entity_id Scene::spawn_pipebase(const float x, const float y) {
 //   mPrint("Spawning pipebase...");
 //   entity_id id = spawn_entity("pipebase", x, y, SPRITETYPE_PIPEBASE, false);

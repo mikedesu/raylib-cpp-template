@@ -30,6 +30,9 @@ public:
   void draw_ground();
   void draw_stars();
 
+  entity_id spawn_bat(const float x, const float y, const float vx);
+  entity_id spawn_bat();
+
 private:
   const float gravity = 0.0032f;
   // const float gravity = 0.0064f;

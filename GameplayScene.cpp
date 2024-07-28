@@ -23,9 +23,9 @@ void GameplayScene::update_player_movement() {
   shared_ptr<Sprite> player = get_sprites()[get_player_id()];
 
   // this handles the 'flappy bird' bounce
-  player->incr_ay(gravity);
-  player->set_y(player->get_y() + player->get_vy());
-  player->update();
+  // player->incr_ay(gravity);
+  // player->set_y(player->get_y() + player->get_vy());
+  // player->update();
 
   const int height = player->get_height();
   const int width = player->get_width();
@@ -128,6 +128,8 @@ void GameplayScene::handle_player_collision() {
           s.second->mark_for_deletion();
           player->set_hp(player->get_hp() - 1);
           enemies_killed++;
+          get_popup_manager()->render("enemies killed: " +
+                                      to_string(enemies_killed));
 
           if (player->get_hp() <= 0) {
             set_scene_transition(SCENE_TRANSITION_OUT);
@@ -221,6 +223,10 @@ void GameplayScene::handle_input() {
 
   if (IsKeyPressed(KEY_D)) {
     flip_debug_panel();
+  }
+
+  if (IsKeyPressed(KEY_F)) {
+    ToggleFullscreen();
   }
 
   if (!get_paused()) {
@@ -470,8 +476,16 @@ void GameplayScene::draw() {
 
   if (show_test_popup) {
     if (get_popup_manager() != nullptr) {
+
       const float x = GetScreenWidth() / 2.0f - 100.0f;
       const float y = GetScreenHeight() / 2.0f - 100.0f;
+
+      // get player x
+      // const float x = get_sprites()[get_player_id()]->get_x();
+
+      // get player y
+      // const float y = get_sprites()[get_player_id()]->get_y();
+
       get_popup_manager()->draw(x, y);
     }
   }
@@ -538,4 +552,36 @@ void GameplayScene::close() {
   enemies_killed = 0;
 
   mPrint("Scene closed.");
+}
+
+entity_id GameplayScene::spawn_bat() {
+  // get player position
+  // const float x = sprites[player_id]->get_x();
+  auto textures = get_textures();
+  auto sprites = get_sprites();
+  auto player_id = get_player_id();
+  const int bat_width = textures["bat"].texture.width;
+
+  int roll = rand() % 2;
+
+  const float x = roll ? -bat_width : GetScreenWidth();
+  const float vx = roll ? 2.0f : -2.0f;
+  const float y = sprites[player_id]->get_y();
+  // const int bat_height = get_textures()["bat"].texture.height;
+  //(float)GetScreenHeight() / 2 - (float)bat_height + 300;
+  return spawn_bat(x, y, vx);
+}
+
+entity_id GameplayScene::spawn_bat(const float x, const float y,
+                                   const float vx) {
+  mPrint("Spawning bat...");
+  entity_id id = spawn_entity("bat", x, y, SPRITETYPE_ENEMY, true);
+  auto sprites = get_sprites();
+  sprites[id]->set_vx(vx);
+  sprites[id]->set_vy(0.0f);
+  sprites[id]->set_ax(0.0f);
+  sprites[id]->set_ay(0.0f);
+  sprites[id]->set_hp(1);
+  sprites[id]->set_maxhp(1);
+  return id;
 }

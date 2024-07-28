@@ -32,6 +32,8 @@ void TitleScene::handle_input() {
     flip_debug_panel();
   } else if (IsKeyPressed(KEY_SPACE)) {
     set_scene_transition(SCENE_TRANSITION_OUT);
+  } else if (IsKeyPressed(KEY_F)) {
+    ToggleFullscreen();
   }
 }
 
