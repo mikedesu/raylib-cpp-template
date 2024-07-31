@@ -209,9 +209,9 @@ void GameplayScene::update() {
       ground_y += ground_y_movement;
     }
 
-    if (get_current_frame() % 60 == 0) {
-      spawn_bat();
-    }
+    // if (get_current_frame() % 60 == 0) {
+    //   spawn_bat();
+    // }
   }
 }
 
