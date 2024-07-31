@@ -8,7 +8,8 @@ GameplayScene::GameplayScene() {
   mPrint("GameplayScene constructor");
   set_control_mode(CONTROL_MODE_PLAYER);
   set_texture_filepath("game_textures.txt");
-  set_global_scale(4.0f);
+  set_global_scale(2.0f);
+  // set_global_scale(4.0f);
   set_scene_transition(SCENE_TRANSITION_IN);
   set_scene_type(SCENE_TYPE_GAMEPLAY);
 
@@ -203,10 +204,10 @@ void GameplayScene::update() {
     Camera2D &camera2d = get_camera2d();
     camera2d.target.y = get_sprites()[get_player_id()]->get_y();
     // camera2d.offset.y = GetScreenHeight() / 2.0f;
-    //
 
-    ground_y -= 1;
-    // UpdateMusicStream(get_music());
+    if (do_ground_movement) {
+      ground_y += ground_y_movement;
+    }
 
     if (get_current_frame() % 60 == 0) {
       spawn_bat();
@@ -239,8 +240,12 @@ void GameplayScene::handle_input() {
     // if (IsKeyDown(KEY_I)) {
     //  ground_y -= 1;
     //}
-
     if (IsKeyPressed(KEY_B)) {
+
+      do_ground_movement = !do_ground_movement;
+    }
+
+    if (IsKeyPressed(KEY_P)) {
       // const int bat_width = get_textures()["bat"].texture.width;
       // const int bat_height = get_textures()["bat"].texture.height;
       // const float bat_x = -bat_width;
@@ -584,4 +589,12 @@ entity_id GameplayScene::spawn_bat(const float x, const float y,
   sprites[id]->set_hp(1);
   sprites[id]->set_maxhp(1);
   return id;
+}
+
+void GameplayScene::set_do_ground_movement(const bool d) {
+  do_ground_movement = d;
+}
+
+void GameplayScene::set_ground_y_movement(const float dy) {
+  ground_y_movement = dy;
 }
