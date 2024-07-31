@@ -6,7 +6,7 @@ using std::endl;
 
 PopupManager::PopupManager() {
   // Constructor
-  target = LoadRenderTexture(200, 200);
+  target = LoadRenderTexture(400, 400);
 }
 
 PopupManager::~PopupManager() {
@@ -39,7 +39,7 @@ void PopupManager::render(string s) {
   ClearBackground(BLANK);
 
   // DrawRectangle(0, 0, 200, 200, RED);
-  DrawText(s.c_str(), 10, 10, 20, WHITE);
+  DrawText(s.c_str(), 10, 10, 48, WHITE);
 
   EndTextureMode();
   EndDrawing();

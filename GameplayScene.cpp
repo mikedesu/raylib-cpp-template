@@ -51,8 +51,10 @@ void GameplayScene::update_enemy_movement() {
   for (auto &s : get_sprites()) {
     switch (s.second->get_type()) {
     case SPRITETYPE_ENEMY: {
+
       s.second->update();
-      s.second->set_x(s.second->get_x() + s.second->get_vx());
+      // s.second->set_x(s.second->get_x() + s.second->get_vx());
+      // s.second->set_y(s.second->get_y() + s.second->get_vy());
 
       const int height = s.second->get_height();
       // const int width = s.second->get_width();
@@ -276,8 +278,9 @@ void GameplayScene::handle_input() {
     if (IsKeyPressed(KEY_Z)) {
       // fire a knife
       spawn_knife();
-
-      // Mix_PlayChannel(-1, sfx_knife_throw, 0);
+    }
+    if (IsKeyPressed(KEY_X)) {
+      spawn_bat();
     }
 
     if (IsKeyPressed(KEY_SPACE)) {
@@ -449,6 +452,13 @@ void GameplayScene::draw() {
     s.second->draw();
     if (get_debug_panel_on()) {
       s.second->draw_hitbox();
+
+      // draw a line from the sprite to the player
+      if (s.second->get_type() == SPRITETYPE_ENEMY) {
+        DrawLine(s.second->get_x(), s.second->get_y(),
+                 get_sprites()[get_player_id()]->get_x(),
+                 get_sprites()[get_player_id()]->get_y(), RED);
+      }
     }
   }
 
@@ -588,6 +598,10 @@ entity_id GameplayScene::spawn_bat(const float x, const float y,
   sprites[id]->set_ay(0.0f);
   sprites[id]->set_hp(1);
   sprites[id]->set_maxhp(1);
+
+  sprites[id]->set_movement_type(MOVEMENT_TYPE_NORMAL);
+  // sprites[id]->set_movement_type(MOVEMENT_TYPE_HOMING);
+
   return id;
 }
 
@@ -610,10 +624,11 @@ entity_id GameplayScene::spawn_knife() {
   // get the width of the knife texture
   const float knife_width = get_textures()["knife"].texture.width;
   if (get_sprites()[get_player_id()]->get_is_flipped()) {
-    // x -= knife_width * global_scale + 1;
+    // left side
     x -= knife_width * get_global_scale() + get_knife_speed().x * 2.0f;
   } else {
-    x += o_x;
+    // right side
+    x += o_x + get_knife_speed().x * 2.0f;
   }
 
   // spawn the knife

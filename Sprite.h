@@ -1,5 +1,6 @@
 #pragma once
 
+#include "movement_type.h"
 #include "raylib.h"
 
 typedef enum {
@@ -99,6 +100,9 @@ public:
   void set_rotation_speed(const float speed);
   const float get_rotation_speed() const;
 
+  void set_movement_type(const movement_type m);
+  const movement_type get_movement_type() const;
+
 private:
   Texture2D texture;
 
@@ -130,6 +134,8 @@ private:
   bool is_spinning = false;
 
   float rotation_speed = 1.0f;
+
+  movement_type movement = MOVEMENT_TYPE_NONE;
 
   void init_rects();
 };
