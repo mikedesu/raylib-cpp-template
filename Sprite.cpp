@@ -189,12 +189,12 @@ void Sprite::set_is_flipped(const bool is_flipped) {
 void Sprite::update() {
   // update the velocity
 
-  if (movement == movement_type::MOVEMENT_TYPE_NORMAL) {
-    dest.x += velocity.x;
-    dest.y += velocity.y;
-    velocity.x += acceleration.x;
-    velocity.y += acceleration.y;
-  }
+  // if (movement == movement_type::MOVEMENT_TYPE_NORMAL) {
+  // dest.x += velocity.x;
+  // dest.y += velocity.y;
+  //}
+  velocity.x += acceleration.x;
+  velocity.y += acceleration.y;
 
   // origin = (Vector2){0, 0};
 

@@ -51,10 +51,58 @@ void GameplayScene::update_enemy_movement() {
   for (auto &s : get_sprites()) {
     switch (s.second->get_type()) {
     case SPRITETYPE_ENEMY: {
-
       s.second->update();
-      // s.second->set_x(s.second->get_x() + s.second->get_vx());
-      // s.second->set_y(s.second->get_y() + s.second->get_vy());
+
+      // if (s.second->get_movement_type() == movement_type::MOVEMENT_TYPE_NONE)
+      // {
+      // }
+      if (s.second->get_movement_type() ==
+          movement_type::MOVEMENT_TYPE_NORMAL) {
+        s.second->set_x(s.second->get_x() + s.second->get_vx());
+        s.second->set_y(s.second->get_y() + s.second->get_vy());
+      } else if (s.second->get_movement_type() ==
+                 movement_type::MOVEMENT_TYPE_HOMING) {
+
+        // we need to calculate the angle between the enemy and the player
+        // and then move the enemy towards the player
+        // we can use the atan2 function to calculate the angle
+        // we can then use the angle to calculate the x and y components of the
+        // velocity
+        //
+
+        // get the player position
+        const float player_x = get_sprites()[get_player_id()]->get_x();
+        const float player_y = get_sprites()[get_player_id()]->get_y();
+
+        // get the enemy position
+        const float enemy_x = s.second->get_x();
+        const float enemy_y = s.second->get_y();
+
+        // calculate the angle
+        const float angle = atan2(player_y - enemy_y, player_x - enemy_x);
+
+        // calculate the x and y components of the velocity
+        float vx = cos(angle) * s.second->get_vx();
+        float vy = sin(angle) * s.second->get_vy();
+
+        // there may be a bug in the movement if the bat has just spawned and is
+        // not fully on-screen yet we can fix this by checking if the bat is
+        // off-screen and then moving it on-screen
+        if (enemy_x < 0) {
+          // the bat is to the left of the player so we need to make sure vx is
+          // positive
+          vx = 4.0;
+
+        } else if (enemy_x > GetScreenWidth()) {
+          // the bat is to the right of the player so we need to make sure vx is
+          // negative
+          vx = -4.0;
+        }
+
+        // update the enemy position
+        s.second->set_x(s.second->get_x() + vx);
+        s.second->set_y(s.second->get_y() + vy);
+      }
 
       const int height = s.second->get_height();
       // const int width = s.second->get_width();
@@ -104,8 +152,15 @@ void GameplayScene::handle_offscreen() {
     // so we can spawn new entities within the buffer
     // while allowing old entities to move outside of it
     // and get marked for deletion
-    if (s.second->get_x() > GetScreenWidth() + width ||
-        s.second->get_x() < -width) {
+
+    const bool condition_0 = s.second->get_x() > GetScreenWidth() + width;
+    const bool condition_1 = s.second->get_x() < -width;
+
+    if (condition_0) {
+      cout << "Condition 0" << endl;
+      s.second->mark_for_deletion();
+    } else if (condition_1) {
+      cout << "Condition 1" << endl;
       s.second->mark_for_deletion();
     }
   }
@@ -211,9 +266,9 @@ void GameplayScene::update() {
       ground_y += ground_y_movement;
     }
 
-    // if (get_current_frame() % 60 == 0) {
-    //   spawn_bat();
-    // }
+    if (get_current_frame() % 30 == 0) {
+      spawn_bat();
+    }
   }
 }
 
@@ -579,8 +634,9 @@ entity_id GameplayScene::spawn_bat() {
 
   int roll = rand() % 2;
 
-  const float x = roll ? -bat_width : GetScreenWidth();
-  const float vx = roll ? 2.0f : -2.0f;
+  const float x = roll ? -bat_width : GetScreenWidth() - 4.0;
+  // const float vx = roll ? 2.0f : -2.0f;
+  const float vx = 2.0f;
   const float y = sprites[player_id]->get_y();
   // const int bat_height = get_textures()["bat"].texture.height;
   //(float)GetScreenHeight() / 2 - (float)bat_height + 300;
@@ -593,14 +649,14 @@ entity_id GameplayScene::spawn_bat(const float x, const float y,
   entity_id id = spawn_entity("bat", x, y, SPRITETYPE_ENEMY, true);
   auto sprites = get_sprites();
   sprites[id]->set_vx(vx);
-  sprites[id]->set_vy(0.0f);
+  sprites[id]->set_vy(1.0f);
   sprites[id]->set_ax(0.0f);
   sprites[id]->set_ay(0.0f);
   sprites[id]->set_hp(1);
   sprites[id]->set_maxhp(1);
 
-  sprites[id]->set_movement_type(MOVEMENT_TYPE_NORMAL);
-  // sprites[id]->set_movement_type(MOVEMENT_TYPE_HOMING);
+  // sprites[id]->set_movement_type(MOVEMENT_TYPE_NORMAL);
+  sprites[id]->set_movement_type(MOVEMENT_TYPE_HOMING);
 
   return id;
 }

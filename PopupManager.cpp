@@ -6,7 +6,7 @@ using std::endl;
 
 PopupManager::PopupManager() {
   // Constructor
-  target = LoadRenderTexture(400, 400);
+  target = LoadRenderTexture(800, 400);
 }
 
 PopupManager::~PopupManager() {
