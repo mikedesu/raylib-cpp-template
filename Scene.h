@@ -63,9 +63,6 @@ public:
   entity_id spawn_entity(const char *texture_key, float x, float y,
                          sprite_type type, bool is_anim);
 
-  entity_id spawn_player(float x, float y);
-
-  entity_id spawn_knife();
   unordered_map<entity_id, Vector2> &get_stars();
 
   unordered_map<entity_id, shared_ptr<Sprite>> &get_sprites();
@@ -158,8 +155,8 @@ private:
 
   bool is_paused = false;
 
-  const Vector2 starting_knife_speed = {1, 0};
-  Vector2 knife_speed = {1, 0};
+  const Vector2 starting_knife_speed = {2, 0};
+  Vector2 knife_speed = {2, 0};
 
   unsigned int knife_catches = 0;
 

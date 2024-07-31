@@ -30,6 +30,8 @@ public:
   void draw_ground();
   void draw_stars();
 
+  entity_id spawn_player(float x, float y);
+  entity_id spawn_knife();
   entity_id spawn_bat(const float x, const float y, const float vx);
   entity_id spawn_bat();
 

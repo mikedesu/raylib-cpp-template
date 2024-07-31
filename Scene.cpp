@@ -239,24 +239,6 @@ void Scene::load_fonts() {
 //   return id;
 // }
 
-entity_id Scene::spawn_player(float x, float y) {
-  mPrint("Attempting to spawn player...");
-  if (player_id != -1) {
-    mPrint("Player already spawned.");
-    return player_id;
-  }
-  mPrint("Spawning player...");
-  entity_id id = spawn_entity("skull", x, y, SPRITETYPE_PLAYER, false);
-  player_id = id;
-
-  const int player_starting_hp = 3;
-  const int player_max_hp = 3;
-  sprites[player_id]->set_maxhp(player_max_hp);
-  sprites[player_id]->set_hp(player_starting_hp);
-
-  return id;
-}
-
 // entity_id Scene::spawn_pipebase(const float x, const float y) {
 //   mPrint("Spawning pipebase...");
 //   entity_id id = spawn_entity("pipebase", x, y, SPRITETYPE_PIPEBASE, false);
@@ -268,58 +250,6 @@ entity_id Scene::spawn_player(float x, float y) {
 //   sprites[id]->set_maxhp(10);
 //   return id;
 // }
-
-entity_id Scene::spawn_knife() {
-  mPrint("Spawning knife...");
-  // calculate offsets
-  // half the width of the sprite
-  const float o_x = sprites[player_id]->get_width();
-  const float o_y = sprites[player_id]->get_height() / 2.0;
-  float x = sprites[player_id]->get_x();
-  float y = sprites[player_id]->get_y() + o_y;
-  // get the width of the knife texture
-  const float knife_width = textures["knife"].texture.width;
-  if (sprites[player_id]->get_is_flipped()) {
-    // x -= knife_width * global_scale + 1;
-    x -= knife_width * global_scale + knife_speed.x * 2.0f;
-  } else {
-    x += o_x;
-  }
-
-  // spawn the knife
-  entity_id id = spawn_entity("knife", x, y, SPRITETYPE_KNIFE, false);
-  const bool is_spinning = knife_catches > 0;
-  const bool is_flipped = sprites[player_id]->get_is_flipped();
-
-  float vx = knife_speed.x;
-  // const float vy = knife_speed.y;
-
-  if (is_flipped) {
-    sprites[id]->set_is_flipped(true);
-    // sprites[id]->set_vx(-knife_speed.x);
-    // sprites[id]->set_vx(-vx);
-    vx = -vx;
-  }
-  // else {
-  // sprites[id]->set_vx(vx);
-  //}
-
-  if (is_spinning) {
-    // sprites[id]->set_vx(sprites[id]->get_vx() * (1 + knife_catches));
-    vx = vx * (1 + knife_catches);
-    sprites[id]->set_is_spinning(true);
-    sprites[id]->set_rotation_speed(1.0f * knife_catches);
-    knife_catches -= 1;
-  }
-
-  sprites[id]->set_vx(vx);
-  sprites[id]->set_vy(knife_speed.y);
-  sprites[id]->set_ax(0);
-  sprites[id]->set_ay(0);
-  sprites[id]->set_rotation_angle(0.0f);
-
-  return id;
-}
 
 entity_id Scene::spawn_entity(const char *texture_key, float x, float y,
                               sprite_type type, bool is_anim) {
