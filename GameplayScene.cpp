@@ -195,7 +195,6 @@ void GameplayScene::handle_player_collision() {
           }
         } else if (t == SPRITETYPE_SOULSHARD) {
 
-          static unsigned int soulshard_catches = 0;
           soulshard_catches++;
           s.second->mark_for_deletion();
           // player->set_hp(player->get_hp() + 1);
