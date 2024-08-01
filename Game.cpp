@@ -47,7 +47,8 @@ bool Game::init() {
     // init popupmanager
     mPrint("Initializing popup manager...");
     popup_manager = make_shared<PopupManager>();
-    popup_manager->render("Hello, world!");
+    // popup_manager->render("Hello, world!");
+    // popup_manager->render("Hello, world!");
 
     mPrint("Loading scene...");
 

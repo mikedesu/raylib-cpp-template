@@ -297,10 +297,10 @@ void GameplayScene::handle_input() {
     // if (IsKeyDown(KEY_I)) {
     //  ground_y -= 1;
     //}
-    if (IsKeyPressed(KEY_B)) {
 
-      do_ground_movement = !do_ground_movement;
-    }
+    // if (IsKeyPressed(KEY_B)) {
+    //   do_ground_movement = !do_ground_movement;
+    // }
 
     if (IsKeyPressed(KEY_P)) {
       // const int bat_width = get_textures()["bat"].texture.width;
