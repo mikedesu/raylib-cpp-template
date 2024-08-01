@@ -467,7 +467,8 @@ void GameplayScene::draw_debug_panel() {
       "Sprites: " + to_string(get_sprites().size()) + "\n" +
       "Knife Catches: " + to_string(knife_catches) + "\n" +
       "IsPaused: " + to_string(get_paused()) + "\n" +
-      "Enemies Killed: " + to_string(enemies_killed) + "\n";
+      "Enemies Killed: " + to_string(enemies_killed) + "\n" +
+      "Soulshard Catches: " + to_string(soulshard_catches) + "\n";
   DrawRectangle(0, 0, 500, 200, Fade(BLACK, 0.5f));
   DrawTextEx(get_global_font(), camera_info_str.c_str(), (Vector2){10, 10}, 16,
              0.5f, WHITE);
@@ -483,8 +484,12 @@ void GameplayScene::draw_hud() {
   const string knife_catches_str = "Knife Catches: " + to_string(knife_catches);
   const string enemies_killed_str = "Killed: " + to_string(enemies_killed);
 
+  const string soulshard_catches_str =
+      "Soulshards: " + to_string(soulshard_catches);
+
   const string full_str = hp_str + " " + knife_catches_str + " " +
-                          enemies_killed_str + " " + "\nPress Z to throw knife";
+                          enemies_killed_str + " " + soulshard_catches_str +
+                          "\nPress Z to throw knife";
 
   // DrawRectangle(0, 0, 500, 20, Fade(BLACK, 0.5f));
   // DrawTextEx(get_global_font(), full_str.c_str(), (Vector2){10, 10}, 20,
