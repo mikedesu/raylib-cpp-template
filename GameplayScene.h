@@ -50,9 +50,11 @@ private:
 
   int ground_y = 0;
 
-  bool show_test_popup = false;
+  // bool show_test_popup = false;
+  bool show_test_popup = true;
 
-  bool do_ground_movement = true;
+  bool do_ground_movement = false;
+  // bool do_ground_movement = true;
   float ground_y_movement = -1;
 
   // bool line_did_cross_line(Vector4 &line1, Vector4 &line2);

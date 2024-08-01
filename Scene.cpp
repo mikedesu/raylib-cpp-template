@@ -121,7 +121,7 @@ void Scene::draw() {
         GetScreenWidth() / 2.0f - textures["title"].texture.width / 2.0f;
 
     const float y0 = GetScreenHeight() / 4.0f - 32.0f;
-    const float y1 = GetScreenHeight() * 3.0f / 4.0f;
+    // const float y1 = GetScreenHeight() * 3.0f / 4.0f;
 
     // DrawTextEx(global_font, "@evildojo666 presents", (Vector2){x, y0}, 32,
     // 0.5f,
