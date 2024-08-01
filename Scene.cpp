@@ -10,7 +10,7 @@
 #include <string>
 
 using std::string;
-using std::to_string;
+// using std::to_string;
 
 static entity_id next_entity_id = 0;
 
@@ -56,7 +56,7 @@ void Scene::close() {
   }
 
   has_been_initialized = false;
-  player_id = -1;
+  // player_id = -1;
 
   mPrint("Scene closed.");
 }
@@ -315,8 +315,8 @@ Camera2D &Scene::get_camera2d() { return camera2d; }
 unsigned int Scene::get_current_frame() { return current_frame; }
 control_mode Scene::get_control_mode() { return controlmode; }
 Font &Scene::get_global_font() { return global_font; }
-void Scene::set_player_id(entity_id id) { player_id = id; }
-entity_id Scene::get_player_id() { return player_id; }
+// void Scene::set_player_id(entity_id id) { player_id = id; }
+// entity_id Scene::get_player_id() { return player_id; }
 void Scene::set_scene_type(scene_type st) { scenetype = st; }
 scene_type Scene::get_scene_type() { return scenetype; }
 unordered_map<entity_id, Vector2> &Scene::get_stars() { return stars; }
@@ -368,3 +368,5 @@ shared_ptr<PopupManager> Scene::get_popup_manager() { return popup_manager; }
 void Scene::set_popup_manager(shared_ptr<PopupManager> pm) {
   popup_manager = pm;
 }
+
+shared_ptr<Sprite> Scene::get_sprite(entity_id id) { return sprites[id]; }

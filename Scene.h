@@ -66,6 +66,9 @@ public:
   unordered_map<entity_id, Vector2> &get_stars();
 
   unordered_map<entity_id, shared_ptr<Sprite>> &get_sprites();
+
+  shared_ptr<Sprite> get_sprite(entity_id id);
+
   unordered_map<entity_id, shared_ptr<Sprite>> &get_bgsprites();
 
   unordered_map<string, texture_info> &get_textures();
@@ -74,7 +77,7 @@ public:
   control_mode get_control_mode();
   Font &get_global_font();
 
-  entity_id get_player_id();
+  // entity_id get_player_id();
   vector<entity_id> &get_entity_ids();
   vector<entity_id> &get_bg_entity_ids();
 
@@ -95,7 +98,7 @@ public:
   void set_scene_transition(scene_transition st);
   void set_alpha(float a);
   void set_id(scene_id i);
-  void set_player_id(entity_id id);
+  // void set_player_id(entity_id id);
   void set_scene_type(scene_type st);
   // void draw_ground();
   // void draw_stars();
@@ -133,7 +136,6 @@ private:
   Camera2D camera2d = {0};
   float global_scale = 1.0f;
   bool has_been_initialized = false;
-  entity_id player_id = -1;
   bool debug_panel_on = true;
   control_mode controlmode = CONTROL_MODE_PLAYER;
   unsigned int current_frame = 0;

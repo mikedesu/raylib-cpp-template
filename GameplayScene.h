@@ -67,6 +67,9 @@ private:
   Vector2 knife_speed = {2, 0};
   unsigned int knife_catches = 0;
 
+  unsigned int max_knives = 2;
+  entity_id player_id = -1;
+
   // bool line_did_cross_line(Vector4 &line1, Vector4 &line2);
   // bool ccw(float x1, float y1, float x2, float y2, float x3, float y3);
 };

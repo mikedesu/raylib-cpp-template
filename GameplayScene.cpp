@@ -21,7 +21,7 @@ GameplayScene::~GameplayScene() { mPrint("GameplayScene destructor"); }
 void GameplayScene::gameover() { set_scene_transition(SCENE_TRANSITION_OUT); }
 
 void GameplayScene::update_player_movement() {
-  shared_ptr<Sprite> player = get_sprites()[get_player_id()];
+  shared_ptr<Sprite> player = get_sprites()[player_id];
 
   // this handles the 'flappy bird' bounce
   // player->incr_ay(gravity);
@@ -71,8 +71,8 @@ void GameplayScene::update_enemy_movement() {
         //
 
         // get the player position
-        const float player_x = get_sprites()[get_player_id()]->get_x();
-        const float player_y = get_sprites()[get_player_id()]->get_y();
+        const float player_x = get_sprites()[player_id]->get_x();
+        const float player_y = get_sprites()[player_id]->get_y();
 
         // get the enemy position
         const float enemy_x = s.second->get_x();
@@ -167,7 +167,7 @@ void GameplayScene::handle_offscreen() {
 }
 
 void GameplayScene::handle_player_collision() {
-  shared_ptr<Sprite> player = get_sprites()[get_player_id()];
+  shared_ptr<Sprite> player = get_sprites()[player_id];
   for (auto &s : get_sprites()) {
     sprite_type t = s.second->get_type();
     switch (t) {
@@ -259,7 +259,7 @@ void GameplayScene::update() {
     // except for the game beginning, when they begin flapping at the bottom
     // once they hit the center, the camera should follow them
     Camera2D &camera2d = get_camera2d();
-    camera2d.target.y = get_sprites()[get_player_id()]->get_y();
+    camera2d.target.y = get_sprites()[player_id]->get_y();
     // camera2d.offset.y = GetScreenHeight() / 2.0f;
 
     if (do_ground_movement) {
@@ -273,7 +273,7 @@ void GameplayScene::update() {
 }
 
 void GameplayScene::handle_input() {
-  shared_ptr<Sprite> player = get_sprites()[get_player_id()];
+  shared_ptr<Sprite> player = get_sprites()[player_id];
   // this value affects how high skull 'flaps' or jumps
   const float vy = -6.75f;
   const float ay = 0.0f;
@@ -331,9 +331,20 @@ void GameplayScene::handle_input() {
     // }
 
     if (IsKeyPressed(KEY_Z)) {
+      // incr the player sprite frame
+      // get_sprites()[player_id]->incr_frame();
+      get_sprite(player_id)->incr_frame();
+
       // fire a knife
       spawn_knife();
     }
+
+    if (IsKeyReleased(KEY_Z)) {
+      // reset the player sprite frame
+      // get_sprites()[player_id]->set_frame(0);
+      get_sprite(player_id)->incr_frame();
+    }
+
     if (IsKeyPressed(KEY_X)) {
       spawn_bat();
     }
@@ -433,16 +444,14 @@ void GameplayScene::draw_debug_panel() {
   string camera_info_str =
       "Current Frame: " + to_string(get_current_frame()) + "\n" +
       "Control mode: " + to_string(get_control_mode()) + "\n" +
-      "Player Position: " + to_string(get_sprites()[get_player_id()]->get_x()) +
-      ", " + to_string(get_sprites()[get_player_id()]->get_y()) + "\n" +
-      "Player Velocity: " +
-      to_string(get_sprites()[get_player_id()]->get_vx()) + ", " +
-      to_string(get_sprites()[get_player_id()]->get_vy()) + "\n" +
-      "Player Acceleration: " +
-      to_string(get_sprites()[get_player_id()]->get_ax()) + ", " +
-      to_string(get_sprites()[get_player_id()]->get_ay()) + "\n" +
-      "Player HP: " + to_string(get_sprites()[get_player_id()]->get_hp()) +
-      "/" + to_string(get_sprites()[get_player_id()]->get_maxhp()) + "\n" +
+      "Player Position: " + to_string(get_sprites()[player_id]->get_x()) +
+      ", " + to_string(get_sprites()[player_id]->get_y()) + "\n" +
+      "Player Velocity: " + to_string(get_sprites()[player_id]->get_vx()) +
+      ", " + to_string(get_sprites()[player_id]->get_vy()) + "\n" +
+      "Player Acceleration: " + to_string(get_sprites()[player_id]->get_ax()) +
+      ", " + to_string(get_sprites()[player_id]->get_ay()) + "\n" +
+      "Player HP: " + to_string(get_sprites()[player_id]->get_hp()) + "/" +
+      to_string(get_sprites()[player_id]->get_maxhp()) + "\n" +
       "Camera target: " + to_string(get_camera2d().target.x) + ", " +
       to_string(get_camera2d().target.y) + "\n" + "GameplayScene" +
       "Sprites: " + to_string(get_sprites().size()) + "\n" +
@@ -455,8 +464,8 @@ void GameplayScene::draw_debug_panel() {
 }
 
 void GameplayScene::draw_hud() {
-  const int player_hp = get_sprites()[get_player_id()]->get_hp();
-  const int player_maxhp = get_sprites()[get_player_id()]->get_maxhp();
+  const int player_hp = get_sprites()[player_id]->get_hp();
+  const int player_maxhp = get_sprites()[player_id]->get_maxhp();
   const string hp_str =
       "HP: " + to_string(player_hp) + "/" + to_string(player_maxhp);
 
@@ -511,8 +520,8 @@ void GameplayScene::draw() {
       // draw a line from the sprite to the player
       if (s.second->get_type() == SPRITETYPE_ENEMY) {
         DrawLine(s.second->get_x(), s.second->get_y(),
-                 get_sprites()[get_player_id()]->get_x(),
-                 get_sprites()[get_player_id()]->get_y(), RED);
+                 get_sprites()[player_id]->get_x(),
+                 get_sprites()[player_id]->get_y(), RED);
       }
     }
   }
@@ -547,16 +556,20 @@ void GameplayScene::draw() {
   if (show_test_popup) {
     if (get_popup_manager() != nullptr) {
 
-      const float x = GetScreenWidth() / 2.0f - 100.0f;
-      const float y = GetScreenHeight() / 2.0f - 100.0f;
-
-      // get player x
-      // const float x = get_sprites()[get_player_id()]->get_x();
+      // const float x = GetScreenWidth() / 2.0f - 100.0f;
+      // const float y = GetScreenHeight() / 2.0f - 100.0f;
+      //  get player x
+      const float x = get_sprite(player_id)->get_x();
 
       // get player y
-      // const float y = get_sprites()[get_player_id()]->get_y();
+      const float y = get_sprite(player_id)->get_y();
 
-      get_popup_manager()->draw(x, y);
+      Vector2 s = GetWorldToScreen2D(
+          (Vector2){x - 200, y - 100},
+          get_camera2d()); // Get the screen space position for
+                           // a 2d camera world space position
+
+      get_popup_manager()->draw(s.x, s.y);
     }
   }
 
@@ -617,7 +630,8 @@ void GameplayScene::close() {
   //}
 
   set_has_been_initialized(false);
-  set_player_id(-1);
+  // set_player_id(-1);
+  player_id = -1;
 
   enemies_killed = 0;
 
@@ -631,7 +645,6 @@ entity_id GameplayScene::spawn_bat() {
   // const float x = sprites[player_id]->get_x();
   auto textures = get_textures();
   auto sprites = get_sprites();
-  auto player_id = get_player_id();
   const int bat_width = textures["bat"].texture.width;
 
   int roll = rand() % 2;
@@ -684,13 +697,13 @@ entity_id GameplayScene::spawn_knife() {
   mPrint("Spawning knife...");
   // calculate offsets
   // half the width of the sprite
-  const float o_x = get_sprites()[get_player_id()]->get_width();
-  const float o_y = get_sprites()[get_player_id()]->get_height() / 2.0;
-  float x = get_sprites()[get_player_id()]->get_x();
-  float y = get_sprites()[get_player_id()]->get_y() + o_y;
+  const float o_x = get_sprites()[player_id]->get_width();
+  const float o_y = get_sprites()[player_id]->get_height() / 2.0;
+  float x = get_sprites()[player_id]->get_x();
+  float y = get_sprites()[player_id]->get_y() + o_y;
   // get the width of the knife texture
   const float knife_width = get_textures()["knife"].texture.width;
-  if (get_sprites()[get_player_id()]->get_is_flipped()) {
+  if (get_sprites()[player_id]->get_is_flipped()) {
     // left side
     x -= knife_width * get_global_scale() + knife_speed.x * 2.0f;
   } else {
@@ -701,7 +714,7 @@ entity_id GameplayScene::spawn_knife() {
   // spawn the knife
   entity_id id = spawn_entity("knife", x, y, SPRITETYPE_KNIFE, false);
   const bool is_spinning = knife_catches > 0;
-  const bool is_flipped = get_sprites()[get_player_id()]->get_is_flipped();
+  const bool is_flipped = get_sprites()[player_id]->get_is_flipped();
 
   float vx = knife_speed.x;
   // const float vy = knife_speed.y;
@@ -736,20 +749,19 @@ entity_id GameplayScene::spawn_knife() {
 
 entity_id GameplayScene::spawn_player(float x, float y) {
   mPrint("Attempting to spawn player...");
-  if (get_player_id() != -1) {
+  if (player_id != -1) {
     mPrint("Player already spawned.");
-    return get_player_id();
+    return player_id;
   }
   mPrint("Spawning player...");
-  entity_id id = spawn_entity("skull", x, y, SPRITETYPE_PLAYER, false);
-  set_player_id(id);
+  player_id = spawn_entity("skull", x, y, SPRITETYPE_PLAYER, false);
 
   const int player_starting_hp = 3;
   const int player_max_hp = 3;
-  get_sprites()[get_player_id()]->set_maxhp(player_max_hp);
-  get_sprites()[get_player_id()]->set_hp(player_starting_hp);
+  get_sprite(player_id)->set_maxhp(player_max_hp);
+  get_sprite(player_id)->set_hp(player_starting_hp);
 
-  return id;
+  return player_id;
 }
 
 /*
