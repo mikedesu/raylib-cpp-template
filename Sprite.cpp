@@ -176,6 +176,7 @@ void Sprite::incr_frame() {
     current_frame = 0;
   }
   src.x = (float)current_frame * src.width;
+  flipped_src.x = src.x;
 }
 
 const bool Sprite::get_is_marked_for_deletion() const {
@@ -188,16 +189,13 @@ void Sprite::set_is_flipped(const bool is_flipped) {
 
 void Sprite::update() {
   // update the velocity
-
   // if (movement == movement_type::MOVEMENT_TYPE_NORMAL) {
   // dest.x += velocity.x;
   // dest.y += velocity.y;
   //}
   velocity.x += acceleration.x;
   velocity.y += acceleration.y;
-
   // origin = (Vector2){0, 0};
-
   if (is_spinning) {
     rotation_angle += rotation_speed;
   }
