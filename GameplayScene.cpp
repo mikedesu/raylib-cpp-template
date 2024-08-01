@@ -266,7 +266,7 @@ void GameplayScene::update() {
       ground_y += ground_y_movement;
     }
 
-    if (get_current_frame() % 30 == 0) {
+    if (get_current_frame() % 120 == 0) {
       spawn_bat();
     }
   }
@@ -639,7 +639,16 @@ entity_id GameplayScene::spawn_bat() {
   const float x = roll ? -bat_width : GetScreenWidth() - 4.0;
   // const float vx = roll ? 2.0f : -2.0f;
   const float vx = 2.0f;
-  const float y = sprites[player_id]->get_y();
+
+  // here, we are hardcoding the bat y to be the player y
+  // const float y = sprites[player_id]->get_y();
+
+  // here, we are adjusting the spawned y in a random direction
+  // in order to provide some variance as to the bat spawn location
+  // perhaps over time this value can increase in scale to how far
+  // into the level the player is
+  const float y = sprites[player_id]->get_y() + (rand() % 200 - 100);
+
   // const int bat_height = get_textures()["bat"].texture.height;
   //(float)GetScreenHeight() / 2 - (float)bat_height + 300;
   return spawn_bat(x, y, vx);
