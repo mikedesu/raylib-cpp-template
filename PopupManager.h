@@ -15,6 +15,7 @@ public:
   // void draw();
   void draw(const float x, const float y);
   void render(string s);
+  void zero_alpha();
 
 private:
   RenderTexture target;

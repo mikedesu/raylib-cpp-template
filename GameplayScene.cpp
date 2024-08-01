@@ -186,7 +186,7 @@ void GameplayScene::handle_player_collision() {
           s.second->mark_for_deletion();
           player->set_hp(player->get_hp() - 1);
           enemies_killed++;
-          get_popup_manager()->render("enemies killed: " +
+          get_popup_manager()->render("enemies killed " +
                                       to_string(enemies_killed));
 
           if (player->get_hp() <= 0) {
@@ -620,6 +620,8 @@ void GameplayScene::close() {
   set_player_id(-1);
 
   enemies_killed = 0;
+
+  get_popup_manager()->zero_alpha();
 
   mPrint("Scene closed.");
 }
