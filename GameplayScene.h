@@ -34,6 +34,7 @@ public:
   entity_id spawn_knife();
   entity_id spawn_bat(const float x, const float y, const float vx);
   entity_id spawn_bat();
+  entity_id spawn_soulshard(const float x, const float y);
 
   void set_ground_y_movement(const float dy);
 

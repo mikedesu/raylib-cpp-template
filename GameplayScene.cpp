@@ -173,6 +173,7 @@ void GameplayScene::handle_player_collision() {
     switch (t) {
     case SPRITETYPE_ENEMY:
     case SPRITETYPE_KNIFE:
+    case SPRITETYPE_SOULSHARD:
       // if (CheckCollisionRecs(player->get_dest(), s.second->get_dest())) {
       // if (CheckCollisionRecs(player->get_hitbox(), s.second->get_hitbox())) {
       if (CheckCollisionRecs(player->get_dest(), s.second->get_dest())) {
@@ -192,6 +193,14 @@ void GameplayScene::handle_player_collision() {
           if (player->get_hp() <= 0) {
             set_scene_transition(SCENE_TRANSITION_OUT);
           }
+        } else if (t == SPRITETYPE_SOULSHARD) {
+
+          static unsigned int soulshard_catches = 0;
+          soulshard_catches++;
+          s.second->mark_for_deletion();
+          // player->set_hp(player->get_hp() + 1);
+          get_popup_manager()->render("soulshard catch " +
+                                      to_string(soulshard_catches));
         }
       }
       break;
@@ -223,6 +232,8 @@ void GameplayScene::handle_knife_collisions() {
 
               get_popup_manager()->render("enemies killed " +
                                           to_string(enemies_killed));
+
+              spawn_soulshard(s.second->get_x(), s.second->get_y());
             }
           }
           break;
@@ -669,7 +680,7 @@ entity_id GameplayScene::spawn_bat() {
 
 entity_id GameplayScene::spawn_bat(const float x, const float y,
                                    const float vx) {
-  mPrint("Spawning bat...");
+  // mPrint("Spawning bat...");
   entity_id id = spawn_entity("bat", x, y, SPRITETYPE_ENEMY, true);
   auto sprites = get_sprites();
   sprites[id]->set_vx(vx);
@@ -694,9 +705,9 @@ void GameplayScene::set_ground_y_movement(const float dy) {
 }
 
 entity_id GameplayScene::spawn_knife() {
-  mPrint("Spawning knife...");
-  // calculate offsets
-  // half the width of the sprite
+  // mPrint("Spawning knife...");
+  //  calculate offsets
+  //  half the width of the sprite
   const float o_x = get_sprites()[player_id]->get_width();
   const float o_y = get_sprites()[player_id]->get_height() / 2.0;
   float x = get_sprites()[player_id]->get_x();
@@ -714,35 +725,28 @@ entity_id GameplayScene::spawn_knife() {
   // spawn the knife
   entity_id id = spawn_entity("knife", x, y, SPRITETYPE_KNIFE, false);
   const bool is_spinning = knife_catches > 0;
-  const bool is_flipped = get_sprites()[player_id]->get_is_flipped();
+  const bool is_flipped = get_sprite(player_id)->get_is_flipped();
 
   float vx = knife_speed.x;
   // const float vy = knife_speed.y;
 
   if (is_flipped) {
-    get_sprites()[id]->set_is_flipped(true);
-    // get_sprites()[id]->set_vx(-knife_speed.x);
-    // get_sprites()[id]->set_vx(-vx);
+    get_sprite(id)->set_is_flipped(true);
     vx = -vx;
   }
-  // else {
-  // get_sprites()[id]->set_vx(vx);
-  //}
 
   if (is_spinning) {
-    // get_sprites()[id]->set_vx(get_sprites()[id]->get_vx() * (1 +
-    // knife_catches));
     vx = vx * (1 + knife_catches);
-    get_sprites()[id]->set_is_spinning(true);
-    get_sprites()[id]->set_rotation_speed(1.0f * knife_catches);
+    get_sprite(id)->set_is_spinning(true);
+    get_sprite(id)->set_rotation_speed(1.0f * knife_catches);
     knife_catches = knife_catches - 1;
   }
 
-  get_sprites()[id]->set_vx(vx);
-  get_sprites()[id]->set_vy(knife_speed.y);
-  get_sprites()[id]->set_ax(0);
-  get_sprites()[id]->set_ay(0);
-  get_sprites()[id]->set_rotation_angle(0.0f);
+  get_sprite(id)->set_vx(vx);
+  get_sprite(id)->set_vy(knife_speed.y);
+  get_sprite(id)->set_ax(0);
+  get_sprite(id)->set_ay(0);
+  get_sprite(id)->set_rotation_angle(0.0f);
 
   return id;
 }
@@ -762,6 +766,22 @@ entity_id GameplayScene::spawn_player(float x, float y) {
   get_sprite(player_id)->set_hp(player_starting_hp);
 
   return player_id;
+}
+
+entity_id GameplayScene::spawn_soulshard(float x, float y) {
+
+  // mPrint("Spawning soulshard...");
+  entity_id id = spawn_entity("soulshard", x, y, SPRITETYPE_SOULSHARD, false);
+  get_sprite(id)->set_vx(0.0f);
+  get_sprite(id)->set_vy(0.0f);
+  get_sprite(id)->set_ax(0.0f);
+  get_sprite(id)->set_ay(0.0f);
+  get_sprite(id)->set_hp(1);
+  get_sprite(id)->set_maxhp(1);
+  get_sprite(id)->set_movement_type(MOVEMENT_TYPE_NONE);
+  get_sprite(id)->set_is_animating(true);
+
+  return id;
 }
 
 /*

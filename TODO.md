@@ -18,6 +18,9 @@
             - [ ] "lock" onto player and move towards them
                 - [ ] will have to calculate vx/vy every step to adjust direction
                 - [ ] will work similar to item magnetism
-
+- [ ] spawn soulshards when enemies die
+- [ ] collect soulshards
+- [ ] eventually we need to decide on how players will upgrade their arsenal
+    - [ ] a 'shop' that can be accessed thru the pause menu or some place in the game itself
 
 
