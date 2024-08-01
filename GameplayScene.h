@@ -39,6 +39,12 @@ public:
 
   void set_do_ground_movement(const bool d);
 
+  // void set_knife_speed(const Vector2 speed);
+  // void set_knife_catches(const unsigned int catches);
+  // const Vector2 get_starting_knife_speed() const;
+  // const Vector2 get_knife_speed() const;
+  // const unsigned int get_knife_catches() const;
+
 private:
   const float gravity = 0.0032f;
   // const float gravity = 0.0064f;
@@ -56,6 +62,10 @@ private:
   bool do_ground_movement = false;
   // bool do_ground_movement = true;
   float ground_y_movement = -1;
+
+  const Vector2 starting_knife_speed = {2, 0};
+  Vector2 knife_speed = {2, 0};
+  unsigned int knife_catches = 0;
 
   // bool line_did_cross_line(Vector4 &line1, Vector4 &line2);
   // bool ccw(float x1, float y1, float x2, float y2, float x3, float y3);

@@ -342,21 +342,6 @@ void Scene::unpause() { is_paused = false; }
 
 const bool Scene::get_paused() const { return is_paused; }
 
-const Vector2 Scene::get_starting_knife_speed() const {
-  return starting_knife_speed;
-}
-
-void Scene::set_knife_speed(const Vector2 speed) { knife_speed = speed; }
-
-const Vector2 Scene::get_knife_speed() const { return knife_speed; }
-
-void Scene::set_knife_catches(const unsigned int catches) {
-
-  knife_catches = catches;
-}
-
-const unsigned int Scene::get_knife_catches() const { return knife_catches; }
-
 Mix_Music *Scene::get_music() { return music; }
 
 void Scene::load_music(const char *path) {

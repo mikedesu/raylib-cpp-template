@@ -179,9 +179,9 @@ void GameplayScene::handle_player_collision() {
 
         if (t == SPRITETYPE_KNIFE) {
           s.second->mark_for_deletion();
-          set_knife_catches(get_knife_catches() + 1);
+          knife_catches = (knife_catches + 1);
           get_popup_manager()->render("knife catch " +
-                                      to_string(get_knife_catches()));
+                                      to_string(knife_catches));
         } else if (t == SPRITETYPE_ENEMY) {
           s.second->mark_for_deletion();
           player->set_hp(player->get_hp() - 1);
@@ -446,7 +446,7 @@ void GameplayScene::draw_debug_panel() {
       "Camera target: " + to_string(get_camera2d().target.x) + ", " +
       to_string(get_camera2d().target.y) + "\n" + "GameplayScene" +
       "Sprites: " + to_string(get_sprites().size()) + "\n" +
-      "Knife Catches: " + to_string(get_knife_catches()) + "\n" +
+      "Knife Catches: " + to_string(knife_catches) + "\n" +
       "IsPaused: " + to_string(get_paused()) + "\n" +
       "Enemies Killed: " + to_string(enemies_killed) + "\n";
   DrawRectangle(0, 0, 500, 200, Fade(BLACK, 0.5f));
@@ -460,7 +460,7 @@ void GameplayScene::draw_hud() {
   const string hp_str =
       "HP: " + to_string(player_hp) + "/" + to_string(player_maxhp);
 
-  const int knife_catches = get_knife_catches();
+  // const int knife_catches = knife_catches;
   const string knife_catches_str = "Knife Catches: " + to_string(knife_catches);
   const string enemies_killed_str = "Killed: " + to_string(enemies_killed);
 
@@ -681,18 +681,18 @@ entity_id GameplayScene::spawn_knife() {
   const float knife_width = get_textures()["knife"].texture.width;
   if (get_sprites()[get_player_id()]->get_is_flipped()) {
     // left side
-    x -= knife_width * get_global_scale() + get_knife_speed().x * 2.0f;
+    x -= knife_width * get_global_scale() + knife_speed.x * 2.0f;
   } else {
     // right side
-    x += o_x + get_knife_speed().x * 2.0f;
+    x += o_x + knife_speed.x * 2.0f;
   }
 
   // spawn the knife
   entity_id id = spawn_entity("knife", x, y, SPRITETYPE_KNIFE, false);
-  const bool is_spinning = get_knife_catches() > 0;
+  const bool is_spinning = knife_catches > 0;
   const bool is_flipped = get_sprites()[get_player_id()]->get_is_flipped();
 
-  float vx = get_knife_speed().x;
+  float vx = knife_speed.x;
   // const float vy = knife_speed.y;
 
   if (is_flipped) {
@@ -708,14 +708,14 @@ entity_id GameplayScene::spawn_knife() {
   if (is_spinning) {
     // get_sprites()[id]->set_vx(get_sprites()[id]->get_vx() * (1 +
     // knife_catches));
-    vx = vx * (1 + get_knife_catches());
+    vx = vx * (1 + knife_catches);
     get_sprites()[id]->set_is_spinning(true);
-    get_sprites()[id]->set_rotation_speed(1.0f * get_knife_catches());
-    set_knife_catches(get_knife_catches() - 1);
+    get_sprites()[id]->set_rotation_speed(1.0f * knife_catches);
+    knife_catches = knife_catches - 1;
   }
 
   get_sprites()[id]->set_vx(vx);
-  get_sprites()[id]->set_vy(get_knife_speed().y);
+  get_sprites()[id]->set_vy(knife_speed.y);
   get_sprites()[id]->set_ax(0);
   get_sprites()[id]->set_ay(0);
   get_sprites()[id]->set_rotation_angle(0.0f);
@@ -740,3 +740,22 @@ entity_id GameplayScene::spawn_player(float x, float y) {
 
   return id;
 }
+
+/*
+const Vector2 Scene::get_starting_knife_speed() const {
+  return starting_knife_speed;
+}
+
+void Scene::set_knife_speed(const Vector2 speed) { knife_speed = speed; }
+
+const Vector2 Scene::get_knife_speed() const { return knife_speed; }
+
+void Scene::set_knife_catches(const unsigned int catches) {
+
+  knife_catches = catches;
+}
+
+const unsigned int Scene::get_knife_catches() const { return knife_catches; }
+
+
+*/

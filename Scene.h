@@ -101,15 +101,10 @@ public:
   // void draw_stars();
   void pause();
   void unpause();
-  void set_knife_speed(const Vector2 speed);
-  void set_knife_catches(const unsigned int catches);
 
   const bool get_has_been_initialized() const;
   const bool get_paused() const;
   const float get_alpha() const;
-  const Vector2 get_starting_knife_speed() const;
-  const Vector2 get_knife_speed() const;
-  const unsigned int get_knife_catches() const;
 
   Mix_Music *get_music();
   void load_music(const char *path);
@@ -154,11 +149,6 @@ private:
   scene_type scenetype;
 
   bool is_paused = false;
-
-  const Vector2 starting_knife_speed = {2, 0};
-  Vector2 knife_speed = {2, 0};
-
-  unsigned int knife_catches = 0;
 
   string music_path;
   Mix_Music *music = NULL;
