@@ -11,8 +11,7 @@ typedef enum {
   SPRITETYPE_KNIFE,
   // SPRITETYPE_PIPEBASE,
   // SPRITETYPE_RED_BRICK,
-
-  SPRITETYPE_BULLET,
+  // SPRITETYPE_BULLET,
   SPRITETYPE_SOULSHARD,
   SPRITETYPE_COUNT
 } sprite_type;
@@ -20,9 +19,9 @@ typedef enum {
 class Sprite {
 
 public:
-  Sprite(const char *filepath, const int anim_frames, const float x,
+  Sprite(const char *filepath, const unsigned int anim_frames, const float x,
          const float y, sprite_type t);
-  Sprite(Texture2D &texture, const int anim_frames, const float x,
+  Sprite(Texture2D &texture, const unsigned int anim_frames, const float x,
          const float y, sprite_type t);
   ~Sprite();
 
@@ -35,38 +34,36 @@ public:
   const float get_scale() const;
   const float get_x() const;
   const float get_y() const;
-
   const Rectangle get_dest() const;
   const Rectangle get_hitbox() const;
-
   const int get_width() const;
   const int get_height() const;
   const int get_anim_frames() const;
   const int get_current_frame() const;
-
   const float get_vx() const;
   const float get_vy() const;
-
   const Vector2 get_velocity() const;
   const Vector2 get_acceleration() const;
-
   const bool get_is_marked_for_deletion() const;
   const bool get_is_animating() const;
   const bool get_is_flipped() const;
-
   const sprite_type get_type() const;
-
   const float get_ax() const;
   const float get_ay() const;
+  const int get_hp() const;
+  const int get_maxhp() const;
+  const bool get_is_spinning() const;
+  const float get_rotation_angle() const;
+  const float get_rotation_speed() const;
+  const movement_type get_movement_type() const;
 
   void incr_frame();
   void incr_ax(const float ax);
   void incr_ay(const float ay);
   void incr_vx(const float vx);
   void incr_vy(const float vy);
-
   void set_scale(const float scale);
-  void set_current_frame(const int frame);
+  void set_current_frame(const unsigned int frame);
   void set_x(const float x);
   void set_y(const float y);
   void set_vx(const float vx);
@@ -78,30 +75,16 @@ public:
   void set_type(const sprite_type t);
   void set_ax(const float ax);
   void set_ay(const float ay);
-
   void set_hp(const int hp);
   void set_maxhp(const int maxhp);
-  const int get_hp() const;
-  const int get_maxhp() const;
-
   void decr_hp(const int hp);
   void incr_hp(const int hp);
-
   void flip();
-
   void update();
-
   void set_rotation_angle(const float angle);
-  const float get_rotation_angle() const;
-
   void set_is_spinning(const bool is_spinning);
-  const bool get_is_spinning() const;
-
   void set_rotation_speed(const float speed);
-  const float get_rotation_speed() const;
-
   void set_movement_type(const movement_type m);
-  const movement_type get_movement_type() const;
 
 private:
   Texture2D texture;
@@ -111,29 +94,26 @@ private:
   Rectangle dest;
   Rectangle hitbox = {0, 0, 0, 0};
 
-  Vector2 origin;
-  int anim_frames;
-  int current_frame;
-  int frame_counter;
+  unsigned int anim_frames;
+  unsigned int current_frame;
+  unsigned int frame_counter;
+  unsigned int hp;
+  unsigned int maxhp;
+
   float scale;
-
   float rotation_angle = 0.0f;
+  float rotation_speed = 1.0f;
 
+  Vector2 origin;
   Vector2 velocity;
   Vector2 acceleration;
 
   bool is_marked_for_deletion;
   bool is_animating;
   bool is_flipped;
-
-  sprite_type type;
-
-  int hp;
-  int maxhp;
-
   bool is_spinning = false;
 
-  float rotation_speed = 1.0f;
+  sprite_type type;
 
   movement_type movement = MOVEMENT_TYPE_NONE;
 
