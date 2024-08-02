@@ -172,6 +172,7 @@ void GameplayScene::handle_player_collision() {
     case SPRITETYPE_ENEMY:
     case SPRITETYPE_KNIFE:
     case SPRITETYPE_SOULSHARD:
+    case SPRITETYPE_POWERUP_HEART:
       // if (CheckCollisionRecs(player->get_dest(), s.second->get_dest())) {
       // if (CheckCollisionRecs(player->get_hitbox(), s.second->get_hitbox())) {
       if (CheckCollisionRecs(player->get_dest(), s.second->get_dest())) {
@@ -201,6 +202,24 @@ void GameplayScene::handle_player_collision() {
           // player->set_hp(player->get_hp() + 1);
           get_popup_manager()->render("soulshard catch " +
                                       to_string(soulshard_catches));
+
+          if (soulshard_catches % 3 == 0) {
+
+            // spawn a heart
+            const float heart_x = rand() % GetScreenWidth();
+            const float heart_y = rand() % GetScreenHeight();
+
+            spawn_heart(heart_x, heart_y);
+          }
+        } else if (t == SPRITETYPE_POWERUP_HEART) {
+          s.second->mark_for_deletion();
+          player->set_hp(player->get_hp() + 1);
+          if (player->get_hp() > player->get_maxhp()) {
+            player->set_hp(player->get_maxhp());
+          }
+
+          // get_popup_manager()->render("heart catch " +
+          //                             to_string(player->get_hp()));
         }
       }
       break;
@@ -795,6 +814,22 @@ entity_id GameplayScene::spawn_soulshard(float x, float y) {
 
   // mPrint("Spawning soulshard...");
   entity_id id = spawn_entity("soulshard", x, y, SPRITETYPE_SOULSHARD, false);
+  get_sprite(id)->set_vx(0.0f);
+  get_sprite(id)->set_vy(0.0f);
+  get_sprite(id)->set_ax(0.0f);
+  get_sprite(id)->set_ay(0.0f);
+  get_sprite(id)->set_hp(1);
+  get_sprite(id)->set_maxhp(1);
+  get_sprite(id)->set_movement_type(MOVEMENT_TYPE_NONE);
+  get_sprite(id)->set_is_animating(true);
+
+  return id;
+}
+
+entity_id GameplayScene::spawn_heart(float x, float y) {
+
+  // mPrint("Spawning soulshard...");
+  entity_id id = spawn_entity("heart", x, y, SPRITETYPE_POWERUP_HEART, false);
   get_sprite(id)->set_vx(0.0f);
   get_sprite(id)->set_vy(0.0f);
   get_sprite(id)->set_ax(0.0f);
