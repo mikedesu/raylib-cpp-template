@@ -33,7 +33,7 @@ void PopupManager::render(string s) {
   BeginTextureMode(target);
   ClearBackground(BLANK);
   // DrawRectangle(0, 0, 200, 200, RED);
-  DrawText(s.c_str(), 10, 10, 32, WHITE);
+  DrawText(s.c_str(), 10, 10, 24, WHITE);
   EndTextureMode();
   EndDrawing();
   alpha = 1.0f;

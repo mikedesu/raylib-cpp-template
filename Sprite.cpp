@@ -110,13 +110,14 @@ void Sprite::set_scale(const float s) {
 }
 
 void Sprite::set_current_frame(const unsigned int frame) {
-  if (frame < 0 || frame >= anim_frames) {
+  if (frame >= anim_frames) {
     return;
   }
   current_frame = frame;
   // update the src rectangle
   src.x = (float)frame * src.width;
   src.y = 0;
+  flipped_src.x = src.x;
 }
 
 void Sprite::incr_frame() {

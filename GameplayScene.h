@@ -39,6 +39,7 @@ public:
   void set_ground_y_movement(const float dy);
 
   void set_do_ground_movement(const bool d);
+  void handle_knife_recovery();
 
   // void set_knife_speed(const Vector2 speed);
   // void set_knife_catches(const unsigned int catches);
@@ -47,8 +48,8 @@ public:
   // const unsigned int get_knife_catches() const;
 
 private:
-  const float gravity = 0.0032f;
-  // const float gravity = 0.0064f;
+  // const float gravity = 0.0032f;
+  //  const float gravity = 0.0064f;
 
   Mix_Chunk *sfx_knife_throw = nullptr;
   Mix_Chunk *sfx_knife_hit = nullptr;
@@ -69,6 +70,8 @@ private:
   unsigned int knife_catches = 0;
 
   unsigned int max_knives = 2;
+  unsigned int current_knives = 2;
+
   entity_id player_id = -1;
   unsigned int soulshard_catches = 0;
 

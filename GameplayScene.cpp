@@ -152,16 +152,14 @@ void GameplayScene::handle_offscreen() {
     // so we can spawn new entities within the buffer
     // while allowing old entities to move outside of it
     // and get marked for deletion
-
-    const bool condition_0 = s.second->get_x() > GetScreenWidth() + width;
-    const bool condition_1 = s.second->get_x() < -width;
-
-    if (condition_0) {
-      cout << "Condition 0" << endl;
+    const bool c0 = s.second->get_x() > GetScreenWidth() + width;
+    const bool c1 = s.second->get_x() < -width;
+    if (c0 || c1) {
       s.second->mark_for_deletion();
-    } else if (condition_1) {
-      cout << "Condition 1" << endl;
-      s.second->mark_for_deletion();
+      if (s.second->get_type() == SPRITETYPE_KNIFE) {
+
+        handle_knife_recovery();
+      }
     }
   }
 }
@@ -183,6 +181,9 @@ void GameplayScene::handle_player_collision() {
           knife_catches = (knife_catches + 1);
           get_popup_manager()->render("knife catch " +
                                       to_string(knife_catches));
+
+          handle_knife_recovery();
+
         } else if (t == SPRITETYPE_ENEMY) {
           s.second->mark_for_deletion();
           player->set_hp(player->get_hp() - 1);
@@ -209,6 +210,13 @@ void GameplayScene::handle_player_collision() {
   }
 }
 
+void GameplayScene::handle_knife_recovery() {
+  current_knives++;
+  if (current_knives > max_knives) {
+    current_knives = max_knives;
+  }
+}
+
 void GameplayScene::handle_knife_collisions() {
   for (auto &knife : get_sprites()) {
     sprite_type t = knife.second->get_type();
@@ -228,6 +236,7 @@ void GameplayScene::handle_knife_collisions() {
 
               // Mix_PlayChannel(-1, sfx_knife_hit, 0);
               enemies_killed++;
+              handle_knife_recovery();
 
               get_popup_manager()->render("enemies killed " +
                                           to_string(enemies_killed));
@@ -343,16 +352,21 @@ void GameplayScene::handle_input() {
     if (IsKeyPressed(KEY_Z)) {
       // incr the player sprite frame
       // get_sprites()[player_id]->incr_frame();
-      get_sprite(player_id)->incr_frame();
+      // get_sprite(player_id)->incr_frame();
+      get_sprite(player_id)->set_current_frame(1);
 
-      // fire a knife
-      spawn_knife();
+      // fire a knife if the player has knives available
+      if (current_knives > 0) {
+        spawn_knife();
+        current_knives--;
+      }
     }
 
     if (IsKeyReleased(KEY_Z)) {
       // reset the player sprite frame
       // get_sprites()[player_id]->set_frame(0);
-      get_sprite(player_id)->incr_frame();
+      // get_sprite(player_id)->incr_frame();
+      get_sprite(player_id)->set_current_frame(0);
     }
 
     if (IsKeyPressed(KEY_X)) {
@@ -468,7 +482,9 @@ void GameplayScene::draw_debug_panel() {
       "Knife Catches: " + to_string(knife_catches) + "\n" +
       "IsPaused: " + to_string(get_paused()) + "\n" +
       "Enemies Killed: " + to_string(enemies_killed) + "\n" +
-      "Soulshard Catches: " + to_string(soulshard_catches) + "\n";
+      "Soulshard Catches: " + to_string(soulshard_catches) + "\n" +
+      "Current Knives: " + to_string(current_knives) + "\n" +
+      "Max Knives: " + to_string(max_knives) + "\n";
   DrawRectangle(0, 0, 500, 200, Fade(BLACK, 0.5f));
   DrawTextEx(get_global_font(), camera_info_str.c_str(), (Vector2){10, 10}, 16,
              0.5f, WHITE);
@@ -487,9 +503,12 @@ void GameplayScene::draw_hud() {
   const string soulshard_catches_str =
       "Soulshards: " + to_string(soulshard_catches);
 
+  const string knives_str =
+      "Knives: " + to_string(current_knives) + "/" + to_string(max_knives);
+
   const string full_str = hp_str + " " + knife_catches_str + " " +
                           enemies_killed_str + " " + soulshard_catches_str +
-                          "\nPress Z to throw knife";
+                          " " + knives_str + "\nPress Z to throw knife";
 
   // DrawRectangle(0, 0, 500, 20, Fade(BLACK, 0.5f));
   // DrawTextEx(get_global_font(), full_str.c_str(), (Vector2){10, 10}, 20,
@@ -580,7 +599,7 @@ void GameplayScene::draw() {
       const float y = get_sprite(player_id)->get_y();
 
       Vector2 s = GetWorldToScreen2D(
-          (Vector2){x - 200, y - 100},
+          (Vector2){x - 50, y - 50},
           get_camera2d()); // Get the screen space position for
                            // a 2d camera world space position
 
