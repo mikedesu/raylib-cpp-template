@@ -49,8 +49,8 @@ public:
   // const unsigned int get_knife_catches() const;
 
 private:
-  // const float gravity = 0.0032f;
-  //  const float gravity = 0.0064f;
+  //  const float gravity = 0.0032f;
+  const float gravity = 0.0064f;
 
   Mix_Chunk *sfx_knife_throw = nullptr;
   Mix_Chunk *sfx_knife_hit = nullptr;
@@ -75,7 +75,4 @@ private:
 
   entity_id player_id = -1;
   unsigned int soulshard_catches = 0;
-
-  // bool line_did_cross_line(Vector4 &line1, Vector4 &line2);
-  // bool ccw(float x1, float y1, float x2, float y2, float x3, float y3);
 };

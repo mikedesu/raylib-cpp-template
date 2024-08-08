@@ -24,9 +24,9 @@ void GameplayScene::update_player_movement() {
   shared_ptr<Sprite> player = get_sprites()[player_id];
 
   // this handles the 'flappy bird' bounce
-  // player->incr_ay(gravity);
-  // player->set_y(player->get_y() + player->get_vy());
-  // player->update();
+  player->incr_ay(gravity);
+  player->set_y(player->get_y() + player->get_vy());
+  player->update();
 
   const int height = player->get_height();
   const int width = player->get_width();
@@ -390,11 +390,11 @@ void GameplayScene::handle_input() {
       spawn_bat();
     }
 
-    // if (IsKeyPressed(KEY_SPACE)) {
-    //   player->set_ay(ay);
-    //   player->set_vy(vy);
-    //   player->update();
-    // }
+    if (IsKeyPressed(KEY_SPACE)) {
+      player->set_ay(ay);
+      player->set_vy(vy);
+      player->update();
+    }
 
     bool shift = IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT);
     int new_move_speed = move_speed;
