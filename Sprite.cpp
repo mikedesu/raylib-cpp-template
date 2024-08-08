@@ -210,3 +210,6 @@ const movement_type Sprite::get_movement_type() const { return movement; }
 void Sprite::set_is_spinning(const bool is) { is_spinning = is; }
 void Sprite::set_is_animating(const bool is) { is_animating = is; }
 void Sprite::set_is_flipped(const bool f) { is_flipped = f; }
+
+unsigned int Sprite::get_alpha() const { return alpha; }
+void Sprite::set_alpha(const unsigned int a) { alpha = a; }

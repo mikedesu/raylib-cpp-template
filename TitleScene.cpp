@@ -79,6 +79,50 @@ bool TitleScene::init() {
   return true;
 }
 
+void TitleScene::draw() {
+  BeginMode2D(get_camera2d());
+  Color clear_color = BLACK;
+  ClearBackground(clear_color);
+
+  for (auto &s : get_sprites()) {
+    s.second->draw();
+    if (get_debug_panel_on()) {
+      s.second->draw_hitbox();
+    }
+  }
+
+  const float x =
+      GetScreenWidth() / 2.0f - get_textures()["title"].texture.width / 2.0f;
+
+  const float y0 = GetScreenHeight() / 4.0f - 32.0f;
+  // const float y1 = GetScreenHeight() * 3.0f / 4.0f;
+
+  // DrawTextEx(global_font, "@evildojo666 presents", (Vector2){x, y0}, 32,
+  // 0.5f,
+  //            WHITE);
+  DrawText("@evildojo666 presents", x, y0, 32, WHITE);
+
+  // DrawTextEx(global_font, "by darkmage", (Vector2){x, y1}, 32, 0.5f,
+  // WHITE);
+  // else if (scenetype == SCENE_TYPE_GAMEOVER) {
+  //   const float x = 0;
+  //   const float y = 0;
+  //   DrawTextEx(global_font, "Gameover", (Vector2){x, y}, 64, 0.5f, WHITE);
+  // }
+
+  EndMode2D();
+
+  // draw debug panel
+  if (get_debug_panel_on()) {
+    DrawFPS(GetScreenWidth() - 80, 10);
+    draw_debug_panel();
+  } else if (get_hud_on()) {
+    draw_hud();
+  }
+
+  incr_current_frame();
+}
+
 void TitleScene::draw_debug_panel() {
   string camera_info_str =
       "Current Frame: " + to_string(get_current_frame()) + "\n" +

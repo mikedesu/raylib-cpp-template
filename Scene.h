@@ -56,6 +56,7 @@ public:
                     const int num_frames, const int is_player);
   bool load_textures();
   bool get_debug_panel_on();
+
   float get_global_scale();
 
   entity_id spawn_entity(const char *texture_key, float x, float y,
@@ -64,20 +65,18 @@ public:
                          sprite_type type, bool is_anim);
 
   unordered_map<entity_id, Vector2> &get_stars();
-
   unordered_map<entity_id, shared_ptr<Sprite>> &get_sprites();
+  unordered_map<entity_id, shared_ptr<Sprite>> &get_bgsprites();
+  unordered_map<string, texture_info> &get_textures();
 
   shared_ptr<Sprite> get_sprite(entity_id id);
 
-  unordered_map<entity_id, shared_ptr<Sprite>> &get_bgsprites();
-
-  unordered_map<string, texture_info> &get_textures();
   Camera2D &get_camera2d();
-  unsigned int get_current_frame();
-  control_mode get_control_mode();
   Font &get_global_font();
 
-  // entity_id get_player_id();
+  unsigned int get_current_frame();
+  control_mode get_control_mode();
+
   vector<entity_id> &get_entity_ids();
   vector<entity_id> &get_bg_entity_ids();
 
@@ -98,10 +97,7 @@ public:
   void set_scene_transition(scene_transition st);
   void set_alpha(float a);
   void set_id(scene_id i);
-  // void set_player_id(entity_id id);
   void set_scene_type(scene_type st);
-  // void draw_ground();
-  // void draw_stars();
   void pause();
   void unpause();
 
@@ -132,15 +128,22 @@ private:
   vector<entity_id> bg_entity_ids;
 
   Font global_font;
-
   Camera2D camera2d = {0};
+  Mix_Music *music = NULL;
+
   float global_scale = 1.0f;
+
   bool has_been_initialized = false;
   bool debug_panel_on = true;
+  bool is_paused = false;
+  bool hud_on = true;
+
   control_mode controlmode = CONTROL_MODE_PLAYER;
+
   unsigned int current_frame = 0;
 
   string texture_filepath;
+  string music_path;
 
   unordered_map<entity_id, Vector2> stars;
 
@@ -150,14 +153,5 @@ private:
   scene_id id;
   scene_type scenetype;
 
-  bool is_paused = false;
-
-  string music_path;
-  Mix_Music *music = NULL;
-
-  bool hud_on = true;
-
   shared_ptr<PopupManager> popup_manager;
-
-  // Music music;
 };

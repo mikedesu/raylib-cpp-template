@@ -1,16 +1,11 @@
 #include "Scene.h"
 #include "mPrint.h"
-// #include "raymath.h"
 #include "rlgl.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 #include <cassert>
 #include <cstring>
 #include <raylib.h>
-#include <string>
-
-using std::string;
-// using std::to_string;
 
 static entity_id next_entity_id = 0;
 
@@ -65,22 +60,8 @@ void Scene::update() {}
 
 void Scene::handle_input() {}
 
-// void Scene::draw_stars() {
-//   for (auto &s : stars) {
-//     DrawRectangle(s.second.x, s.second.y, 4, 4, WHITE);
-//   }
-// }
-
-// void Scene::draw_ground() {
-//   // want a real ground sprite texture
-//   const int w = GetScreenWidth();
-//   const int h = GetScreenHeight();
-//   const int offset_h = 20;
-//   DrawRectangle(0, GetScreenHeight() - offset_h, w, h, RED);
-//   // DrawRectangle(0, GetScreenHeight() - 10, w, h, c);
-// }
-
 void Scene::draw() {
+  /*
   BeginMode2D(camera2d);
   Color clear_color = BLACK;
   switch (scenetype) {
@@ -148,6 +129,7 @@ void Scene::draw() {
   }
 
   current_frame++;
+  */
 }
 
 bool Scene::init() { return true; }

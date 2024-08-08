@@ -53,9 +53,6 @@ void GameplayScene::update_enemy_movement() {
     case SPRITETYPE_ENEMY: {
       s.second->update();
 
-      // if (s.second->get_movement_type() == movement_type::MOVEMENT_TYPE_NONE)
-      // {
-      // }
       if (s.second->get_movement_type() ==
           movement_type::MOVEMENT_TYPE_NORMAL) {
         s.second->set_x(s.second->get_x() + s.second->get_vx());
@@ -68,7 +65,6 @@ void GameplayScene::update_enemy_movement() {
         // we can use the atan2 function to calculate the angle
         // we can then use the angle to calculate the x and y components of the
         // velocity
-        //
 
         // get the player position
         const float player_x = get_sprites()[player_id]->get_x();
@@ -297,7 +293,8 @@ void GameplayScene::update() {
     // except for the game beginning, when they begin flapping at the bottom
     // once they hit the center, the camera should follow them
     Camera2D &camera2d = get_camera2d();
-    camera2d.target.y = get_sprites()[player_id]->get_y();
+    // camera2d.target.y = get_sprites()[player_id]->get_y();
+    camera2d.target.y = get_sprite(player_id)->get_y();
     // camera2d.offset.y = GetScreenHeight() / 2.0f;
 
     if (do_ground_movement) {
@@ -311,7 +308,8 @@ void GameplayScene::update() {
 }
 
 void GameplayScene::handle_input() {
-  shared_ptr<Sprite> player = get_sprites()[player_id];
+  // shared_ptr<Sprite> player = get_sprites()[player_id];
+  shared_ptr<Sprite> player = get_sprite(player_id);
   // this value affects how high skull 'flaps' or jumps
   const float vy = -6.75f;
   const float ay = 0.0f;
@@ -355,10 +353,10 @@ void GameplayScene::handle_input() {
       show_test_popup = !show_test_popup;
     }
 
-    if (IsKeyPressed(KEY_R)) {
-      static int count = 0;
-      get_popup_manager()->render("test " + to_string(count++));
-    }
+    // if (IsKeyPressed(KEY_R)) {
+    //   static int count = 0;
+    //   get_popup_manager()->render("test " + to_string(count++));
+    // }
 
     // if (IsKeyPressed(KEY_P)) {
     //   const int pipebase_width = get_textures()["pipebase"].texture.width;
@@ -392,11 +390,11 @@ void GameplayScene::handle_input() {
       spawn_bat();
     }
 
-    if (IsKeyPressed(KEY_SPACE)) {
-      player->set_ay(ay);
-      player->set_vy(vy);
-      player->update();
-    }
+    // if (IsKeyPressed(KEY_SPACE)) {
+    //   player->set_ay(ay);
+    //   player->set_vy(vy);
+    //   player->update();
+    // }
 
     bool shift = IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT);
     int new_move_speed = move_speed;
@@ -699,9 +697,7 @@ entity_id GameplayScene::spawn_bat() {
   auto textures = get_textures();
   auto sprites = get_sprites();
   const int bat_width = textures["bat"].texture.width;
-
-  int roll = rand() % 2;
-
+  const int roll = rand() % 2;
   const float x = roll ? -bat_width : GetScreenWidth() - 4.0;
   // const float vx = roll ? 2.0f : -2.0f;
   const float vx = 2.0f;
@@ -713,7 +709,8 @@ entity_id GameplayScene::spawn_bat() {
   // in order to provide some variance as to the bat spawn location
   // perhaps over time this value can increase in scale to how far
   // into the level the player is
-  const float y = sprites[player_id]->get_y() + (rand() % 200 - 100);
+  // const float y = sprites[player_id]->get_y() + (rand() % 200 - 100);
+  const float y = get_sprite(player_id)->get_y() + (rand() % 200 - 100);
 
   // const int bat_height = get_textures()["bat"].texture.height;
   //(float)GetScreenHeight() / 2 - (float)bat_height + 300;
@@ -724,17 +721,20 @@ entity_id GameplayScene::spawn_bat(const float x, const float y,
                                    const float vx) {
   // mPrint("Spawning bat...");
   entity_id id = spawn_entity("bat", x, y, SPRITETYPE_ENEMY, true);
-  auto sprites = get_sprites();
-  sprites[id]->set_vx(vx);
-  sprites[id]->set_vy(1.0f);
-  sprites[id]->set_ax(0.0f);
-  sprites[id]->set_ay(0.0f);
-  sprites[id]->set_hp(1);
-  sprites[id]->set_maxhp(1);
+  // shared_ptr<Sprite> s = get_sprite(id);
 
+  mPrint("Spawn bat " + to_string(x) + ", " + to_string(y) + ", " +
+         to_string(vx));
+
+  auto s = get_sprites();
+  s[id]->set_vx(vx);
+  s[id]->set_vy(1.0f);
+  s[id]->set_ax(0.0f);
+  s[id]->set_ay(0.0f);
+  s[id]->set_hp(1);
+  s[id]->set_maxhp(1);
   // sprites[id]->set_movement_type(MOVEMENT_TYPE_NORMAL);
-  sprites[id]->set_movement_type(MOVEMENT_TYPE_HOMING);
-
+  s[id]->set_movement_type(MOVEMENT_TYPE_HOMING);
   return id;
 }
 

@@ -87,6 +87,9 @@ public:
   void set_rotation_speed(const float speed);
   void set_movement_type(const movement_type m);
 
+  unsigned int get_alpha() const;
+  void set_alpha(const unsigned int alpha);
+
 private:
   Texture2D texture;
 
@@ -117,6 +120,8 @@ private:
   sprite_type type;
 
   movement_type movement = MOVEMENT_TYPE_NONE;
+
+  unsigned int alpha;
 
   void init_rects();
 };

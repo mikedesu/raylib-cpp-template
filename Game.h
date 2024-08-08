@@ -26,6 +26,8 @@ using std::vector;
 class Game {
 public:
   Game();
+  ~Game();
+
   void run();
   void update();
   void draw();
@@ -39,41 +41,41 @@ public:
   void set_screen_width(int w);
   void set_screen_height(int h);
   void set_window_title(const char *t);
-  string get_window_title();
   void set_camera_default_values();
   void set_has_been_initialized(bool b);
-  bool get_has_been_initialized();
-  bool init();
   void close();
   void handle_transition_in();
   void handle_transition_out();
   void cleanup();
-  ~Game();
+
+  bool get_has_been_initialized();
+  bool init();
+  string get_window_title();
 
 private:
   unordered_map<string, texture_info> textures;
   unordered_map<entity_id, shared_ptr<Sprite>> sprites;
-  vector<entity_id> entity_ids;
   unordered_map<entity_id, bool> gravity;
+  unordered_map<scene_id, shared_ptr<Scene>> scenes;
+  unordered_map<string, scene_id> scene_keys;
 
-  float global_scale;
+  vector<entity_id> entity_ids;
+
+  shared_ptr<Scene> current_scene;
+  shared_ptr<PopupManager> popup_manager;
+
   entity_id player_id;
-  Font global_font;
+  scene_id current_scene_id;
+
   bool has_been_initialized;
   bool debug_panel_on;
+  float global_scale;
   unsigned int current_frame;
   control_mode controlmode;
   string window_title;
 
+  Font global_font;
   Camera2D camera2d;
   RenderTexture target;
   Rectangle screen_rect;
-
-  unordered_map<scene_id, shared_ptr<Scene>> scenes;
-  unordered_map<string, scene_id> scene_keys;
-
-  scene_id current_scene_id;
-  shared_ptr<Scene> current_scene;
-
-  shared_ptr<PopupManager> popup_manager;
 };
