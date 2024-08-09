@@ -20,7 +20,7 @@ GameplayScene::~GameplayScene() { mPrint("GameplayScene destructor"); }
 void GameplayScene::gameover() { set_scene_transition(SCENE_TRANSITION_OUT); }
 
 void GameplayScene::update_player_movement() {
-  
+
   /*
   shared_ptr<Sprite> player = get_sprites()[player_id];
 
@@ -120,53 +120,53 @@ void GameplayScene::update_enemy_movement() {
   */
 }
 
-void GameplayScene::update_knife_movement() {
-  /*
-  for (auto &s : get_sprites()) {
-    switch (s.second->get_type()) {
-    case SPRITETYPE_KNIFE: {
-      s.second->update();
-      s.second->set_x(s.second->get_x() + s.second->get_vx());
+// void GameplayScene::update_knife_movement() {
+/*
+for (auto &s : get_sprites()) {
+  switch (s.second->get_type()) {
+  case SPRITETYPE_KNIFE: {
+    s.second->update();
+    s.second->set_x(s.second->get_x() + s.second->get_vx());
 
-      const int height = s.second->get_height();
-      // const int width = s.second->get_width();
-      const int bottom_of_sprite = s.second->get_y() + height;
-      // lock the s.second to a relative "ground" location
-      const int beginning_of_lava = ground_y;
-      if (bottom_of_sprite >= beginning_of_lava) {
-        s.second->mark_for_deletion();
-      }
-    }
-
-    break;
-    default:
-      break;
-    }
-  }
-  */
-}
-
-void GameplayScene::handle_offscreen() {
-  /*
-  for (auto &s : get_sprites()) {
-    const int width = s.second->get_width() * 2;
-    // if sprite moves beyond screen, mark for deletion
-    // we use 2*width to help create a buffer zone
-    // so we can spawn new entities within the buffer
-    // while allowing old entities to move outside of it
-    // and get marked for deletion
-    const bool c0 = s.second->get_x() > GetScreenWidth() + width;
-    const bool c1 = s.second->get_x() < -width;
-    if (c0 || c1) {
+    const int height = s.second->get_height();
+    // const int width = s.second->get_width();
+    const int bottom_of_sprite = s.second->get_y() + height;
+    // lock the s.second to a relative "ground" location
+    const int beginning_of_lava = ground_y;
+    if (bottom_of_sprite >= beginning_of_lava) {
       s.second->mark_for_deletion();
-      if (s.second->get_type() == SPRITETYPE_KNIFE) {
-
-        handle_knife_recovery();
-      }
     }
   }
-  */
+
+  break;
+  default:
+    break;
+  }
 }
+*/
+//}
+
+// void GameplayScene::handle_offscreen() {
+/*
+for (auto &s : get_sprites()) {
+  const int width = s.second->get_width() * 2;
+  // if sprite moves beyond screen, mark for deletion
+  // we use 2*width to help create a buffer zone
+  // so we can spawn new entities within the buffer
+  // while allowing old entities to move outside of it
+  // and get marked for deletion
+  const bool c0 = s.second->get_x() > GetScreenWidth() + width;
+  const bool c1 = s.second->get_x() < -width;
+  if (c0 || c1) {
+    s.second->mark_for_deletion();
+    if (s.second->get_type() == SPRITETYPE_KNIFE) {
+
+      handle_knife_recovery();
+    }
+  }
+}
+*/
+//}
 
 void GameplayScene::handle_player_collision() {
   /*
@@ -242,57 +242,57 @@ void GameplayScene::handle_player_collision() {
   */
 }
 
-void GameplayScene::handle_knife_recovery() {
-  /*
-  current_knives++;
-  if (current_knives > max_knives) {
-    current_knives = max_knives;
-  }
-  */
+// void GameplayScene::handle_knife_recovery() {
+/*
+current_knives++;
+if (current_knives > max_knives) {
+  current_knives = max_knives;
 }
+*/
+//}
 
-void GameplayScene::handle_knife_collisions() {
-  /*
-  for (auto &knife : get_sprites()) {
-    sprite_type t = knife.second->get_type();
-    switch (t) {
-    case SPRITETYPE_KNIFE: {
-      for (auto &s : get_sprites()) {
-        sprite_type t2 = s.second->get_type();
-        switch (t2) {
-        case SPRITETYPE_ENEMY: {
-          if (CheckCollisionRecs(knife.second->get_dest(),
-                                 s.second->get_dest())) {
+// void GameplayScene::handle_knife_collisions() {
+/*
+for (auto &knife : get_sprites()) {
+  sprite_type t = knife.second->get_type();
+  switch (t) {
+  case SPRITETYPE_KNIFE: {
+    for (auto &s : get_sprites()) {
+      sprite_type t2 = s.second->get_type();
+      switch (t2) {
+      case SPRITETYPE_ENEMY: {
+        if (CheckCollisionRecs(knife.second->get_dest(),
+                               s.second->get_dest())) {
 
-            s.second->set_hp(s.second->get_hp() - 1);
-            if (s.second->get_hp() <= 0) {
-              s.second->mark_for_deletion();
-              knife.second->mark_for_deletion();
+          s.second->set_hp(s.second->get_hp() - 1);
+          if (s.second->get_hp() <= 0) {
+            s.second->mark_for_deletion();
+            knife.second->mark_for_deletion();
 
-              // Mix_PlayChannel(-1, sfx_knife_hit, 0);
-              enemies_killed++;
-              handle_knife_recovery();
+            // Mix_PlayChannel(-1, sfx_knife_hit, 0);
+            enemies_killed++;
+            handle_knife_recovery();
 
-              get_popup_manager()->render("enemies killed " +
-                                          to_string(enemies_killed));
+            get_popup_manager()->render("enemies killed " +
+                                        to_string(enemies_killed));
 
-              spawn_soulshard(s.second->get_x(), s.second->get_y());
-            }
+            spawn_soulshard(s.second->get_x(), s.second->get_y());
           }
-          break;
         }
-        default:
-          break;
-        }
+        break;
       }
-      break;
+      default:
+        break;
+      }
     }
-    default:
-      break;
-    }
+    break;
   }
-  */
+  default:
+    break;
+  }
 }
+*/
+//}
 
 void GameplayScene::update() {
   /*
@@ -473,33 +473,33 @@ bool GameplayScene::init() {
     }
     mPrint("Spawning player...");
 
-    //const int sprite_width = get_textures()["skull"].texture.width;
-    //const int sprite_height = get_textures()["skull"].texture.height;
-    //const float x = (float)GetScreenWidth() / 2 - (float)sprite_width;
-    //const float y = (float)GetScreenHeight() / 2 - (float)sprite_height;
-    //spawn_player(x, y);
+    // const int sprite_width = get_textures()["skull"].texture.width;
+    // const int sprite_height = get_textures()["skull"].texture.height;
+    // const float x = (float)GetScreenWidth() / 2 - (float)sprite_width;
+    // const float y = (float)GetScreenHeight() / 2 - (float)sprite_height;
+    // spawn_player(x, y);
 
-    //for (int i = 0; i < 1000; i++) {
-    //  add_star();
-    //}
+    // for (int i = 0; i < 1000; i++) {
+    //   add_star();
+    // }
 
-    //get_camera2d().offset.y = GetScreenHeight() / 2.0f;
+    // get_camera2d().offset.y = GetScreenHeight() / 2.0f;
 
     // load_music("audio/skull-title-0.mp3");
     // Mix_PlayMusic(get_music(), -1);
     mPrint("Loading sound effects...");
 
-    //sfx_knife_throw = Mix_LoadWAV("audio/knife-throw.mp3");
-    //sfx_knife_hit = Mix_LoadWAV("audio/knife-hit.mp3");
+    // sfx_knife_throw = Mix_LoadWAV("audio/knife-throw.mp3");
+    // sfx_knife_hit = Mix_LoadWAV("audio/knife-hit.mp3");
 
-    //if (sfx_knife_throw == nullptr || sfx_knife_hit == nullptr) {
-    //  mPrint("Error loading sound effects. Exiting...");
-    //  return false;
-    //}
+    // if (sfx_knife_throw == nullptr || sfx_knife_hit == nullptr) {
+    //   mPrint("Error loading sound effects. Exiting...");
+    //   return false;
+    // }
 
-    //ground_y = GetScreenHeight();
+    // ground_y = GetScreenHeight();
 
-    //init_damage_zones();
+    // init_damage_zones();
 
     set_has_been_initialized(true);
 
@@ -508,13 +508,13 @@ bool GameplayScene::init() {
   return true;
 }
 
-void GameplayScene::init_damage_zones() {
-  //Vector2 p = GetScreenToWorld2D((Vector2){0, 0}, get_camera2d());
-  //damage_zones.push_back({p.x, p.y, 100, 100});
-  //p = GetScreenToWorld2D((Vector2){(float)GetScreenWidth() - 100, -100},
-  //                       get_camera2d());
-  //damage_zones.push_back({p.x, p.y, 100, 100});
-}
+// void GameplayScene::init_damage_zones() {
+//  Vector2 p = GetScreenToWorld2D((Vector2){0, 0}, get_camera2d());
+//  damage_zones.push_back({p.x, p.y, 100, 100});
+//  p = GetScreenToWorld2D((Vector2){(float)GetScreenWidth() - 100, -100},
+//                         get_camera2d());
+//  damage_zones.push_back({p.x, p.y, 100, 100});
+//}
 
 void GameplayScene::draw_debug_panel() {
   string camera_info_str =
@@ -531,12 +531,12 @@ void GameplayScene::draw_debug_panel() {
       "Camera target: " + to_string(get_camera2d().target.x) + ", " +
       to_string(get_camera2d().target.y) + "\n" + "GameplayScene" +
       "Sprites: " + to_string(get_sprites().size()) + "\n" +
-      "Knife Catches: " + to_string(knife_catches) + "\n" +
-      "IsPaused: " + to_string(get_paused()) + "\n" +
-      "Enemies Killed: " + to_string(enemies_killed) + "\n" +
-      "Soulshard Catches: " + to_string(soulshard_catches) + "\n" +
-      "Current Knives: " + to_string(current_knives) + "\n" +
-      "Max Knives: " + to_string(max_knives) + "\n";
+      //"Knife Catches: " + to_string(knife_catches) + "\n" +
+      "IsPaused: " + to_string(get_paused()) + "\n";
+  //"Soulshard Catches: " + to_string(soulshard_catches) + "\n" +
+  //"Current Knives: " + to_string(current_knives) + "\n" +
+  //"Max Knives: " + to_string(max_knives) + "\n";
+  //"Enemies Killed: " + to_string(enemies_killed) + "\n" +
   DrawRectangle(0, 0, 500, 200, Fade(BLACK, 0.5f));
   DrawTextEx(get_global_font(), camera_info_str.c_str(), (Vector2){10, 10}, 16,
              0.5f, WHITE);
@@ -595,7 +595,7 @@ void GameplayScene::draw() {
   // DrawRectangle(GetScreenWidth() / 2 - 405 / 2, 0, 405, 720, BLACK);
   // draw stars
   // want: real stars
-  //if (get_scene_type() == SCENE_TYPE_GAMEPLAY) {
+  // if (get_scene_type() == SCENE_TYPE_GAMEPLAY) {
   //  draw_stars();
   //  draw_ground();
   //}
@@ -606,7 +606,7 @@ void GameplayScene::draw() {
       s.second->draw_hitbox();
 
       // draw a line from the sprite to the player
-      //if (s.second->get_type() == SPRITETYPE_ENEMY) {
+      // if (s.second->get_type() == SPRITETYPE_ENEMY) {
       //  DrawLine(s.second->get_x(), s.second->get_y(),
       //           get_sprites()[player_id]->get_x(),
       //           get_sprites()[player_id]->get_y(), RED);
@@ -614,9 +614,9 @@ void GameplayScene::draw() {
     }
   }
 
-  //for (auto s : damage_zones) {
-  //  DrawRectangle(s.x, s.y, s.width, s.height, RED);
-  //}
+  // for (auto s : damage_zones) {
+  //   DrawRectangle(s.x, s.y, s.width, s.height, RED);
+  // }
 
   // if (get_scene_type() == SCENE_TYPE_TITLE) {
   //   const float x =
@@ -648,12 +648,12 @@ void GameplayScene::draw() {
   if (show_test_popup) {
     if (get_popup_manager() != nullptr) {
 
-       const float x = GetScreenWidth() / 2.0f - 100.0f;
-       const float y = GetScreenHeight() / 2.0f - 100.0f;
+      const float x = GetScreenWidth() / 2.0f - 100.0f;
+      const float y = GetScreenHeight() / 2.0f - 100.0f;
       //  get player x
-      //const float x = get_sprite(player_id)->get_x();
+      // const float x = get_sprite(player_id)->get_x();
       // get player y
-      //const float y = get_sprite(player_id)->get_y();
+      // const float y = get_sprite(player_id)->get_y();
       Vector2 s = GetWorldToScreen2D(
           (Vector2){x - 50, y - 50},
           get_camera2d()); // Get the screen space position for
@@ -676,22 +676,22 @@ inline void GameplayScene::handle_draw_debug_panel() {
   }
 }
 
-void GameplayScene::draw_ground() {
-  // want a real ground sprite texture
-  //const int w = GetScreenWidth();
-  //const int h = GetScreenHeight() * 4;
-  //const int offset_h = 20;
-  //const int x = 0;
-  //const int y = ground_y - offset_h;
-  //DrawRectangle(x, y, w, h, RED);
-  // DrawRectangle(0, GetScreenHeight() - 10, w, h, c);
-}
+// void GameplayScene::draw_ground() {
+//  want a real ground sprite texture
+//  const int w = GetScreenWidth();
+//  const int h = GetScreenHeight() * 4;
+//  const int offset_h = 20;
+//  const int x = 0;
+//  const int y = ground_y - offset_h;
+//  DrawRectangle(x, y, w, h, RED);
+//  DrawRectangle(0, GetScreenHeight() - 10, w, h, c);
+//}
 
-void GameplayScene::draw_stars() {
-  //for (auto &s : get_stars()) {
-  //  DrawRectangle(s.second.x, s.second.y, 4, 4, WHITE);
-  //}
-}
+// void GameplayScene::draw_stars() {
+//  for (auto &s : get_stars()) {
+//    DrawRectangle(s.second.x, s.second.y, 4, 4, WHITE);
+//  }
+//}
 
 void GameplayScene::close() {
   mPrint("Closing gameplay scene...");
@@ -722,41 +722,41 @@ void GameplayScene::close() {
   // set_player_id(-1);
   player_id = -1;
 
-  enemies_killed = 0;
+  // enemies_killed = 0;
 
   get_popup_manager()->zero_alpha();
 
   mPrint("Scene closed.");
 }
 
-//entity_id GameplayScene::spawn_bat() {
-  // get player position
-  // const float x = sprites[player_id]->get_x();
-  //auto textures = get_textures();
-  //auto sprites = get_sprites();
-  //const int bat_width = textures["bat"].texture.width;
-  //const int roll = rand() % 2;
-  //const float x = roll ? -bat_width : GetScreenWidth() - 4.0;
-  // const float vx = roll ? 2.0f : -2.0f;
-  //const float vx = 2.0f;
-  // here, we are hardcoding the bat y to be the player y
-  // const float y = sprites[player_id]->get_y();
-  // here, we are adjusting the spawned y in a random direction
-  // in order to provide some variance as to the bat spawn location
-  // perhaps over time this value can increase in scale to how far
-  // into the level the player is
-  // const float y = sprites[player_id]->get_y() + (rand() % 200 - 100);
-  //const float y = get_sprite(player_id)->get_y() + (rand() % 200 - 100);
-  // const int bat_height = get_textures()["bat"].texture.height;
-  //(float)GetScreenHeight() / 2 - (float)bat_height + 300;
-  //return spawn_bat(x, y, vx);
+// entity_id GameplayScene::spawn_bat() {
+//  get player position
+//  const float x = sprites[player_id]->get_x();
+// auto textures = get_textures();
+// auto sprites = get_sprites();
+// const int bat_width = textures["bat"].texture.width;
+// const int roll = rand() % 2;
+// const float x = roll ? -bat_width : GetScreenWidth() - 4.0;
+//  const float vx = roll ? 2.0f : -2.0f;
+// const float vx = 2.0f;
+//  here, we are hardcoding the bat y to be the player y
+//  const float y = sprites[player_id]->get_y();
+//  here, we are adjusting the spawned y in a random direction
+//  in order to provide some variance as to the bat spawn location
+//  perhaps over time this value can increase in scale to how far
+//  into the level the player is
+//  const float y = sprites[player_id]->get_y() + (rand() % 200 - 100);
+// const float y = get_sprite(player_id)->get_y() + (rand() % 200 - 100);
+//  const int bat_height = get_textures()["bat"].texture.height;
+//(float)GetScreenHeight() / 2 - (float)bat_height + 300;
+// return spawn_bat(x, y, vx);
 //}
 
-//entity_id GameplayScene::spawn_bat(const float x, const float y,
-//                                   const float vx) {
-  // mPrint("Spawning bat...");
+// entity_id GameplayScene::spawn_bat(const float x, const float y,
+//                                    const float vx) {
+//  mPrint("Spawning bat...");
 //  entity_id id = spawn_entity("bat", x, y, SPRITETYPE_ENEMY, true);
-  // shared_ptr<Sprite> s = get_sprite(id);
+// shared_ptr<Sprite> s = get_sprite(id);
 
 //  mPrint("Spawn bat " + to_string(x) + ", " + to_string(y) + ", " +
 //         to_string(vx));
@@ -768,85 +768,85 @@ void GameplayScene::close() {
 //  s[id]->set_ay(0.0f);
 //  s[id]->set_hp(1);
 //  s[id]->set_maxhp(1);
-  // sprites[id]->set_movement_type(MOVEMENT_TYPE_NORMAL);
+// sprites[id]->set_movement_type(MOVEMENT_TYPE_NORMAL);
 //  s[id]->set_movement_type(MOVEMENT_TYPE_HOMING);
 //  return id;
 //}
 
-//void GameplayScene::set_do_ground_movement(const bool d) {
-//  do_ground_movement = d;
+// void GameplayScene::set_do_ground_movement(const bool d) {
+//   do_ground_movement = d;
+// }
+
+// void GameplayScene::set_ground_y_movement(const float dy) {
+//   ground_y_movement = dy;
+// }
+
+// entity_id GameplayScene::spawn_knife() {
+//  mPrint("Spawning knife...");
+//   calculate offsets
+//   half the width of the sprite
+// const float o_x = get_sprites()[player_id]->get_width();
+// const float o_y = get_sprites()[player_id]->get_height() / 2.0;
+// float x = get_sprites()[player_id]->get_x();
+// float y = get_sprites()[player_id]->get_y() + o_y;
+//  get the width of the knife texture
+// const float knife_width = get_textures()["knife"].texture.width;
+// if (get_sprites()[player_id]->get_is_flipped()) {
+//  left side
+//  x -= knife_width * get_global_scale() + knife_speed.x * 2.0f;
+//} else {
+// right side
+//  x += o_x + knife_speed.x * 2.0f;
 //}
 
-//void GameplayScene::set_ground_y_movement(const float dy) {
-//  ground_y_movement = dy;
+// spawn the knife
+// entity_id id = spawn_entity("knife", x, y, SPRITETYPE_KNIFE, false);
+// const bool is_spinning = knife_catches > 0;
+// const bool is_flipped = get_sprite(player_id)->get_is_flipped();
+
+// float vx = knife_speed.x;
+//  const float vy = knife_speed.y;
+
+// if (is_flipped) {
+//   get_sprite(id)->set_is_flipped(true);
+//   vx = -vx;
+// }
+
+// if (is_spinning) {
+//   vx = vx * (1 + knife_catches);
+//   get_sprite(id)->set_is_spinning(true);
+//   get_sprite(id)->set_rotation_speed(1.0f * knife_catches);
+//   knife_catches = knife_catches - 1;
+// }
+
+// get_sprite(id)->set_vx(vx);
+// get_sprite(id)->set_vy(knife_speed.y);
+// get_sprite(id)->set_ax(0);
+// get_sprite(id)->set_ay(0);
+// get_sprite(id)->set_rotation_angle(0.0f);
+
+// return id;
 //}
 
-//entity_id GameplayScene::spawn_knife() {
-  // mPrint("Spawning knife...");
-  //  calculate offsets
-  //  half the width of the sprite
-  //const float o_x = get_sprites()[player_id]->get_width();
-  //const float o_y = get_sprites()[player_id]->get_height() / 2.0;
-  //float x = get_sprites()[player_id]->get_x();
-  //float y = get_sprites()[player_id]->get_y() + o_y;
-  // get the width of the knife texture
-  //const float knife_width = get_textures()["knife"].texture.width;
-  //if (get_sprites()[player_id]->get_is_flipped()) {
-    // left side
-  //  x -= knife_width * get_global_scale() + knife_speed.x * 2.0f;
-  //} else {
-    // right side
-  //  x += o_x + knife_speed.x * 2.0f;
-  //}
-
-  // spawn the knife
-  //entity_id id = spawn_entity("knife", x, y, SPRITETYPE_KNIFE, false);
-  //const bool is_spinning = knife_catches > 0;
-  //const bool is_flipped = get_sprite(player_id)->get_is_flipped();
-
-  //float vx = knife_speed.x;
-  // const float vy = knife_speed.y;
-
-  //if (is_flipped) {
-  //  get_sprite(id)->set_is_flipped(true);
-  //  vx = -vx;
-  //}
-
-  //if (is_spinning) {
-  //  vx = vx * (1 + knife_catches);
-  //  get_sprite(id)->set_is_spinning(true);
-  //  get_sprite(id)->set_rotation_speed(1.0f * knife_catches);
-  //  knife_catches = knife_catches - 1;
-  //}
-
-  //get_sprite(id)->set_vx(vx);
-  //get_sprite(id)->set_vy(knife_speed.y);
-  //get_sprite(id)->set_ax(0);
-  //get_sprite(id)->set_ay(0);
-  //get_sprite(id)->set_rotation_angle(0.0f);
-
-  //return id;
-//}
-
-//entity_id GameplayScene::spawn_player(float x, float y) {
-//  mPrint("Attempting to spawn player...");
-//  if (player_id != -1) {
-//    mPrint("Player already spawned.");
-//    return player_id;
-//  }
-//  mPrint("Spawning player...");
-//  player_id = spawn_entity("skull", x, y, SPRITETYPE_PLAYER, false);
+// entity_id GameplayScene::spawn_player(float x, float y) {
+//   mPrint("Attempting to spawn player...");
+//   if (player_id != -1) {
+//     mPrint("Player already spawned.");
+//     return player_id;
+//   }
+//   mPrint("Spawning player...");
+//   player_id = spawn_entity("skull", x, y, SPRITETYPE_PLAYER, false);
 //
-//  const int player_starting_hp = 3;
-//  const int player_max_hp = 3;
-//  get_sprite(player_id)->set_maxhp(player_max_hp);
-//  get_sprite(player_id)->set_hp(player_starting_hp);
+//   const int player_starting_hp = 3;
+//   const int player_max_hp = 3;
+//   get_sprite(player_id)->set_maxhp(player_max_hp);
+//   get_sprite(player_id)->set_hp(player_starting_hp);
 //
-//  return player_id;
-//}
+//   return player_id;
+// }
 
-//entity_id GameplayScene::spawn_soulshard(float x, float y) {
-  // mPrint("Spawning soulshard...");
+// entity_id GameplayScene::spawn_soulshard(float x, float y) {
+//  mPrint("Spawning soulshard...");
 //  entity_id id = spawn_entity("soulshard", x, y, SPRITETYPE_SOULSHARD, false);
 //  get_sprite(id)->set_vx(0.0f);
 //  get_sprite(id)->set_vy(0.0f);
@@ -860,8 +860,8 @@ void GameplayScene::close() {
 //  return id;
 //}
 
-//entity_id GameplayScene::spawn_heart(float x, float y) {
- // mPrint("Spawning soulshard...");
+// entity_id GameplayScene::spawn_heart(float x, float y) {
+//  mPrint("Spawning soulshard...");
 //  entity_id id = spawn_entity("heart", x, y, SPRITETYPE_POWERUP_HEART, false);
 //  get_sprite(id)->set_vx(0.0f);
 //  get_sprite(id)->set_vy(0.0f);
