@@ -12,7 +12,6 @@ GameplayScene::GameplayScene() {
   // set_global_scale(4.0f);
   set_scene_transition(SCENE_TRANSITION_IN);
   set_scene_type(SCENE_TYPE_GAMEPLAY);
-
   // load_music("/home/darkmage/Music/darkmage/lets-fkn-go.mp3");
 }
 
@@ -169,8 +168,6 @@ void GameplayScene::handle_player_collision() {
     case SPRITETYPE_KNIFE:
     case SPRITETYPE_SOULSHARD:
     case SPRITETYPE_POWERUP_HEART:
-      // if (CheckCollisionRecs(player->get_dest(), s.second->get_dest())) {
-      // if (CheckCollisionRecs(player->get_hitbox(), s.second->get_hitbox())) {
       if (CheckCollisionRecs(player->get_dest(), s.second->get_dest())) {
 
         if (t == SPRITETYPE_KNIFE) {
@@ -221,6 +218,15 @@ void GameplayScene::handle_player_collision() {
       break;
     default:
       break;
+    }
+  }
+
+  for (auto s : damage_zones) {
+    if (CheckCollisionRecs(player->get_dest(), s)) {
+      // player->set_hp(player->get_hp() - 1);
+      // if (player->get_hp() <= 0) {
+      set_scene_transition(SCENE_TRANSITION_OUT);
+      // }
     }
   }
 }
@@ -474,11 +480,21 @@ bool GameplayScene::init() {
 
     ground_y = GetScreenHeight();
 
+    init_damage_zones();
+
     set_has_been_initialized(true);
 
     mPrint("GameplayScene initialized");
   }
   return true;
+}
+
+void GameplayScene::init_damage_zones() {
+  Vector2 p = GetScreenToWorld2D((Vector2){0, 0}, get_camera2d());
+  damage_zones.push_back({p.x, p.y, 100, 100});
+  p = GetScreenToWorld2D((Vector2){(float)GetScreenWidth() - 100, -100},
+                         get_camera2d());
+  damage_zones.push_back({p.x, p.y, 100, 100});
 }
 
 void GameplayScene::draw_debug_panel() {
@@ -575,6 +591,10 @@ void GameplayScene::draw() {
                  get_sprites()[player_id]->get_y(), RED);
       }
     }
+  }
+
+  for (auto s : damage_zones) {
+    DrawRectangle(s.x, s.y, s.width, s.height, RED);
   }
 
   // if (get_scene_type() == SCENE_TYPE_TITLE) {

@@ -52,6 +52,8 @@ private:
   //  const float gravity = 0.0032f;
   const float gravity = 0.0064f;
 
+  vector<Rectangle> damage_zones;
+
   Mix_Chunk *sfx_knife_throw = nullptr;
   Mix_Chunk *sfx_knife_hit = nullptr;
 
@@ -75,4 +77,6 @@ private:
 
   entity_id player_id = -1;
   unsigned int soulshard_catches = 0;
+
+  void init_damage_zones();
 };
